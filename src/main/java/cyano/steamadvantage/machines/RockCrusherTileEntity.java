@@ -1,6 +1,7 @@
 package cyano.steamadvantage.machines;
 
 import cyano.poweradvantage.api.ConduitType;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -100,7 +101,11 @@ public class RockCrusherTileEntity extends cyano.poweradvantage.api.simple.TileE
 		}
 	}
 
-
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		return true;
+	}
+	
 	private float oldSteam = 0;
 	private int oldProgress = 0;
 	

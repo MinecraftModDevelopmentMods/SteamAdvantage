@@ -7,6 +7,7 @@ import cyano.poweradvantage.init.Fluids;
 import cyano.poweradvantage.registry.FuelRegistry;
 import cyano.steamadvantage.SteamAdvantage;
 import cyano.steamadvantage.init.Power;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -79,7 +80,10 @@ public class OilBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 		}
 	}
 
-
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		return true;
+	}
 
 	private boolean hasRedstoneSignal() {
 		return getWorld().isBlockPowered(getPos());

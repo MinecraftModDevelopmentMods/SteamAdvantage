@@ -1,19 +1,26 @@
 package cyano.steamadvantage.machines;
 
+import static cyano.steamadvantage.util.SoundHelper.playSoundAtTileEntity;
+
 import cyano.poweradvantage.api.ConduitType;
 import cyano.poweradvantage.api.PowerRequest;
 import cyano.poweradvantage.api.fluid.FluidRequest;
 import cyano.poweradvantage.init.Fluids;
 import cyano.steamadvantage.init.Power;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
-import net.minecraftforge.fluids.*;
-
-import static cyano.steamadvantage.util.SoundHelper.playSoundAtTileEntity;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidContainerRegistry;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fluids.FluidTankInfo;
+import net.minecraftforge.fluids.IFluidHandler;
 
 public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEntitySimplePowerMachine implements IFluidHandler{
 
@@ -415,5 +422,10 @@ public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	@Override
 	public boolean isItemValidForSlot(final int slot, final ItemStack item) {
 		return super.isItemValidForSlot(slot, item) && TileEntityFurnace.getItemBurnTime(item) > 0;
+	}
+	
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		return true;
 	}
 }

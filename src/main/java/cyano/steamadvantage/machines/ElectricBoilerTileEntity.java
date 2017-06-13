@@ -1,18 +1,25 @@
 package cyano.steamadvantage.machines;
 
+import static cyano.steamadvantage.util.SoundHelper.playSoundAtTileEntity;
+
 import cyano.poweradvantage.api.ConduitType;
 import cyano.poweradvantage.api.PowerRequest;
 import cyano.poweradvantage.api.fluid.FluidRequest;
 import cyano.poweradvantage.init.Fluids;
 import cyano.steamadvantage.init.Power;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
-import net.minecraftforge.fluids.*;
-
-import static cyano.steamadvantage.util.SoundHelper.playSoundAtTileEntity;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidContainerRegistry;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fluids.FluidTankInfo;
+import net.minecraftforge.fluids.IFluidHandler;
 
 public class ElectricBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEntitySimplePowerMachine implements IFluidHandler{
 
@@ -76,6 +83,11 @@ public class ElectricBoilerTileEntity extends cyano.poweradvantage.api.simple.Ti
 		}
 	}
 
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		return true;
+	}
+	
 	private void boilWater() {
 		if(getTank().getFluidAmount() >= 1 && (getEnergyCapacity(Power.steam_power) - getEnergy(Power.steam_power)) >= 1
 				&& getEnergy(ELECTRIC_POWER) >= ELECTRICITY_PER_TICK){

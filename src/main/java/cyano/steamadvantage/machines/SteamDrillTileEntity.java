@@ -9,6 +9,7 @@ import cyano.steamadvantage.init.Blocks;
 import cyano.steamadvantage.init.Power;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
@@ -337,7 +338,7 @@ public class SteamDrillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	}
 	
 	private EnumFacing getFacing(){
-		return (EnumFacing)worldObj.getBlockState(getPos()).getValue(SteamDrillBlock.FACING);
+		return (EnumFacing)world.getBlockState(getPos()).getValue(SteamDrillBlock.FACING);
 	}
 	
 	private void energyDecay() {
@@ -463,5 +464,10 @@ public class SteamDrillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	@Override
 	public boolean isPowerSource(ConduitType conduitType) {
 		return false;
+	}
+
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		return true;
 	}
 }

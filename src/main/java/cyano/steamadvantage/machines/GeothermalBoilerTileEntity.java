@@ -7,6 +7,7 @@ import cyano.poweradvantage.init.Fluids;
 import cyano.steamadvantage.init.Power;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -38,6 +39,11 @@ public class GeothermalBoilerTileEntity extends cyano.poweradvantage.api.simple.
 		super(new ConduitType[]{Power.steam_power,Fluids.fluidConduit_general}, new float[]{100,1000}, GeothermalBoilerTileEntity.class.getSimpleName());
 		tank = new FluidTank(FluidContainerRegistry.BUCKET_VOLUME * 2);
 		inventory = new ItemStack[0];
+	}
+	
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		return true;
 	}
 
 	private boolean redstone = true;

@@ -8,6 +8,7 @@ import cyano.poweradvantage.init.Fluids;
 import cyano.poweradvantage.registry.still.recipe.DistillationRecipe;
 import cyano.poweradvantage.registry.still.recipe.DistillationRecipeRegistry;
 import cyano.steamadvantage.init.Power;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -18,8 +19,6 @@ import net.minecraftforge.fluids.*;
 import static cyano.steamadvantage.util.SoundHelper.playSoundAtTileEntity;
 
 public class SteamStillTileEntity extends cyano.poweradvantage.api.simple.TileEntitySimplePowerMachine implements IFluidHandler{
-
-
 
 	private final FluidTank outputTank;
 	private final FluidTank inputTank;
@@ -415,5 +414,10 @@ public class SteamStillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	@Override
 	public boolean isItemValidForSlot(final int slot, final ItemStack item) {
 		return false; // no inventory
+	}
+
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		return true;
 	}
 }

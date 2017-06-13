@@ -2,6 +2,7 @@ package cyano.steamadvantage.machines;
 
 import cyano.poweradvantage.api.ConduitType;
 import cyano.steamadvantage.init.Power;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
@@ -180,7 +181,7 @@ public class BlastFurnaceTileEntity extends cyano.poweradvantage.api.simple.Tile
 		}
 	}
 	
-	private static int getFuelBurnTime(ItemStack item) {
+	private int getFuelBurnTime(ItemStack item) {
 		if(item == null) return 0;
 		return TileEntityFurnace.getItemBurnTime(item);
 	}
@@ -320,5 +321,10 @@ public class BlastFurnaceTileEntity extends cyano.poweradvantage.api.simple.Tile
 	@Override
 	public boolean isPowerSource(ConduitType powerType) {
 		return false;
+	}
+
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		return true;
 	}
 }

@@ -1,7 +1,13 @@
 package cyano.steamadvantage.items;
 
+import static cyano.steamadvantage.util.SoundHelper.playBigSoundAtPosition;
+import static cyano.steamadvantage.util.SoundHelper.playSoundAtPosition;
+
+import java.util.List;
+
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+
 import cyano.steamadvantage.SteamAdvantage;
 import cyano.steamadvantage.init.Enchantments;
 import cyano.steamadvantage.init.Power;
@@ -23,7 +29,13 @@ import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.SPacketEntityVelocity;
-import net.minecraft.util.*;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -33,11 +45,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
-
-import java.util.List;
-
-import static cyano.steamadvantage.util.SoundHelper.playBigSoundAtPosition;
-import static cyano.steamadvantage.util.SoundHelper.playSoundAtPosition;
 
 public class MusketItem extends net.minecraft.item.Item{
 	
@@ -111,7 +118,7 @@ public class MusketItem extends net.minecraft.item.Item{
 	
 	@Override
 	public void onUsingTick(ItemStack stack, EntityLivingBase player, int count){
-		if(player.worldObj.isRemote && count % 7 == 3 && isNotLoaded(stack)){
+		if(player.world.isRemote && count % 7 == 3 && isNotLoaded(stack)){
 			// indicator to player that the gun is loading
 			player.playSound(SoundType.STONE.getStepSound(), 0.5f, 1.0f);
 		}
@@ -158,7 +165,7 @@ public class MusketItem extends net.minecraft.item.Item{
 		playBigSoundAtPosition(playerEntity.posX,playerEntity.posY,playerEntity.posZ, SoundEvents.ENTITY_FIREWORK_BLAST,SoundCategory.PLAYERS,2F,0.5F,world);
 		
 		Vec3d start = new Vec3d(playerEntity.posX, playerEntity.posY+playerEntity.getEyeHeight(),playerEntity.posZ);
-		Vec3d end = start.addVector(MAX_RANGE * lookVector.xCoord, MAX_RANGE * lookVector.yCoord, MAX_RANGE * lookVector.zCoord);
+		start.addVector(MAX_RANGE * lookVector.xCoord, MAX_RANGE * lookVector.yCoord, MAX_RANGE * lookVector.zCoord);
 		RayTraceResult rayTrace = rayTraceBlocksAndEntities(world,MAX_RANGE,playerEntity);
 		if(rayTrace == null){
 			// no collisions
@@ -443,7 +450,7 @@ public class MusketItem extends net.minecraft.item.Item{
 	}
 	
 	@Override
-	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean b){
+	public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean b){
 		super.addInformation(stack,player,list,b);
 		list.add(I18n.translateToLocal("tooltip.musket.damage").replace("%x", String.valueOf((int)this.getShotDamage())));
 		if(isLoaded(stack)){
@@ -458,9 +465,9 @@ public class MusketItem extends net.minecraft.item.Item{
 	@Override
 	public Multimap<String, AttributeModifier> getAttributeModifiers(EntityEquipmentSlot slot, ItemStack stack)
 	{
-		Multimap multimap = HashMultimap.create();
+		Multimap<String, AttributeModifier> multimap = HashMultimap.create();
 		if(slot != EntityEquipmentSlot.MAINHAND) return multimap;
-		multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getAttributeUnlocalizedName(), new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier", (double)getMeleeDamage(), 0));
+		multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(), new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier", (double)getMeleeDamage(), 0));
 		return multimap;
 	}
 	

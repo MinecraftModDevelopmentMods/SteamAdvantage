@@ -3,6 +3,7 @@ package cyano.steamadvantage.machines;
 import cyano.poweradvantage.api.ConduitType;
 import cyano.poweradvantage.api.PowerRequest;
 import cyano.steamadvantage.init.Power;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 
@@ -110,5 +111,10 @@ public class SteamTankTileEntity  extends cyano.poweradvantage.api.simple.TileEn
 
 	public float getSteamLevel(){
 		return this.getEnergy(Power.steam_power) / this.getEnergyCapacity(Power.steam_power);
+	}
+
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		return true;
 	}
 }

@@ -8,6 +8,7 @@ import cyano.steamadvantage.init.Power;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
@@ -25,8 +26,6 @@ import java.util.Set;
 import static cyano.steamadvantage.util.SoundHelper.playSoundAtTileEntity;
 
 public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEntitySimplePowerMachine implements IFluidHandler{
-
-
 
 	private final FluidTank tank;
 	public static final float ENERGY_COST_PIPE = 5f;
@@ -448,5 +447,12 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 	@Override
 	public boolean isItemValidForSlot(final int slot, final ItemStack item) {
 		return false; // no inventory
+	}
+
+
+
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		return true;
 	}
 }
