@@ -7,6 +7,7 @@ import cyano.poweradvantage.init.Fluids;
 import cyano.poweradvantage.registry.FuelRegistry;
 import cyano.steamadvantage.SteamAdvantage;
 import cyano.steamadvantage.init.Power;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -20,6 +21,7 @@ import java.util.Map;
 
 import static cyano.steamadvantage.util.SoundHelper.playSoundAtTileEntity;
 
+@SuppressWarnings("deprecation")
 public class OilBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEntitySimplePowerMachine implements IFluidHandler{
 
 
@@ -28,9 +30,6 @@ public class OilBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 	private final FluidTank waterTank;
 	private final FluidTank fuelTank;
 	private static final Map<Fluid,Float> flammibilityCache = new HashMap<>();
-	private static final Map<Fluid,Integer> burnCache = new HashMap<>();
-
-
 	private int burnTime = 0;
 	private int totalBurnTime = 0;
 
@@ -40,6 +39,11 @@ public class OilBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 		super(new ConduitType[]{Power.steam_power, Fluids.fluidConduit_general}, new float[]{1000,1000}, OilBoilerTileEntity.class.getSimpleName());
 		waterTank = new FluidTank(FluidContainerRegistry.BUCKET_VOLUME * 4);
 		fuelTank = new FluidTank(FluidContainerRegistry.BUCKET_VOLUME * 4);
+	}
+	
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		return true;
 	}
 
 	private boolean redstone = true;

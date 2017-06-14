@@ -3,9 +3,11 @@ package cyano.steamadvantage.machines;
 import cyano.poweradvantage.api.ConduitType;
 import cyano.poweradvantage.api.PowerRequest;
 import cyano.steamadvantage.init.Power;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 
+@SuppressWarnings("deprecation")
 public class SteamTankTileEntity  extends cyano.poweradvantage.api.simple.TileEntitySimplePowerMachine {
 
 	private final ItemStack[] inventory = new ItemStack[0];
@@ -16,8 +18,12 @@ public class SteamTankTileEntity  extends cyano.poweradvantage.api.simple.TileEn
 	}
 	
 	private boolean redstone = true;
-	
 
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		return true;
+	}
+	
 	@Override
 	public void tickUpdate(boolean isServerWorld) {
 		if(isServerWorld){

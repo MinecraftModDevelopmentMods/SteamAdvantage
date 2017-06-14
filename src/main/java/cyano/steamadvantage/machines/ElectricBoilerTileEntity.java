@@ -1,19 +1,27 @@
 package cyano.steamadvantage.machines;
 
+import static cyano.steamadvantage.util.SoundHelper.playSoundAtTileEntity;
+
 import cyano.poweradvantage.api.ConduitType;
 import cyano.poweradvantage.api.PowerRequest;
 import cyano.poweradvantage.api.fluid.FluidRequest;
 import cyano.poweradvantage.init.Fluids;
 import cyano.steamadvantage.init.Power;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
-import net.minecraftforge.fluids.*;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidContainerRegistry;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fluids.FluidTankInfo;
+import net.minecraftforge.fluids.IFluidHandler;
 
-import static cyano.steamadvantage.util.SoundHelper.playSoundAtTileEntity;
-
+@SuppressWarnings("deprecation")
 public class ElectricBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEntitySimplePowerMachine implements IFluidHandler{
 
 	static final ConduitType ELECTRIC_POWER = new ConduitType("electricity");
@@ -362,6 +370,13 @@ public class ElectricBoilerTileEntity extends cyano.poweradvantage.api.simple.Ti
 	@Override
 	public boolean isItemValidForSlot(final int slot, final ItemStack item) {
 		return false;
+	}
+
+
+
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		return true;
 	}
 }
 

@@ -123,7 +123,7 @@ public class SteamDrillBlock extends GUIBlock implements ITypedConduit {
 	 * Creates the blockstate of this block when it is placed in the world
 	 */
 	@Override
-	public IBlockState onBlockPlaced(final World world, final BlockPos coord, final EnumFacing facing, 
+	public IBlockState getStateForPlacement(final World world, final BlockPos coord, final EnumFacing facing, 
 			final float f1, final float f2, final float f3, 
 			final int meta, final EntityLivingBase player) {
 		return this.getDefaultState().withProperty( FACING, facing.getOpposite());

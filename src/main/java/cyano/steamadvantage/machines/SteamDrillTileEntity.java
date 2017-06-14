@@ -9,6 +9,7 @@ import cyano.steamadvantage.init.Blocks;
 import cyano.steamadvantage.init.Power;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
@@ -50,9 +51,15 @@ public class SteamDrillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	public SteamDrillTileEntity() {
 		super(Power.steam_power, 50, RockCrusherTileEntity.class.getName());
 	}
+	
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		return true;
+	}
 
 	
 	private boolean redstone = true;
+	@SuppressWarnings("deprecation")
 	@Override
 	public void tickUpdate(boolean isServerWorld) {
 		if(isServerWorld){
@@ -337,7 +344,7 @@ public class SteamDrillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	}
 	
 	private EnumFacing getFacing(){
-		return (EnumFacing)worldObj.getBlockState(getPos()).getValue(SteamDrillBlock.FACING);
+		return (EnumFacing)world.getBlockState(getPos()).getValue(SteamDrillBlock.FACING);
 	}
 	
 	private void energyDecay() {
@@ -355,6 +362,7 @@ public class SteamDrillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 		return !(b == net.minecraft.init.Blocks.BEDROCK || b == net.minecraft.init.Blocks.BARRIER);
 	}
 	
+	@SuppressWarnings("deprecation")
 	private int getBlockStrength(BlockPos coord){
 		if(getWorld().isAirBlock(coord)){
 			return 0;

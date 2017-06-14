@@ -5,6 +5,7 @@ import cyano.poweradvantage.api.PowerRequest;
 import cyano.poweradvantage.api.fluid.FluidRequest;
 import cyano.poweradvantage.init.Fluids;
 import cyano.steamadvantage.init.Power;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -15,6 +16,7 @@ import net.minecraftforge.fluids.*;
 
 import static cyano.steamadvantage.util.SoundHelper.playSoundAtTileEntity;
 
+@SuppressWarnings("deprecation")
 public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEntitySimplePowerMachine implements IFluidHandler{
 
 	
@@ -415,5 +417,10 @@ public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	@Override
 	public boolean isItemValidForSlot(final int slot, final ItemStack item) {
 		return super.isItemValidForSlot(slot, item) && TileEntityFurnace.getItemBurnTime(item) > 0;
+	}
+
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		return true;
 	}
 }

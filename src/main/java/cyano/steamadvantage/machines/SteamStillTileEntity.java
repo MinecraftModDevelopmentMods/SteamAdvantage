@@ -8,6 +8,7 @@ import cyano.poweradvantage.init.Fluids;
 import cyano.poweradvantage.registry.still.recipe.DistillationRecipe;
 import cyano.poweradvantage.registry.still.recipe.DistillationRecipeRegistry;
 import cyano.steamadvantage.init.Power;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -17,6 +18,7 @@ import net.minecraftforge.fluids.*;
 
 import static cyano.steamadvantage.util.SoundHelper.playSoundAtTileEntity;
 
+@SuppressWarnings("deprecation")
 public class SteamStillTileEntity extends cyano.poweradvantage.api.simple.TileEntitySimplePowerMachine implements IFluidHandler{
 
 
@@ -33,6 +35,11 @@ public class SteamStillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 		super(new ConduitType[]{Power.steam_power, Fluids.fluidConduit_general}, new float[]{100,1000}, SteamStillTileEntity.class.getSimpleName());
 		outputTank = new FluidTank(FluidContainerRegistry.BUCKET_VOLUME );
 		inputTank = new FluidTank(FluidContainerRegistry.BUCKET_VOLUME);
+	}
+	
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		return true;
 	}
 
 	private boolean redstone = true;

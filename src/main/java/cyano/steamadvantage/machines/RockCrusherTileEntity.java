@@ -1,6 +1,7 @@
 package cyano.steamadvantage.machines;
 
 import cyano.poweradvantage.api.ConduitType;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -30,6 +31,11 @@ public class RockCrusherTileEntity extends cyano.poweradvantage.api.simple.TileE
 		for(int i = 0; i < allSlots.length; i++){
 			allSlots[i] = i;
 		}
+	}
+	
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		return true;
 	}
 
 	private boolean redstone = true;

@@ -39,6 +39,7 @@ import java.util.List;
 import static cyano.steamadvantage.util.SoundHelper.playBigSoundAtPosition;
 import static cyano.steamadvantage.util.SoundHelper.playSoundAtPosition;
 
+@SuppressWarnings("deprecation")
 public class MusketItem extends net.minecraft.item.Item{
 	
 	
@@ -111,7 +112,7 @@ public class MusketItem extends net.minecraft.item.Item{
 	
 	@Override
 	public void onUsingTick(ItemStack stack, EntityLivingBase player, int count){
-		if(player.worldObj.isRemote && count % 7 == 3 && isNotLoaded(stack)){
+		if(player.world.isRemote && count % 7 == 3 && isNotLoaded(stack)){
 			// indicator to player that the gun is loading
 			player.playSound(SoundType.STONE.getStepSound(), 0.5f, 1.0f);
 		}
@@ -158,7 +159,7 @@ public class MusketItem extends net.minecraft.item.Item{
 		playBigSoundAtPosition(playerEntity.posX,playerEntity.posY,playerEntity.posZ, SoundEvents.ENTITY_FIREWORK_BLAST,SoundCategory.PLAYERS,2F,0.5F,world);
 		
 		Vec3d start = new Vec3d(playerEntity.posX, playerEntity.posY+playerEntity.getEyeHeight(),playerEntity.posZ);
-		Vec3d end = start.addVector(MAX_RANGE * lookVector.xCoord, MAX_RANGE * lookVector.yCoord, MAX_RANGE * lookVector.zCoord);
+		start.addVector(MAX_RANGE * lookVector.xCoord, MAX_RANGE * lookVector.yCoord, MAX_RANGE * lookVector.zCoord);
 		RayTraceResult rayTrace = rayTraceBlocksAndEntities(world,MAX_RANGE,playerEntity);
 		if(rayTrace == null){
 			// no collisions
@@ -441,9 +442,9 @@ public class MusketItem extends net.minecraft.item.Item{
 		}
 		return false;
 	}
-	
+	@SuppressWarnings("deprecation")
 	@Override
-	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean b){
+	public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean b){
 		super.addInformation(stack,player,list,b);
 		list.add(I18n.translateToLocal("tooltip.musket.damage").replace("%x", String.valueOf((int)this.getShotDamage())));
 		if(isLoaded(stack)){
@@ -458,9 +459,9 @@ public class MusketItem extends net.minecraft.item.Item{
 	@Override
 	public Multimap<String, AttributeModifier> getAttributeModifiers(EntityEquipmentSlot slot, ItemStack stack)
 	{
-		Multimap multimap = HashMultimap.create();
+		Multimap<String, AttributeModifier> multimap = HashMultimap.create();
 		if(slot != EntityEquipmentSlot.MAINHAND) return multimap;
-		multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getAttributeUnlocalizedName(), new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier", (double)getMeleeDamage(), 0));
+		multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(), new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier", (double)getMeleeDamage(), 0));
 		return multimap;
 	}
 	

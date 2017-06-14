@@ -8,6 +8,7 @@ import cyano.steamadvantage.init.Power;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
@@ -24,6 +25,7 @@ import java.util.Set;
 
 import static cyano.steamadvantage.util.SoundHelper.playSoundAtTileEntity;
 
+@SuppressWarnings("deprecation")
 public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEntitySimplePowerMachine implements IFluidHandler{
 
 
@@ -45,6 +47,11 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 		super(new ConduitType[]{Power.steam_power,Fluids.fluidConduit_general}, new float[]{300f,1000f}, SteamPumpTileEntity.class.getSimpleName());
 		tank = new FluidTank(FluidContainerRegistry.BUCKET_VOLUME);
 	}
+	
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		return true;
+	}
 
 	private boolean redstone = true;
 
@@ -53,8 +60,6 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 	@Override
 	public void tickUpdate(boolean isServerWorld) {
 		if(isServerWorld){
-			// server-side logic
-			net.minecraft.tileentity.TileEntityPiston k;
 			if(!redstone){
 				if(timeUntilNextPump > 0) timeUntilNextPump--;
 				if(timeUntilNextPump == 0 && getTank().getFluidAmount() <= 0){

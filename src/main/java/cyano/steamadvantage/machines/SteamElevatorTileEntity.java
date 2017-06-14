@@ -4,6 +4,7 @@ import cyano.poweradvantage.api.ConduitType;
 import cyano.steamadvantage.init.Blocks;
 import cyano.steamadvantage.init.Power;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -34,9 +35,6 @@ public class SteamElevatorTileEntity extends cyano.poweradvantage.api.simple.Til
 	private boolean redstone = true;
 	
 
-	private int timeSinceLastSteamBurst = 0;
-	
-	private ItemStack itemCheck = null;
 	@Override
 	public void tickUpdate(boolean isServerWorld) {
 		if(isServerWorld){
@@ -52,13 +50,16 @@ public class SteamElevatorTileEntity extends cyano.poweradvantage.api.simple.Til
 		}
 	}
 
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		return true;
+	}
+	
 	private boolean moveUp(){
 		if(this.getEnergy(Power.steam_power) < STEAM_PER_ELEVATOR_MOVE) return false;
 		this.subtractEnergy(STEAM_PER_ELEVATOR_MOVE, Power.steam_power);
 		playSoundAtTileEntity( SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.AMBIENT, 0.5f, 1f, this);
 		playSoundAtTileEntity( SoundEvents.BLOCK_PISTON_EXTEND, SoundCategory.BLOCKS, 0.5f, 1f, this);
-		// scan up to find solid block, then move piston up to 2 less than that
-		final int maxTop = MAX_RANGE + 2;
 		int dist = 0;
 		BlockPos p = this.getPos().up();
 		while(p.getY() < 256 && dist < MAX_RANGE && getWorld().isAirBlock(p)){
