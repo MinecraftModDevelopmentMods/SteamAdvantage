@@ -1,5 +1,7 @@
 package cyano.steamadvantage.machines;
 
+import static cyano.steamadvantage.util.SoundHelper.playSoundAtTileEntity;
+
 import cyano.poweradvantage.api.ConduitType;
 import cyano.poweradvantage.api.PowerRequest;
 import cyano.poweradvantage.api.fluid.FluidRequest;
@@ -12,9 +14,13 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
-import net.minecraftforge.fluids.*;
-
-import static cyano.steamadvantage.util.SoundHelper.playSoundAtTileEntity;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fluids.FluidTankInfo;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
 @SuppressWarnings("deprecation")
 public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEntitySimplePowerMachine implements IFluidHandler{
@@ -97,7 +103,7 @@ public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	
 
 	private void decrementFuel() {
-		if(inventory[0].stackSize == 1 && inventory[0].getItem().getContainerItem(inventory[0]) != null){
+		if(inventory[0].getCount() == 1 && inventory[0].getItem().getContainerItem(inventory[0]) != null){
 			inventory[0] = inventory[0].getItem().getContainerItem(inventory[0]);
 		} else {
 			this.decrStackSize(0, 1);
@@ -234,7 +240,7 @@ public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	
 	public int getComparatorOutput() {
 		if(inventory[0] == null) return 0;
-		return Math.min(Math.max(15 * inventory[0].stackSize * inventory[0].getMaxStackSize() / inventory[0].getMaxStackSize(),1),15);
+		return Math.min(Math.max(15 * inventory[0].getCount() * inventory[0].getMaxStackSize() / inventory[0].getMaxStackSize(),1),15);
 	}
 	
 	///// Overrides to make this a multi-type block /////
@@ -261,7 +267,7 @@ public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEn
 		if(Fluids.isFluidType(type)){
 			if(Fluids.conduitTypeToFluid(type) == FluidRegistry.WATER){
 				if(this.canFill(null, Fluids.conduitTypeToFluid(type))){
-					return this.fill(null, new FluidStack(Fluids.conduitTypeToFluid(type),(int)amount), true);
+					return this.fill(new FluidStack(Fluids.conduitTypeToFluid(type),(int)amount), true);
 				} else {
 					return 0;
 				}
@@ -300,7 +306,7 @@ public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	public float subtractEnergy(float amount, ConduitType type){
 		if(Fluids.isFluidType(type)){
 			if(this.canDrain(null, Fluids.conduitTypeToFluid(type))){
-				return this.drain(null, new FluidStack(Fluids.conduitTypeToFluid(type),(int)amount), true).amount;
+				return this.drain(new FluidStack(Fluids.conduitTypeToFluid(type),(int)amount), true).amount;
 			} else {
 				return 0;
 			}
@@ -343,7 +349,7 @@ public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	 * @param forReal if true, then the fluid in the tank will change
 	 */
 	@Override
-	public int fill(EnumFacing face, FluidStack fluid, boolean forReal) {
+	public int fill(FluidStack fluid, boolean forReal) {
 		if(getTank().getFluidAmount() <= 0 || getTank().getFluid().getFluid().equals(fluid.getFluid())){
 			return getTank().fill(fluid, forReal);
 		} else {
@@ -357,7 +363,7 @@ public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	 * @param forReal if true, then the fluid in the tank will change
 	 */
 	@Override
-	public FluidStack drain(EnumFacing face, FluidStack fluid, boolean forReal) {
+	public FluidStack drain(FluidStack fluid, boolean forReal) {
 		if(getTank().getFluidAmount() > 0 && getTank().getFluid().getFluid().equals(fluid.getFluid())){
 			return getTank().drain(fluid.amount,forReal);
 		} else {
@@ -371,7 +377,7 @@ public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	 * @param forReal if true, then the fluid in the tank will change
 	 */
 	@Override
-	public FluidStack drain(EnumFacing face, int amount, boolean forReal) {
+	public FluidStack drain(int amount, boolean forReal) {
 		if(getTank().getFluidAmount() > 0 ){
 			return getTank().drain(amount,forReal);
 		} else {
@@ -422,5 +428,16 @@ public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	@Override
 	public boolean isUsableByPlayer(EntityPlayer player) {
 		return true;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return false;
+	}
+
+	@Override
+	public IFluidTankProperties[] getTankProperties() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
