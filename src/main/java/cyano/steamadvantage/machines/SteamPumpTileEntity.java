@@ -25,6 +25,7 @@ import java.util.Set;
 
 import static cyano.steamadvantage.util.SoundHelper.playSoundAtTileEntity;
 
+@SuppressWarnings("deprecation")
 public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEntitySimplePowerMachine implements IFluidHandler{
 
 	private final FluidTank tank;
@@ -52,8 +53,6 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 	@Override
 	public void tickUpdate(boolean isServerWorld) {
 		if(isServerWorld){
-			// server-side logic
-			net.minecraft.tileentity.TileEntityPiston k;
 			if(!redstone){
 				if(timeUntilNextPump > 0) timeUntilNextPump--;
 				if(timeUntilNextPump == 0 && getTank().getFluidAmount() <= 0){

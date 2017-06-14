@@ -45,7 +45,7 @@ public class DrillBitBlock extends Block implements ITileEntityProvider {
 	}
 	
 	@Override public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune){
-		return Collections.EMPTY_LIST;
+		return Collections.emptyList();
 	}
 
 	@Override

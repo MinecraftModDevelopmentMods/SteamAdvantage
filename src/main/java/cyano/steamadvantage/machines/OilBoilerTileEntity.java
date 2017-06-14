@@ -21,6 +21,7 @@ import java.util.Map;
 
 import static cyano.steamadvantage.util.SoundHelper.playSoundAtTileEntity;
 
+@SuppressWarnings("deprecation")
 public class OilBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEntitySimplePowerMachine implements IFluidHandler{
 
 
@@ -29,9 +30,6 @@ public class OilBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 	private final FluidTank waterTank;
 	private final FluidTank fuelTank;
 	private static final Map<Fluid,Float> flammibilityCache = new HashMap<>();
-	private static final Map<Fluid,Integer> burnCache = new HashMap<>();
-
-
 	private int burnTime = 0;
 	private int totalBurnTime = 0;
 

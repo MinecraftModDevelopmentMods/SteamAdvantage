@@ -46,6 +46,7 @@ public abstract class Items {
 		}
 		return n;
 	}
+	@SuppressWarnings("deprecation")
 	private static Item addItem(String unlocalizedName, Item i){
 		i.setUnlocalizedName(SteamAdvantage.MODID+"."+unlocalizedName);
 		GameRegistry.registerItem(i, unlocalizedName);

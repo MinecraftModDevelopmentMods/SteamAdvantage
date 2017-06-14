@@ -46,6 +46,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
 
+@SuppressWarnings("deprecation")
 public class MusketItem extends net.minecraft.item.Item{
 	
 	
@@ -452,7 +453,7 @@ public class MusketItem extends net.minecraft.item.Item{
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean b){
 		super.addInformation(stack,player,list,b);
-		list.add(I18n.translateToLocal("tooltip.musket.damage").replace("%x", String.valueOf((int)this.getShotDamage())));
+		list.add(I18n.translateToLocal("tooltip.musket.damage").replace("%x", String.valueOf((int)MusketItem.getShotDamage())));
 		if(isLoaded(stack)){
 			list.add(I18n.translateToLocal("tooltip.musket.loaded"));
 		} else {

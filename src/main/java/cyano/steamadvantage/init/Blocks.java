@@ -44,6 +44,7 @@ public abstract class Blocks {
 	public static GUIBlock steam_boiler_oil;
 	
 	private static boolean initDone = false;
+	@SuppressWarnings("deprecation")
 	public static void init(){
 		if(initDone) return;
 		
@@ -76,6 +77,7 @@ public abstract class Blocks {
 	}
 	
 
+	@SuppressWarnings("deprecation")
 	private static Block addBlock(Block block, String name ){
 		block.setUnlocalizedName(SteamAdvantage.MODID+"."+name);
 		GameRegistry.registerBlock(block, name);

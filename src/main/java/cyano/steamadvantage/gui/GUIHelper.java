@@ -9,14 +9,9 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fluids.FluidStack;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public abstract class GUIHelper {
 
 
-	private static final Map<ResourceLocation,ResourceLocation> realTextureLocationCache = new HashMap<>();
-	
 	public static float maxDelta(float newValue,float oldValue,float maxChange){
 		if((newValue - oldValue) > maxChange){
 			return oldValue + maxChange;
