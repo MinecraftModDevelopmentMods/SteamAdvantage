@@ -28,14 +28,39 @@ sourceCompatibility = targetCompatibility = "1.8"
 minecraft {
     version = "1.11.2-13.20.0.2228"
     runDir = "run"
-    mappings = "snapshot_20170531"
+    mappings = "stable_32"
+}
+
+repositories {
+    maven {
+        name "MMD"
+        url "https://maven.mcmoddev.com/"
+    }
+    maven {
+        name "Dankhax"
+        url "http://maven.epoxide.org"
+    }
+    maven { // Mantle, TCon, JEI
+        name "DVS1 Maven FS"
+        url "http://dvs1.progwml6.com/files/maven"
+    }
+    maven { // CCL, CCC, NEI
+        name "Chickenbones Repo"
+        url "http://chickenbones.net/maven/"
+    }
+    maven { // CoFH
+    	name "Covers Maven"
+    	url "http://maven.covers1624.net"
+    }
+    maven {
+	    name "SpongePowered"
+        url 'https://repo.spongepowered.org/maven/'
+    }
 }
 
 dependencies {
-    compile files(
-        'libs/PowerAdvantage_1.9.4-API-2.2.0.jar',
-        'libs/BaseMetals_1.9.4-API-2.3.2.6.jar'
-    )
+    deobfCompile "com.mcmoddev:BaseMetals:1.11.2-2.5.0-beta+"
+    deobfCompile "cyano:PowerAdvantage:1.10.2-2.3.1"
 }
 
 processResources {

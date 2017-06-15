@@ -6,8 +6,8 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-import cyano.basemetals.registry.CrusherRecipeRegistry;
-import cyano.basemetals.registry.recipe.ICrusherRecipe;
+import com.mcmoddev.lib.registry.CrusherRecipeRegistry;
+import com.mcmoddev.lib.registry.recipe.ICrusherRecipe;
 import cyano.steamadvantage.init.Power;
 import net.minecraft.util.SoundCategory;
 

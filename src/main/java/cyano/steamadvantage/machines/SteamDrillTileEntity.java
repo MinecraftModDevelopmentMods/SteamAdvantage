@@ -1,7 +1,7 @@
 package cyano.steamadvantage.machines;
 
-import cyano.basemetals.registry.CrusherRecipeRegistry;
-import cyano.basemetals.registry.recipe.ICrusherRecipe;
+import com.mcmoddev.lib.registry.CrusherRecipeRegistry;
+import com.mcmoddev.lib.registry.recipe.ICrusherRecipe;
 import cyano.poweradvantage.api.ConduitType;
 import cyano.poweradvantage.util.InventoryWrapper;
 import cyano.steamadvantage.blocks.DrillBitTileEntity;
