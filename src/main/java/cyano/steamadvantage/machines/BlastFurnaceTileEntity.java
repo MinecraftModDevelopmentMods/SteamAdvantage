@@ -181,7 +181,7 @@ public class BlastFurnaceTileEntity extends cyano.poweradvantage.api.simple.Tile
 		}
 	}
 	
-	private static int getFuelBurnTime(ItemStack item) {
+	private int getFuelBurnTime(ItemStack item) {
 		if(item == null) return 0;
 		return TileEntityFurnace.getItemBurnTime(item);
 	}

@@ -106,7 +106,11 @@ public class RockCrusherTileEntity extends cyano.poweradvantage.api.simple.TileE
 		}
 	}
 
-
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		return true;
+	}
+	
 	private float oldSteam = 0;
 	private int oldProgress = 0;
 	

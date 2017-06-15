@@ -83,7 +83,10 @@ public class OilBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 		}
 	}
 
-
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		return true;
+	}
 
 	private boolean hasRedstoneSignal() {
 		return getWorld().isBlockPowered(getPos());

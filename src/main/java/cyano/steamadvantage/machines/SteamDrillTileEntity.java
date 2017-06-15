@@ -27,6 +27,7 @@ import java.util.List;
 import static cyano.steamadvantage.util.SoundHelper.playSoundAtPosition;
 import static cyano.steamadvantage.util.SoundHelper.playSoundAtTileEntity;
 
+@SuppressWarnings("deprecation")
 public class SteamDrillTileEntity extends cyano.poweradvantage.api.simple.TileEntitySimplePowerMachine{
 	
 	public static final int MAX_RANGE = 64;
@@ -471,5 +472,10 @@ public class SteamDrillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	@Override
 	public boolean isPowerSource(ConduitType conduitType) {
 		return false;
+	}
+
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		return true;
 	}
 }

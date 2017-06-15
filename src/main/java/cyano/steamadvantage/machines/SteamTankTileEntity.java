@@ -117,4 +117,9 @@ public class SteamTankTileEntity  extends cyano.poweradvantage.api.simple.TileEn
 	public float getSteamLevel(){
 		return this.getEnergy(Power.steam_power) / this.getEnergyCapacity(Power.steam_power);
 	}
+
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		return true;
+	}
 }

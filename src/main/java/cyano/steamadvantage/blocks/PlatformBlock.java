@@ -131,7 +131,7 @@ public class PlatformBlock extends Block{
 	}
 	
 	@Override public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune){
-		return Collections.EMPTY_LIST;
+		return Collections.emptyList();
 	}
 
 	@SideOnly(Side.CLIENT)

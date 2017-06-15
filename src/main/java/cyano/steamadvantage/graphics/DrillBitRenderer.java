@@ -23,8 +23,6 @@ public class DrillBitRenderer extends TileEntitySpecialRenderer{
 	
 	private final ResourceLocation texture = new ResourceLocation(SteamAdvantage.MODID+":textures/entity/drill_bit.png");
 
-	private static final float RADIANS_TO_DEGREES = (float)(180 / Math.PI);
-	
 	public DrillBitRenderer() {
 		super();
 	}

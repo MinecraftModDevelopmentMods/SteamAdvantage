@@ -84,6 +84,11 @@ public class ElectricBoilerTileEntity extends cyano.poweradvantage.api.simple.Ti
 		}
 	}
 
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		return true;
+	}
+	
 	private void boilWater() {
 		if(getTank().getFluidAmount() >= 1 && (getEnergyCapacity(Power.steam_power) - getEnergy(Power.steam_power)) >= 1
 				&& getEnergy(ELECTRIC_POWER) >= ELECTRICITY_PER_TICK){

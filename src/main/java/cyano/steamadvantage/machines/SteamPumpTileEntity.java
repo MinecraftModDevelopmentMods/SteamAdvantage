@@ -28,8 +28,6 @@ import static cyano.steamadvantage.util.SoundHelper.playSoundAtTileEntity;
 @SuppressWarnings("deprecation")
 public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEntitySimplePowerMachine implements IFluidHandler{
 
-
-
 	private final FluidTank tank;
 	public static final float ENERGY_COST_PIPE = 5f;
 	public static final float ENERGY_COST_VERTICAL = 1f;
@@ -453,5 +451,12 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 	@Override
 	public boolean isItemValidForSlot(final int slot, final ItemStack item) {
 		return false; // no inventory
+	}
+
+
+
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		return true;
 	}
 }
