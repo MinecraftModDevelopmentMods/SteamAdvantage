@@ -10,15 +10,22 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+@Mod.EventBusSubscriber
 public abstract class Blocks {
 	private static final Map<String,Block> allBlocks = new HashMap<>();
 
@@ -44,6 +51,7 @@ public abstract class Blocks {
 	public static GUIBlock steam_boiler_oil;
 	
 	private static boolean initDone = false;
+
 	@SuppressWarnings("deprecation")
 	public static void init(){
 		if(initDone) return;
@@ -75,12 +83,24 @@ public abstract class Blocks {
 		
 		initDone = true;
 	}
-	
+
+	@SubscribeEvent
+	public static void registerBlocks(RegistryEvent.Register<Block> event){
+		event.getRegistry().registerAll(allBlocks.values().toArray(new Block[0]));
+	}
+
+	@SubscribeEvent
+	public static void registerItemBlocks(RegistryEvent.Register<Item> event) {
+		Arrays.stream(allBlocks.values().toArray(new Block[0]))
+				.filter(block -> block.getRegistryName() != null)
+				.map((block -> new ItemBlock(block).setRegistryName(block.getRegistryName())))
+				.forEach((item -> event.getRegistry().register(item)));
+	}
 
 	@SuppressWarnings("deprecation")
 	private static Block addBlock(Block block, String name ){
 		block.setUnlocalizedName(SteamAdvantage.MODID+"."+name);
-		GameRegistry.registerBlock(block, name);
+		block.setRegistryName(SteamAdvantage.MODID, name);
 		block.setCreativeTab(cyano.poweradvantage.init.ItemGroups.tab_powerAdvantage);
 		allBlocks.put(name, block);
 		return block;

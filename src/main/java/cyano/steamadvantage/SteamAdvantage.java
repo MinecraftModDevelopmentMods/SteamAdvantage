@@ -91,7 +91,6 @@ public class SteamAdvantage
 		config.save();
 
 		Blocks.init();
-		Items.init();
 		TreasureChests.init(config.getConfigFile().toPath().getParent());
 
 

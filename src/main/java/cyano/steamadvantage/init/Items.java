@@ -1,11 +1,15 @@
 package cyano.steamadvantage.init;
 
+import cyano.poweradvantage.PowerAdvantage;
 import cyano.steamadvantage.SteamAdvantage;
 import cyano.steamadvantage.items.MusketItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -15,10 +19,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+@Mod.EventBusSubscriber
+@GameRegistry.ObjectHolder(SteamAdvantage.MODID)
 public abstract class Items {
 
 	
-	public static final Map<String,Item> allItems = new HashMap<>();
+	private static final Map<String,Item> allItems = new HashMap<>();
 
 	public static Item steam_governor;
 	public static Item steam_drill_bit;
@@ -27,29 +33,32 @@ public abstract class Items {
 	
 	
 	private static boolean initDone = false;
-	public static void init(){
+
+	@SubscribeEvent
+	public static void init(RegistryEvent.Register<Item> event) {
 		if(initDone) return;
 		Blocks.init();
 
-		steam_governor = addItem("steam_governor",new Item(),"governor","governorBrass");
-		steam_drill_bit = addItem("steam_drill_bit",new Item());
-		blackpowder_cartridge = addItem("blackpowder_cartridge",new Item(),"ammoBlackpowder");
-		blackpowder_musket = addItem("musket",new MusketItem(),"gun");
+		steam_governor = addItem(event, "steam_governor",new Item(),"governor","governorBrass");
+		steam_drill_bit = addItem(event, "steam_drill_bit",new Item());
+		blackpowder_cartridge = addItem(event, "blackpowder_cartridge",new Item(),"ammoBlackpowder");
+		blackpowder_musket = addItem(event, "musket",new MusketItem(),"gun");
 		
 		initDone = true;
 	}
 
-	private static Item addItem(String unlocalizedName, Item i,String... oreDictNames){
-		Item n = addItem(unlocalizedName,i);
+	private static Item addItem(RegistryEvent.Register<Item> event, String unlocalizedName, Item i,String... oreDictNames){
+		Item n = addItem(event, unlocalizedName, i);
 		for(String oreDictName : oreDictNames){
 			OreDictionary.registerOre(oreDictName, n);
 		}
 		return n;
 	}
 	@SuppressWarnings("deprecation")
-	private static Item addItem(String unlocalizedName, Item i){
+	private static Item addItem(RegistryEvent.Register<Item> event, String unlocalizedName, Item i){
 		i.setUnlocalizedName(SteamAdvantage.MODID+"."+unlocalizedName);
-		GameRegistry.registerItem(i, unlocalizedName);
+		i.setRegistryName(SteamAdvantage.MODID, unlocalizedName);
+		event.getRegistry().register(i);
 		i.setCreativeTab(cyano.poweradvantage.init.ItemGroups.tab_powerAdvantage);
 		allItems.put(unlocalizedName, i);
 		return i;

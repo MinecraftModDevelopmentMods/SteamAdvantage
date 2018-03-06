@@ -1,6 +1,6 @@
 package cyano.steamadvantage.init;
 
-import cyano.basemetals.util.VillagerTradeHelper;
+import com.mcmoddev.basemetals.util.VillagerTradeHelper;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.FMLLog;

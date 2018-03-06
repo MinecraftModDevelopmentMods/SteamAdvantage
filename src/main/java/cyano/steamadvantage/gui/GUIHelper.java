@@ -2,8 +2,8 @@ package cyano.steamadvantage.gui;
 
 import cyano.poweradvantage.api.simple.SimpleMachineGUI.GUIContainer;
 import cyano.poweradvantage.gui.FluidTankGUI;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
@@ -39,7 +39,8 @@ public abstract class GUIHelper {
 		float angle = (1f - value) * PI;
 		float offsetX = pivotX;
 		float offsetY = pivotY;
-		VertexBuffer renderer = Tessellator.getInstance().getBuffer();
+		Tessellator tessellator = Tessellator.getInstance();
+		BufferBuilder renderer = tessellator.getBuffer();
 
 		float sin = MathHelper.sin(angle);
 		float cos = MathHelper.cos(angle);
@@ -79,7 +80,7 @@ public abstract class GUIHelper {
 		for(int i = 3; i >= 0; i--){
 			renderer.pos(x[i], y[i], zLevel).tex(u[i],v[i]).endVertex();; 
 		}
-		net.minecraft.client.renderer.Tessellator.getInstance().draw();
+		tessellator.draw();
 		
 	}
 	
