@@ -17,7 +17,7 @@ public class SoundHelper {
 	public static void playSoundAtTileEntity(SoundEvent sound, SoundCategory soundType, float volume, float pitch, TileEntity te){
 		final BlockPos pos = te.getPos();
 		final Vec3d center = new Vec3d(pos.getX()+0.5,pos.getY()+0.5,pos.getZ()+0.5);
-		playSoundAtPosition(center.xCoord, center.yCoord, center.zCoord, sound, soundType, volume, pitch, te.getWorld());
+		playSoundAtPosition(center.x, center.y, center.z, sound, soundType, volume, pitch, te.getWorld());
 	}
 
 	public static void playSoundAtPosition(double x, double y, double z, SoundEvent sound, SoundCategory soundType, float volume, float pitch, World serverWorld){

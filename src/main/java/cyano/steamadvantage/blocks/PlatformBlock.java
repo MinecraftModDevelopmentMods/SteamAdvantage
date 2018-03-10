@@ -18,6 +18,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -57,11 +58,9 @@ public class PlatformBlock extends Block{
 	}
 
 	@Override
-	public void addCollisionBoxToList(final IBlockState bs, final World world, final BlockPos coord,
-										final AxisAlignedBB box, final List collisionBoxList,
-										final Entity entity) {
-		Integer height = ((Integer)world.getBlockState(coord).getValue(HEIGHT));
-		super.addCollisionBoxToList(coord, box, collisionBoxList, boxes[height]);
+	public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState) {
+		Integer height = (state.getValue(HEIGHT));
+		super.addCollisionBoxToList(pos, entityBox, collidingBoxes, boxes[height]);
 	}
 
 	/**
@@ -110,8 +109,8 @@ public class PlatformBlock extends Block{
 		}
 	}
 	@Override
-	public void neighborChanged(IBlockState state, World w, BlockPos pos, Block b){
-		onNeighborChange(w,pos,pos);
+	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos){
+		onNeighborChange(worldIn,pos,fromPos);
 	}
 
 	public boolean canBlockStay(World worldIn, BlockPos pos)

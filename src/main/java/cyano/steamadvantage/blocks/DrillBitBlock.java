@@ -17,6 +17,7 @@ import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -66,9 +67,10 @@ public class DrillBitBlock extends Block implements ITileEntityProvider {
 	}
 
 	private static final AxisAlignedBB blockBounds = new AxisAlignedBB(0.25f, 0.25f, 0.25f, 0.75f, 0.75f, 0.75f);
+
 	@Override
-	public void addCollisionBoxToList(final IBlockState state, final World w, final BlockPos coord, final AxisAlignedBB bb, final List<AxisAlignedBB> list, final Entity e) {
-		super.addCollisionBoxToList(coord, bb, list, blockBounds);
+	public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState) {
+		super.addCollisionBoxToList(pos, entityBox, collidingBoxes, blockBounds);
 	}
 
 	@Override

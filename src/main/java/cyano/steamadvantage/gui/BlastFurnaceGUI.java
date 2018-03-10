@@ -18,10 +18,10 @@ public class BlastFurnaceGUI extends SimpleMachineGUI{
 		);
 		for(int i = 4; i < 7; i++)super.specialSlots.put(i, (SlotContext c)->new Slot(c.machineInventory,c.slotIndex,c.screenPositionX,c.screenPositionY){
 			@Override
-			public void onPickupFromSlot(EntityPlayer player, ItemStack stack)
+			public ItemStack onTake(EntityPlayer player, ItemStack stack)
 			{
-				stack.onCrafting(player.getEntityWorld(), player, stack.stackSize);
-				super.onPickupFromSlot(player, stack);
+				stack.onCrafting(player.getEntityWorld(), player, stack.getCount());
+				return super.onTake(player, stack);
 			}
 			@Override
 			public boolean isItemValid(ItemStack stack){ return false; }

@@ -22,6 +22,9 @@ import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 @SuppressWarnings("deprecation")
 public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEntitySimplePowerMachine implements IFluidHandler{
 
@@ -40,8 +43,8 @@ public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	
 	public CoalBoilerTileEntity() {
 		super(new ConduitType[]{Power.steam_power,Fluids.fluidConduit_general}, new float[]{1000,1000}, CoalBoilerTileEntity.class.getSimpleName());
-		tank = new FluidTank(FluidContainerRegistry.BUCKET_VOLUME * 4);
-		inventory = new ItemStack[1];
+		tank = new FluidTank(Fluid.BUCKET_VOLUME * 4);
+		inventory = new ItemStack[] {ItemStack.EMPTY};
 	}
 
 	private boolean redstone = true;
@@ -97,13 +100,13 @@ public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEn
 
 
 	private int getFuelBurnTime() {
-		if(inventory[0] == null) return 0;
+		if(inventory[0] == ItemStack.EMPTY) return 0;
 		return TileEntityFurnace.getItemBurnTime(inventory[0]);
 	}
 	
 
 	private void decrementFuel() {
-		if(inventory[0].getCount() == 1 && inventory[0].getItem().getContainerItem(inventory[0]) != null){
+		if(inventory[0].getCount() == 1 && inventory[0].getItem().getContainerItem(inventory[0]) != ItemStack.EMPTY){
 			inventory[0] = inventory[0].getItem().getContainerItem(inventory[0]);
 		} else {
 			this.decrStackSize(0, 1);
@@ -344,7 +347,6 @@ public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEn
 
 	/**
 	 * Implementation of IFluidHandler
-	 * @param face Face of the block being polled
 	 * @param fluid The fluid being added/removed
 	 * @param forReal if true, then the fluid in the tank will change
 	 */
@@ -358,7 +360,6 @@ public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	}
 	/**
 	 * Implementation of IFluidHandler
-	 * @param face Face of the block being polled
 	 * @param fluid The fluid being added/removed
 	 * @param forReal if true, then the fluid in the tank will change
 	 */
@@ -372,7 +373,6 @@ public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	}
 	/**
 	 * Implementation of IFluidHandler
-	 * @param face Face of the block being polled
 	 * @param amount The amount of fluid being added/removed
 	 * @param forReal if true, then the fluid in the tank will change
 	 */
@@ -389,7 +389,6 @@ public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	 * @param face Face of the block being polled
 	 * @param fluid The fluid being added/removed
 	 */
-	@Override
 	public boolean canFill(EnumFacing face, Fluid fluid) {
 		if(fluid != FluidRegistry.WATER) return false;
 		if(getTank().getFluid() == null) return true;
@@ -400,23 +399,11 @@ public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	 * @param face Face of the block being polled
 	 * @param fluid The fluid being added/removed
 	 */
-	@Override
 	public boolean canDrain(EnumFacing face, Fluid fluid) {
 		if(getTank().getFluid() == null) return false;
 		return getTank().getFluidAmount() > 0 && fluid.equals(getTank().getFluid().getFluid());
 	}
-	
-	/**
-	 * Implementation of IFluidHandler
-	 * @param face Face of the block being polled
-	 * @return array of FluidTankInfo describing all of the FluidTanks
-	 */
-	@Override
-	public FluidTankInfo[] getTankInfo(EnumFacing face) {
-		FluidTankInfo[] arr = new FluidTankInfo[1];
-		arr[0] = getTank().getInfo();
-		return arr;
-	}
+
 
 	///// end of IFluidHandler methods /////
 	
@@ -432,12 +419,11 @@ public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEn
 
 	@Override
 	public boolean isEmpty() {
-		return false;
+		return Arrays.stream(inventory).allMatch(x -> x == ItemStack.EMPTY);
 	}
 
 	@Override
 	public IFluidTankProperties[] getTankProperties() {
-		// TODO Auto-generated method stub
-		return null;
+			return this.tank.getTankProperties();
 	}
 }

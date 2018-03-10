@@ -7,11 +7,15 @@ import cyano.steamadvantage.enchantments.RapidReloadEnchantment;
 import cyano.steamadvantage.enchantments.RecoilEnchantment;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.HashSet;
 import java.util.Set;
 
+@Mod.EventBusSubscriber
 public class Enchantments {
 
 	public static Enchantment rapid_reload;
@@ -20,23 +24,23 @@ public class Enchantments {
 	public static Enchantment recoil;
 	
 	private static boolean initDone = false;
-	public static void init(){
+
+	@SubscribeEvent
+	public static void init(RegistryEvent.Register<Enchantment> event){
 		if(initDone) return;
 
-		Enchantment.REGISTRY.register(getNextEnchantmentID(),
-				new ResourceLocation(SteamAdvantage.MODID+":"+"high_explosive"),
-				new HighExplosiveEnchantment());
-		Enchantment.REGISTRY.register(getNextEnchantmentID(),
-				new ResourceLocation(SteamAdvantage.MODID+":"+"powderless"),
-				new PowderlessEnchantment());
-		Enchantment.REGISTRY.register(getNextEnchantmentID(),
-				new ResourceLocation(SteamAdvantage.MODID+":"+"rapid_reload"),
-				new RapidReloadEnchantment());
-		Enchantment.REGISTRY.register(getNextEnchantmentID(),
-				new ResourceLocation(SteamAdvantage.MODID+":"+"recoil"),
-				new RecoilEnchantment());
-
-		
+		high_explosive = new HighExplosiveEnchantment();
+		high_explosive.setRegistryName(new ResourceLocation(SteamAdvantage.MODID+":"+"high_explosive"));
+		event.getRegistry().register(high_explosive);
+		powderless = new PowderlessEnchantment();
+		powderless.setRegistryName(new ResourceLocation(SteamAdvantage.MODID+":"+"powderless"));
+		event.getRegistry().register(powderless);
+		rapid_reload = new RapidReloadEnchantment();
+		rapid_reload.setRegistryName(new ResourceLocation(SteamAdvantage.MODID+":"+"rapid_reload"));
+		event.getRegistry().register(rapid_reload);
+		recoil = new RecoilEnchantment();
+		recoil.setRegistryName(new ResourceLocation(SteamAdvantage.MODID+":"+"recoil"));
+		event.getRegistry().register(recoil);
 		initDone = true;
 	}
 

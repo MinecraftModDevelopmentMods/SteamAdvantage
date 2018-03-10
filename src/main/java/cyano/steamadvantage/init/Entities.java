@@ -29,7 +29,7 @@ public class Entities {
 		GameRegistry.registerTileEntity(SteamStillTileEntity.class, SteamAdvantage.MODID+"."+"steam_still");
 		GameRegistry.registerTileEntity(SteamPumpTileEntity.class, SteamAdvantage.MODID+"."+"steam_pump");
 		GameRegistry.registerTileEntity(OilBoilerTileEntity.class, SteamAdvantage.MODID+"."+"steam_boiler_oil");
-		
+
 		
 		initDone = true;
 	}

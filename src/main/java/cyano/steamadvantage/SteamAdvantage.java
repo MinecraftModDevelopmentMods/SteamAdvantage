@@ -1,5 +1,7 @@
 package cyano.steamadvantage;
 
+import cyano.poweradvantage.registry.MachineGUIRegistry;
+import cyano.steamadvantage.gui.GUIRegistry;
 import cyano.steamadvantage.init.*;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.FMLLog;
@@ -8,6 +10,7 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -43,7 +46,7 @@ public class SteamAdvantage
 	public static final String NAME = "Steam Advantage";
 	/** The version of this mod, in the format major.minor.update */
 	public static final String VERSION = "2.2.0";
-
+	private static SteamAdvantage instance;
 	public static float MUSKET_DAMAGE = 20;
 	public static int MUSKET_RELOAD = 20*5;
 	public static boolean MUSKET_ENABLE = true;
@@ -57,6 +60,7 @@ public class SteamAdvantage
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event)
 	{
+		instance = this;
 		Configuration config = new Configuration(event.getSuggestedConfigurationFile());
 		config.load();
 
@@ -118,10 +122,9 @@ public class SteamAdvantage
 	@EventHandler
 	public void init(FMLInitializationEvent event)
 	{
-		Recipes.init();
+		NetworkRegistry.INSTANCE.registerGuiHandler(SteamAdvantage.getInstance(), GUIRegistry.getInstance());
 		Entities.init();
 		GUI.init();
-		Enchantments.init();
 		Villages.init();
 
 		if(event.getSide() == Side.CLIENT){
@@ -144,6 +147,10 @@ public class SteamAdvantage
 	@SideOnly(Side.SERVER)
 	private void serverInit(FMLInitializationEvent event){
 		// client-only code
+	}
+
+	public static SteamAdvantage getInstance() {
+		return instance;
 	}
 
 	/**
