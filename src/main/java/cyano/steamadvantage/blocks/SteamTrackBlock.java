@@ -18,7 +18,7 @@ import java.util.List;
 public class SteamTrackBlock extends cyano.poweradvantage.api.simple.BlockSimplePowerConduit{
 
 	public SteamTrackBlock() {
-		super(Material.PISTON, 0.75f, 2f/16f, Power.steam_power);
+		super(Material.IRON, 0.75f, 2f/16f, Power.steam_power);
 	}
 
 	@Override
