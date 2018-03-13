@@ -47,18 +47,27 @@ public class Recipes {
 			CrusherRecipeRegistry.addNewCrusherRecipe(Blocks.steam_tank, new ItemStack(Items.steam_governor,1));
 		} else {
 			// normal
-			addRecipe(event, new ItemStack(Items.steam_governor,1)," t ","srs","btb",'t',"nuggetIron",'s',"stick",'r',"stick",'b',"ingotBrass");
-			if(SteamAdvantage.MUSKET_ENABLE)addRecipe(event, new ItemStack(Items.blackpowder_musket,1),"fss","w  ",'f',net.minecraft.init.Items.FLINT_AND_STEEL,'s',"ingotSteel",'w',"plankWood");
-			if(SteamAdvantage.MUSKET_ENABLE)addRecipe(event, new ItemStack(Items.blackpowder_musket,1),"ssf","  w",'f',net.minecraft.init.Items.FLINT_AND_STEEL,'s',"ingotSteel",'w',"plankWood");
+			addRecipe(event, new ItemStack(Items.steam_governor,1)," t ","sss","btb",'t',net.minecraft.init.Items.IRON_NUGGET,'s',
+					net.minecraft.init.Items.STICK, 'b',com.mcmoddev.basemetals.init.Items.getItemByName("brass_ingot"));
+			if(SteamAdvantage.MUSKET_ENABLE)addRecipe(event, new ItemStack(Items.blackpowder_musket,1),"fss","w  ",
+					'f', net.minecraft.init.Items.FLINT_AND_STEEL,
+					's', com.mcmoddev.basemetals.init.Items.getItemByName("steel_ingot"),
+					'w', net.minecraft.init.Blocks.PLANKS);
+			if(SteamAdvantage.MUSKET_ENABLE)addRecipe(event, new ItemStack(Items.blackpowder_musket,1),"ssf","  w",
+					'f',net.minecraft.init.Items.FLINT_AND_STEEL,
+					's',com.mcmoddev.basemetals.init.Items.getItemByName("steel_ingot"),
+					'w',net.minecraft.init.Blocks.PLANKS);
 			addRecipe(event, steamMachineRecipe(Blocks.steam_drill,net.minecraft.init.Items.DIAMOND_PICKAXE));
 		}
 
 		addRecipe(event, new ItemStack(Items.steam_drill_bit)," g "," i ","did",'g',"sprocket",'i',"ingotSteel",'d',"gemDiamond");
 		
-		addRecipe(event, new ItemStack(Blocks.steam_pipe,6),"xxx","   ","xxx",'x',"ingotBrass");
-		addRecipe(event, steamMachineRecipe(Blocks.steam_crusher,net.minecraft.init.Blocks.PISTON,"blockSteel"));
+		addRecipe(event, new ItemStack(Blocks.steam_pipe,6),"xxx","   ","xxx",
+				'x',com.mcmoddev.basemetals.init.Items.getItemByName("brass_ingot"));
+		addRecipe(event, steamMachineRecipe(Blocks.steam_crusher,net.minecraft.init.Blocks.PISTON,
+				com.mcmoddev.basemetals.init.Items.getItemByName("steel_block")));
 		addRecipe(event, steamMachineRecipe(Blocks.steam_furnace,net.minecraft.init.Blocks.FURNACE));
-		addRecipe(event, steamMachineRecipe(Blocks.steam_boiler_coal,"conduitSteam"));
+		addRecipe(event, steamMachineRecipe(Blocks.steam_boiler_coal, OreDictionary.getOreID("conduitSteam")));
 		addRecipe(event, steamMachineRecipe(Blocks.steam_drill,Items.steam_drill_bit));
 		addRecipe(event, steamMachineRecipe(Blocks.steam_elevator,net.minecraft.init.Blocks.PISTON,"sprocket"));
 		addRecipe(event, new ItemStack(Blocks.steam_tank),"xgx","xpx","xxx",'x',"plateCopper",'p',"conduitSteam",'g',"governor");
@@ -91,10 +100,19 @@ public class Recipes {
 	}
 
 	private static ShapedOreRecipe steamMachineRecipe(Block output, Object item){
-		return new ShapedOreRecipe(output.getRegistryName(), new ItemStack(output, 1), "gXg","pmp",'X',item,'g',"governor",'p',"plateIron",'m',"frameSteel");
+		return new ShapedOreRecipe(output.getRegistryName(), new ItemStack(output, 1),
+				"gXg","pmp",
+				'X',item,
+				'g', Items.steam_governor,
+				'p', com.mcmoddev.basemetals.init.Blocks.getBlockByName("iron_plate"),
+				'm', cyano.poweradvantage.init.Blocks.steel_frame);
 	}
 
 	private static ShapedOreRecipe steamMachineRecipe(Block output, Object item1, Object item2){
-		return new ShapedOreRecipe(output.getRegistryName(), new ItemStack(output, 1), " Y ","gXg","pmp",'X',item1,'Y',item2,'g',"governor",'p',"plateIron",'m',"frameSteel");
+		return new ShapedOreRecipe(output.getRegistryName(), new ItemStack(output, 1),
+				" Y ","gXg","pmp",'X',item1,'Y',item2,
+				'g', Items.steam_governor,
+				'p', com.mcmoddev.basemetals.init.Blocks.getBlockByName("iron_plate"),
+				'm', cyano.poweradvantage.init.Blocks.steel_frame);
 	}
 }
