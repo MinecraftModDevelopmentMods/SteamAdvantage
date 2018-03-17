@@ -57,7 +57,6 @@ public abstract class Blocks {
 		if(initDone) return;
 		
 		steam_pipe = addBlock(new SteamPipeBlock(),"steam_pipe");
-		OreDictionary.registerOre("conduitSteam", steam_pipe);
 		steam_track = addBlock(new SteamTrackBlock(),"steam_track");
 		steam_boiler_coal = (GUIBlock)addBlock(new CoalBoilerBlock(),"steam_boiler_coal");
 		steam_boiler_electric = (GUIBlock)addBlock(new ElectricBoilerBlock(),"steam_boiler_electric");
@@ -91,9 +90,14 @@ public abstract class Blocks {
 
 	@SubscribeEvent
 	public static void registerItemBlocks(RegistryEvent.Register<Item> event) {
+
 		Arrays.stream(allBlocks.values().toArray(new Block[0]))
 				.filter(block -> block.getRegistryName() != null)
-				.map((block -> new ItemBlock(block).setRegistryName(block.getRegistryName())))
+				.map((block ->
+				{
+					System.out.println(String.format("Registering item block for %s", block.getRegistryName()));
+					return new ItemBlock(block).setRegistryName(block.getRegistryName());
+				}))
 				.forEach((item -> event.getRegistry().register(item)));
 	}
 
