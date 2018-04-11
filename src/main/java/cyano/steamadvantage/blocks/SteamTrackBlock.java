@@ -12,12 +12,13 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class SteamTrackBlock extends cyano.poweradvantage.api.simple.BlockSimplePowerConduit{
 
 	public SteamTrackBlock() {
-		super(Material.PISTON, 0.75f, 2f/16f, Power.steam_power);
+		super(Material.IRON, 0.75f, 2f/16f, Power.steam_power);
 	}
 
 	@Override
@@ -25,10 +26,10 @@ public class SteamTrackBlock extends cyano.poweradvantage.api.simple.BlockSimple
 		return FULL_BLOCK_AABB;
 	}
 	@Override
-	public void addCollisionBoxToList(final IBlockState bs, final World world, final BlockPos coord,
-			final AxisAlignedBB box, final List collisionBoxList,
-			final Entity entity) {
-		super.addCollisionBoxToList(coord, box, collisionBoxList, FULL_BLOCK_AABB);
+	public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos,
+									  AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes,
+									  @Nullable Entity entityIn, boolean isActualState) {
+		super.addCollisionBoxToList(pos, entityBox, collidingBoxes, FULL_BLOCK_AABB);
 	}
 	
 	@Override

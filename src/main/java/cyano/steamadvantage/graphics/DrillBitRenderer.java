@@ -3,10 +3,10 @@ package cyano.steamadvantage.graphics;
 import cyano.steamadvantage.SteamAdvantage;
 import cyano.steamadvantage.blocks.DrillBitTileEntity;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.tileentity.TileEntity;
@@ -29,7 +29,7 @@ public class DrillBitRenderer extends TileEntitySpecialRenderer{
 
 	
 	@Override
-	public void renderTileEntityAt(final TileEntity te, final double x, final double y, final double z, final float partialTick, int meta) {
+	public void render(final TileEntity te, final double x, final double y, final double z, final float partialTick, int destroyStage, float alpha) {
 		if(te instanceof DrillBitTileEntity){
 			// partialTick is guaranteed to range from 0 to 1
 			GlStateManager.pushMatrix();
@@ -43,7 +43,7 @@ public class DrillBitRenderer extends TileEntitySpecialRenderer{
 	
 	private void render(DrillBitTileEntity e, World world, BlockPos pos, float partialTick){
 		final Tessellator instance = Tessellator.getInstance();
-		final VertexBuffer worldRenderer = instance.getBuffer();
+		final BufferBuilder worldRenderer = instance.getBuffer();
 		
 		this.bindTexture(texture);
 		

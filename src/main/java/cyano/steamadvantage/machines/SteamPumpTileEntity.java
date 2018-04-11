@@ -4,6 +4,7 @@ import cyano.poweradvantage.api.ConduitType;
 import cyano.poweradvantage.api.PowerRequest;
 import cyano.poweradvantage.conduitnetwork.ConduitRegistry;
 import cyano.poweradvantage.init.Fluids;
+import cyano.poweradvantage.util.FluidHelper;
 import cyano.steamadvantage.init.Power;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
@@ -19,6 +20,9 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.*;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidTankProperties;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -26,7 +30,7 @@ import java.util.Set;
 import static cyano.steamadvantage.util.SoundHelper.playSoundAtTileEntity;
 
 @SuppressWarnings("deprecation")
-public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEntitySimplePowerMachine implements IFluidHandler{
+public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEntitySimplePowerMachine implements IFluidHandler {
 
 	private final FluidTank tank;
 	public static final float ENERGY_COST_PIPE = 5f;
@@ -41,9 +45,20 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 	private final int[] dataSyncArray = new int[4];
 	private byte timeUntilNextPump = PUMP_INTERVAL;
 
+	@Override
+	public boolean isEmpty() {
+		return false;
+	}
+
 	public SteamPumpTileEntity() {
 		super(new ConduitType[]{Power.steam_power,Fluids.fluidConduit_general}, new float[]{300f,1000f}, SteamPumpTileEntity.class.getSimpleName());
-		tank = new FluidTank(FluidContainerRegistry.BUCKET_VOLUME);
+		tank = new FluidTank(Fluid.BUCKET_VOLUME);
+	}
+
+	@Override
+	public IFluidTankProperties[] getTankProperties() {
+
+		return this.tank.getTankProperties();
 	}
 	
 	@Override
@@ -88,7 +103,7 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 							IBlockState blockstate = w.getBlockState(fluidSource);
 							Fluid f = getFluid(blockstate);
 							if(f != null && getEnergy(Power.steam_power) >= cost){
-								this.getTank().fill(new FluidStack(f,FluidContainerRegistry.BUCKET_VOLUME), true);
+								this.getTank().fill(new FluidStack(f, Fluid.BUCKET_VOLUME), true);
 								this.subtractEnergy(cost, Power.steam_power);
 								w.setBlockToAir(fluidSource);
 								success = true;
@@ -203,11 +218,17 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 					EnumFacing dir = EnumFacing.values()[i];
 					BlockPos nPos = getPos().offset(dir);
 					TileEntity neighbor = getWorld().getTileEntity(nPos);
-					if(neighbor instanceof IFluidHandler
-							&& ((IFluidHandler)neighbor).canFill(dir.getOpposite(),fluid.getFluid())){
-						int d = ((IFluidHandler)neighbor).fill(dir.getOpposite(),fluid,true);
-						getTank().drain(Math.max(d,1),true); // no free energy!
-						fluid = getTank().getFluid();
+					if (neighbor instanceof IFluidHandler){
+						for (IFluidTankProperties tankProp : ((IFluidHandler) neighbor).getTankProperties())
+						{
+							if (tankProp.canFillFluidType(fluid))
+							{
+								int d = ((IFluidHandler)neighbor).fill(fluid, true);
+								getTank().drain(Math.max(d, 1), true);
+								fluid = getTank().getFluid();
+
+							}
+						}
 					}
 				}
 			}
@@ -258,14 +279,14 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 	public void prepareDataFieldsForSync() {
 		dataSyncArray[0] = Float.floatToRawIntBits(this.getEnergy(Power.steam_power));
 		dataSyncArray[1] = this.getTank().getFluidAmount();
-		dataSyncArray[2] = (this.getTank().getFluidAmount() > 0 ? FluidRegistry.getFluidID(this.getTank().getFluid().getFluid()) : FluidRegistry.getFluidID(FluidRegistry.WATER));
+		dataSyncArray[2] = (this.getTank().getFluidAmount() > 0 ? FluidHelper.getFluidId(this.getTank().getFluid().getFluid()) : FluidHelper.getFluidId(FluidRegistry.WATER));
 		dataSyncArray[3] = this.timeUntilNextPump;
 	}
 
 	@Override
 	public void onDataFieldUpdate() {
 		this.setEnergy(Float.intBitsToFloat(dataSyncArray[0]), Power.steam_power);
-		this.getTank().setFluid(new FluidStack(FluidRegistry.getFluid(dataSyncArray[2]),dataSyncArray[1]));
+		this.getTank().setFluid(new FluidStack(FluidHelper.getFluidById(dataSyncArray[2]),dataSyncArray[1]));
 		this.timeUntilNextPump = (byte)dataSyncArray[3];
 	}
 
@@ -331,9 +352,9 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 	public float addEnergy(float amount, ConduitType type){
 		if(Fluids.isFluidType(type)){
 			if(amount > 0 && this.canFill(null, Fluids.conduitTypeToFluid(type))){
-				return this.fill(null, new FluidStack(Fluids.conduitTypeToFluid(type),(int)amount), true);
+				return this.fill(new FluidStack(Fluids.conduitTypeToFluid(type),(int)amount), true);
 			} else if (amount < 0 && this.canDrain(null, Fluids.conduitTypeToFluid(type))){
-				return -1 * this.drain(null, (int)amount, true).amount;
+				return -1 * this.drain((int)amount, true).amount;
 			}
 		}
 		return super.addEnergy(amount, type);
@@ -372,12 +393,11 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 
 	/**
 	 * Implementation of IFluidHandler
-	 * @param face Face of the block being polled
 	 * @param fluid The fluid being added/removed
 	 * @param forReal if true, then the fluid in the tank will change
 	 */
 	@Override
-	public int fill(EnumFacing face, FluidStack fluid, boolean forReal) {
+	public int fill(FluidStack fluid, boolean forReal) {
 		if(fluid == null) return 0;
 		if(getTank().getFluidAmount() <= 0 || getTank().getFluid().getFluid().equals(fluid.getFluid())){
 			return getTank().fill(fluid, forReal);
@@ -386,12 +406,11 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 	}
 	/**
 	 * Implementation of IFluidHandler
-	 * @param face Face of the block being polled
 	 * @param fluid The fluid being added/removed
 	 * @param forReal if true, then the fluid in the tank will change
 	 */
 	@Override
-	public FluidStack drain(EnumFacing face, FluidStack fluid, boolean forReal) {
+	public FluidStack drain(FluidStack fluid, boolean forReal) {
 		if(getTank().getFluidAmount() > 0 && getTank().getFluid().getFluid().equals(fluid.getFluid())){
 			return getTank().drain(fluid.amount,forReal);
 		} else {
@@ -400,12 +419,11 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 	}
 	/**
 	 * Implementation of IFluidHandler
-	 * @param face Face of the block being polled
 	 * @param amount The amount of fluid being added/removed
 	 * @param forReal if true, then the fluid in the tank will change
 	 */
 	@Override
-	public FluidStack drain(EnumFacing face, int amount, boolean forReal) {
+	public FluidStack drain(int amount, boolean forReal) {
 		if(getTank().getFluidAmount() > 0 ){
 			return getTank().drain(amount,forReal);
 		} else {
@@ -417,7 +435,6 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 	 * @param face Face of the block being polled
 	 * @param fluid The fluid being added/removed
 	 */
-	@Override
 	public boolean canFill(EnumFacing face, Fluid fluid) {
 		if(fluid == null) return false;
 		if(getTank().getFluidAmount() <= 0) return true;
@@ -428,7 +445,6 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 	 * @param face Face of the block being polled
 	 * @param fluid The fluid being added/removed
 	 */
-	@Override
 	public boolean canDrain(EnumFacing face, Fluid fluid) {
 		if(fluid == null) return false;
 		return getTank().getFluidAmount() > 0 && fluid.equals(getTank().getFluid().getFluid());
@@ -436,15 +452,9 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 
 	/**
 	 * Implementation of IFluidHandler
-	 * @param face Face of the block being polled
 	 * @return array of FluidTankInfo describing all of the FluidTanks
 	 */
-	@Override
-	public FluidTankInfo[] getTankInfo(EnumFacing face) {
-		FluidTankInfo[] arr = new FluidTankInfo[1];
-		arr[0] = getTank().getInfo();
-		return arr;
-	}
+
 
 	///// end of IFluidHandler methods /////
 
@@ -454,9 +464,4 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 	}
 
 
-
-	@Override
-	public boolean isUsableByPlayer(EntityPlayer player) {
-		return true;
-	}
 }

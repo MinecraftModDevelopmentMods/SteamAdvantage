@@ -11,6 +11,9 @@ import com.mcmoddev.lib.registry.recipe.ICrusherRecipe;
 import cyano.steamadvantage.init.Power;
 import net.minecraft.util.SoundCategory;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 import static cyano.steamadvantage.util.SoundHelper.playSoundAtTileEntity;
 
 public class RockCrusherTileEntity extends cyano.poweradvantage.api.simple.TileEntitySimplePowerMachine{
@@ -18,7 +21,8 @@ public class RockCrusherTileEntity extends cyano.poweradvantage.api.simple.TileE
 	public static final float STEAM_PER_PROGRESS_TICK = 1.5f;
 	public static final int TICKS_PER_ACTION = 125;
 
-	private final ItemStack[] inventory = new ItemStack[6]; // slot 0 is input, other slots are output
+	private final ItemStack[] inventory = new ItemStack[]{ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY,
+				ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY}; // slot 0 is input, other slots are output
 	private final int[] allSlots;
 	private final int[] dataSyncArray = new int[2];
 	
@@ -32,7 +36,13 @@ public class RockCrusherTileEntity extends cyano.poweradvantage.api.simple.TileE
 			allSlots[i] = i;
 		}
 	}
-	
+
+	@Override
+	public boolean isEmpty() {
+		return Arrays.stream(inventory).allMatch(x -> x == ItemStack.EMPTY);
+	}
+
+
 	@Override
 	public boolean isUsableByPlayer(EntityPlayer player) {
 		return true;
@@ -43,13 +53,13 @@ public class RockCrusherTileEntity extends cyano.poweradvantage.api.simple.TileE
 
 	private int timeSinceLastSteamBurst = 0;
 	
-	private ItemStack itemCheck = null;
+	private ItemStack itemCheck = ItemStack.EMPTY;
 	@Override
 	public void tickUpdate(boolean isServerWorld) {
 		if(isServerWorld){
 			// reset progress when item in slot changes
 			ItemStack input = inventory[0];
-			if(itemCheck != null && ItemStack.areItemsEqual(itemCheck, input) == false){
+			if(itemCheck != ItemStack.EMPTY && ItemStack.areItemsEqual(itemCheck, input) == false){
 				progress = 0;
 			}
 			itemCheck  = input;
@@ -87,12 +97,13 @@ public class RockCrusherTileEntity extends cyano.poweradvantage.api.simple.TileE
 						}
 						if(progress >= TICKS_PER_ACTION){
 							// add product to output
-							if(inventory[availableSlot] == null){
+							if(inventory[availableSlot] == ItemStack.EMPTY){
 								inventory[availableSlot] = output.copy();
 							} else {
-								inventory[availableSlot].stackSize += output.stackSize;
+								inventory[availableSlot].grow(output.getCount());
 							}
-							if(--inventory[0].stackSize <= 0){inventory[0] = null;} // decrement the input slot
+							inventory[0].shrink(1);
+							if(inventory[0].getCount() <= 0){inventory[0] = ItemStack.EMPTY;} // decrement the input slot
 							progress = 0;
 							playSoundAtTileEntity( SoundEvents.BLOCK_GRAVEL_BREAK, SoundCategory.AMBIENT, 0.5f, 0.2f, this);
 						}
@@ -106,11 +117,6 @@ public class RockCrusherTileEntity extends cyano.poweradvantage.api.simple.TileE
 		}
 	}
 
-	@Override
-	public boolean isUsableByPlayer(EntityPlayer player) {
-		return true;
-	}
-	
 	private float oldSteam = 0;
 	private int oldProgress = 0;
 	
@@ -136,7 +142,7 @@ public class RockCrusherTileEntity extends cyano.poweradvantage.api.simple.TileE
 	}
 	
 	private ICrusherRecipe getCrusherRecipe(ItemStack item) {
-		if(item == null) return null;
+		if(item == ItemStack.EMPTY) return null;
 		return CrusherRecipeRegistry.getInstance().getRecipeForInputItem(item);
 	}
 
@@ -178,9 +184,9 @@ public class RockCrusherTileEntity extends cyano.poweradvantage.api.simple.TileE
 
 	private int canAddToOutputInventory(ItemStack output) {
 		for(int i = 1; i < inventory.length; i++){
-			if(inventory[i] == null) {return i;}
+			if(inventory[i] == ItemStack.EMPTY) {return i;}
 			if(ItemStack.areItemsEqual(output, inventory[i]) && ItemStack.areItemStackTagsEqual(output, inventory[i])
-					&& (inventory[i].stackSize + output.stackSize) <= inventory[i].getMaxStackSize()){
+					&& (inventory[i].getCount() + output.getCount()) <= inventory[i].getMaxStackSize()){
 				return i;
 			}
 		}
@@ -205,8 +211,8 @@ public class RockCrusherTileEntity extends cyano.poweradvantage.api.simple.TileE
 
 
 	public int getComparatorOutput() {
-		if(inventory[0] == null) return 0;
-		return Math.min(Math.max(15 * inventory[0].stackSize * inventory[0].getMaxStackSize() / inventory[0].getMaxStackSize(),1),15);
+		if(inventory[0] == ItemStack.EMPTY) return 0;
+		return Math.min(Math.max(15 * inventory[0].getCount() * inventory[0].getMaxStackSize() / inventory[0].getMaxStackSize(),1),15);
 	}
 	
 ///// Item Handling (for hoppers) /////

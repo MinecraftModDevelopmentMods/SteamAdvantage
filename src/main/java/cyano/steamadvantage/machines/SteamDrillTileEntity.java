@@ -23,6 +23,8 @@ import net.minecraft.world.World;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 
 import static cyano.steamadvantage.util.SoundHelper.playSoundAtPosition;
 import static cyano.steamadvantage.util.SoundHelper.playSoundAtTileEntity;
@@ -36,7 +38,8 @@ public class SteamDrillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	public static final float ENERGY_COST_PROGRESS_TICK = 1f;
 	public static float MINING_TIME_FACTOR = 12.0f;
 	
-	private final ItemStack[] inventory = new ItemStack[5];
+	private final ItemStack[] inventory = new ItemStack[]{ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY,
+	ItemStack.EMPTY, ItemStack.EMPTY};
 	private final int[] dataSyncArray = new int[3];
 	private int progress = 0;
 	private int progressGoal = 0;
@@ -52,10 +55,15 @@ public class SteamDrillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	public SteamDrillTileEntity() {
 		super(Power.steam_power, 50, RockCrusherTileEntity.class.getName());
 	}
-	
+
 	@Override
 	public boolean isUsableByPlayer(EntityPlayer player) {
 		return true;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return Arrays.stream(inventory).allMatch(x -> x == ItemStack.EMPTY);
 	}
 
 	
@@ -127,29 +135,29 @@ public class SteamDrillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	}
 
 	private boolean canStack(ItemStack newItem, ItemStack slot) {
-		if(slot == null || newItem == null) return true;
+		if(slot == ItemStack.EMPTY || newItem == ItemStack.EMPTY) return true;
 		return ItemStack.areItemsEqual(newItem, slot) 
 				&& ItemStack.areItemStackTagsEqual(newItem, slot) 
-				&& (newItem.stackSize + slot.stackSize <= slot.getItem().getItemStackLimit(slot));
+				&& (newItem.getCount() + slot.getCount() <= slot.getItem().getItemStackLimit(slot));
 	}
 	
 	public ItemStack addItem(ItemStack in){
 		for(int i = 0; i < inventory.length; i++){
-			if(inventory[i] == null){
+			if(inventory[i] == ItemStack.EMPTY){
 				inventory[i] = in;
-				return null;
+				return ItemStack.EMPTY;
 			} else if(ItemStack.areItemsEqual(in, inventory[i]) 
 					&& ItemStack.areItemStackTagsEqual(in, inventory[i])){
 				// are stackable
-				if(inventory[i].stackSize >= inventory[i].getItem().getItemStackLimit(inventory[i])){
+				if(inventory[i].getCount() >= inventory[i].getItem().getItemStackLimit(inventory[i])){
 					continue;
-				} else if(in.stackSize + inventory[i].stackSize <= inventory[i].getItem().getItemStackLimit(inventory[i])){
-					inventory[i].stackSize += in.stackSize;
-					return null;
+				} else if(in.getCount() + inventory[i].getCount() <= inventory[i].getItem().getItemStackLimit(inventory[i])){
+					inventory[i].grow(in.getCount());
+					return ItemStack.EMPTY;
 				} else {
-					int delta = inventory[i].getItem().getItemStackLimit(inventory[i]) - inventory[i].stackSize;
-					inventory[i].stackSize += delta;
-					in.stackSize -= delta;
+					int delta = inventory[i].getItem().getItemStackLimit(inventory[i]) - inventory[i].getCount();
+					inventory[i].grow(delta);
+					in.shrink(delta);
 				}
 			}
 		}
@@ -183,7 +191,7 @@ public class SteamDrillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 		te.setPos(nextPos);
 		te.validate();
 		te.markDirty();
-		Arrays.fill(this.getInventory(), null);
+		Arrays.fill(this.getInventory(), ItemStack.EMPTY);
 		
 		// replace this block with steam pipe
 		destroyDrillBit(this.getFacing());
@@ -321,7 +329,12 @@ public class SteamDrillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 		progressGoal = this.getBlockStrength(n);
 		targetBlockState = getWorld().getBlockState(n); 
 		targetBlock = targetBlockState.getBlock();
-		ICrusherRecipe cr = CrusherRecipeRegistry.getInstance().getRecipeForInputItem(targetBlockState);
+
+		ICrusherRecipe cr = CrusherRecipeRegistry
+				.getInstance().getRecipeForInputItem(
+						new ItemStack(targetBlock.getItemDropped(targetBlockState, world.rand, 1),
+								targetBlock.quantityDropped(targetBlockState, 1, world.rand)
+						));
 		if(cr != null){
 			targetBlockItems = Arrays.asList(cr.getOutput());
 		} else {
@@ -382,25 +395,25 @@ public class SteamDrillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 			int[] accessibleSlots = inv.getSlotsForFace(otherFace);
 			if(accessibleSlots.length == 0) return;
 			for(int mySlot = 0; mySlot < this.inventory.length; mySlot++){
-				if(this.inventory[mySlot] == null) continue;
+				if(this.inventory[mySlot] == ItemStack.EMPTY) continue;
 				for(int i = 0; i < accessibleSlots.length; i++){
 					int theirSlot = accessibleSlots[i];
 					ItemStack theirItem = inv.getStackInSlot(theirSlot);
 					if(inv.canInsertItem(theirSlot, inventory[mySlot], otherFace)){
 						if(theirItem == null){
 							ItemStack newItem = inventory[mySlot].copy();
-							newItem.stackSize = 1;
+							newItem.setCount(1);
 							inv.setInventorySlotContents(theirSlot, newItem);
-							inventory[mySlot].stackSize--;
-							if(inventory[mySlot].stackSize <= 0) inventory[mySlot] = null;
+							inventory[mySlot].shrink(1);
+							if(inventory[mySlot].getCount() <= 0) inventory[mySlot] = ItemStack.EMPTY;
 							return;
 						} else if(ItemStack.areItemsEqual(theirItem, inventory[mySlot]) 
 								&& ItemStack.areItemStackTagsEqual(theirItem, inventory[mySlot])
-								&& theirItem.stackSize < theirItem.getMaxStackSize()
-								&& theirItem.stackSize < inv.getInventoryStackLimit()){
-							theirItem.stackSize++;
-							inventory[mySlot].stackSize--;
-							if(inventory[mySlot].stackSize <= 0) inventory[mySlot] = null;
+								&& theirItem.getCount() < theirItem.getMaxStackSize()
+								&& theirItem.getCount() < inv.getInventoryStackLimit()){
+							theirItem.grow(1);
+							inventory[mySlot].shrink(1);
+							if(inventory[mySlot].getCount() <= 0) inventory[mySlot] = ItemStack.EMPTY;
 							return;
 						}
 					}
@@ -456,8 +469,8 @@ public class SteamDrillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	public int getComparatorOutput() {
 		int sum = 0;
 		for(int n = 0; n < inventory.length; n++){
-			if(inventory[n] != null){
-				sum += inventory[n].stackSize * 64 / inventory[n].getMaxStackSize();
+			if(inventory[n] != ItemStack.EMPTY){
+				sum += inventory[n].getCount() * 64 / inventory[n].getMaxStackSize();
 			}
 		}
 		if(sum == 0) return 0;
@@ -474,8 +487,4 @@ public class SteamDrillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 		return false;
 	}
 
-	@Override
-	public boolean isUsableByPlayer(EntityPlayer player) {
-		return true;
-	}
 }

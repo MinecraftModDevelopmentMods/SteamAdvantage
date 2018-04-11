@@ -5,7 +5,8 @@ import cyano.poweradvantage.api.PowerRequest;
 import cyano.steamadvantage.init.Power;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fluids.FluidContainerRegistry;
+import net.minecraftforge.fluids.Fluid;
+
 
 @SuppressWarnings("deprecation")
 public class SteamTankTileEntity  extends cyano.poweradvantage.api.simple.TileEntitySimplePowerMachine {
@@ -14,14 +15,14 @@ public class SteamTankTileEntity  extends cyano.poweradvantage.api.simple.TileEn
 	private final int[] dataSyncArray = new int[1];
 	
 	public SteamTankTileEntity() {
-		super(Power.steam_power, FluidContainerRegistry.BUCKET_VOLUME * 10, SteamTankTileEntity.class.getSimpleName());
+		super(Power.steam_power, Fluid.BUCKET_VOLUME * 10, SteamTankTileEntity.class.getSimpleName());
 	}
 	
 	private boolean redstone = true;
 
 	@Override
-	public boolean isUsableByPlayer(EntityPlayer player) {
-		return true;
+	public boolean isEmpty(){
+		return false;
 	}
 	
 	@Override

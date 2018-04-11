@@ -12,7 +12,9 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import static cyano.steamadvantage.util.SoundHelper.playSoundAtTileEntity;
 
@@ -33,6 +35,11 @@ public class SteamElevatorTileEntity extends cyano.poweradvantage.api.simple.Til
 	}
 
 	private boolean redstone = true;
+
+	@Override
+	public boolean isEmpty() {
+		return false;
+	}
 	
 
 	@Override

@@ -14,12 +14,12 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.FluidTankInfo;
-import net.minecraftforge.fluids.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
 @SuppressWarnings("deprecation")
 public class ElectricBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEntitySimplePowerMachine implements IFluidHandler{
@@ -41,13 +41,23 @@ public class ElectricBoilerTileEntity extends cyano.poweradvantage.api.simple.Ti
 		super(new ConduitType[]{Power.steam_power, ELECTRIC_POWER, Fluids.fluidConduit_general},
 				new float[]{100, MAX_ELECTRICITY, 1000},
 				ElectricBoilerTileEntity.class.getSimpleName());
-		tank = new FluidTank(FluidContainerRegistry.BUCKET_VOLUME * 2);
+		tank = new FluidTank(Fluid.BUCKET_VOLUME * 2);
 		inventory = new ItemStack[0];
 	}
 
 	private boolean redstone = true;
 	
 	private int timeSinceSound = 0;
+
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
+
+    @Override
+    public IFluidTankProperties[] getTankProperties() {
+        return this.tank.getTankProperties();
+    }
 	
 	@Override
 	public void tickUpdate(boolean isServerWorld) {
@@ -231,8 +241,8 @@ public class ElectricBoilerTileEntity extends cyano.poweradvantage.api.simple.Ti
 	public float addEnergy(float amount, ConduitType type){
 		if(Fluids.isFluidType(type)){
 			if(Fluids.conduitTypeToFluid(type) == FluidRegistry.WATER){
-				if(this.canFill(null, Fluids.conduitTypeToFluid(type))){
-					return this.fill(null, new FluidStack(Fluids.conduitTypeToFluid(type),(int)amount), true);
+				if(this.canFill(Fluids.conduitTypeToFluid(type))){
+					return this.fill(new FluidStack(Fluids.conduitTypeToFluid(type),(int)amount), true);
 				} else {
 					return 0;
 				}
@@ -266,8 +276,8 @@ public class ElectricBoilerTileEntity extends cyano.poweradvantage.api.simple.Ti
     @Override
 	public float subtractEnergy(float amount, ConduitType type){
 		if(Fluids.isFluidType(type)){
-			if(this.canDrain(null, Fluids.conduitTypeToFluid(type))){
-				return this.drain(null, new FluidStack(Fluids.conduitTypeToFluid(type),(int)amount), true).amount;
+			if(this.canDrain(Fluids.conduitTypeToFluid(type))){
+				return this.drain(new FluidStack(Fluids.conduitTypeToFluid(type),(int)amount), true).amount;
 			} else {
 				return 0;
 			}
@@ -296,12 +306,11 @@ public class ElectricBoilerTileEntity extends cyano.poweradvantage.api.simple.Ti
 
 	/**
 	 * Implementation of IFluidHandler
-	 * @param face Face of the block being polled
 	 * @param fluid The fluid being added/removed
 	 * @param forReal if true, then the fluid in the tank will change
 	 */
 	@Override
-	public int fill(EnumFacing face, FluidStack fluid, boolean forReal) {
+	public int fill(FluidStack fluid, boolean forReal) {
 		if(getTank().getFluidAmount() <= 0 || getTank().getFluid().getFluid().equals(fluid.getFluid())){
 			return getTank().fill(fluid, forReal);
 		} else {
@@ -310,12 +319,11 @@ public class ElectricBoilerTileEntity extends cyano.poweradvantage.api.simple.Ti
 	}
 	/**
 	 * Implementation of IFluidHandler
-	 * @param face Face of the block being polled
 	 * @param fluid The fluid being added/removed
 	 * @param forReal if true, then the fluid in the tank will change
 	 */
 	@Override
-	public FluidStack drain(EnumFacing face, FluidStack fluid, boolean forReal) {
+	public FluidStack drain(FluidStack fluid, boolean forReal) {
 		if(getTank().getFluidAmount() > 0 && getTank().getFluid().getFluid().equals(fluid.getFluid())){
 			return getTank().drain(fluid.amount,forReal);
 		} else {
@@ -324,12 +332,11 @@ public class ElectricBoilerTileEntity extends cyano.poweradvantage.api.simple.Ti
 	}
 	/**
 	 * Implementation of IFluidHandler
-	 * @param face Face of the block being polled
 	 * @param amount The amount of fluid being added/removed
 	 * @param forReal if true, then the fluid in the tank will change
 	 */
 	@Override
-	public FluidStack drain(EnumFacing face, int amount, boolean forReal) {
+	public FluidStack drain(int amount, boolean forReal) {
 		if(getTank().getFluidAmount() > 0 ){
 			return getTank().drain(amount,forReal);
 		} else {
@@ -338,37 +345,22 @@ public class ElectricBoilerTileEntity extends cyano.poweradvantage.api.simple.Ti
 	}
 	/**
 	 * Implementation of IFluidHandler
-	 * @param face Face of the block being polled
 	 * @param fluid The fluid being added/removed
 	 */
-	@Override
-	public boolean canFill(EnumFacing face, Fluid fluid) {
+	public boolean canFill(Fluid fluid) {
 		if(fluid != FluidRegistry.WATER) return false;
 		if(getTank().getFluid() == null) return true;
 		return getTank().getFluidAmount() <= getTank().getCapacity() && fluid.equals(getTank().getFluid().getFluid());
 	}
 	/**
 	 * Implementation of IFluidHandler
-	 * @param face Face of the block being polled
 	 * @param fluid The fluid being added/removed
 	 */
-	@Override
-	public boolean canDrain(EnumFacing face, Fluid fluid) {
+	public boolean canDrain(Fluid fluid) {
 		if(getTank().getFluid() == null) return false;
 		return getTank().getFluidAmount() > 0 && fluid.equals(getTank().getFluid().getFluid());
 	}
-	
-	/**
-	 * Implementation of IFluidHandler
-	 * @param face Face of the block being polled
-	 * @return array of FluidTankInfo describing all of the FluidTanks
-	 */
-	@Override
-	public FluidTankInfo[] getTankInfo(EnumFacing face) {
-		FluidTankInfo[] arr = new FluidTankInfo[1];
-		arr[0] = getTank().getInfo();
-		return arr;
-	}
+
 
 	///// end of IFluidHandler methods /////
 	
@@ -378,10 +370,5 @@ public class ElectricBoilerTileEntity extends cyano.poweradvantage.api.simple.Ti
 	}
 
 
-
-	@Override
-	public boolean isUsableByPlayer(EntityPlayer player) {
-		return true;
-	}
 }
 

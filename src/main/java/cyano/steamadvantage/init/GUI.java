@@ -1,7 +1,6 @@
 package cyano.steamadvantage.init;
 
-import cyano.poweradvantage.PowerAdvantage;
-import cyano.poweradvantage.registry.MachineGUIRegistry;
+import cyano.steamadvantage.SteamAdvantage;
 import cyano.steamadvantage.gui.*;
 
 public class GUI {
@@ -13,17 +12,17 @@ public class GUI {
 		Blocks.init();
 		Entities.init();
 
-		Blocks.steam_boiler_coal.setGuiID(MachineGUIRegistry.addGUI(new CoalBoilerGUI()),PowerAdvantage.getInstance());
-		Blocks.steam_tank.setGuiID(MachineGUIRegistry.addGUI(new SteamTankGUI()),PowerAdvantage.getInstance());
-		Blocks.steam_furnace.setGuiID(MachineGUIRegistry.addGUI(new BlastFurnaceGUI()),PowerAdvantage.getInstance());
-		Blocks.steam_crusher.setGuiID(MachineGUIRegistry.addGUI(new RockCrusherGUI()),PowerAdvantage.getInstance());
-		Blocks.steam_drill.setGuiID(MachineGUIRegistry.addGUI(new SteamDrillGUI()),PowerAdvantage.getInstance());
-		Blocks.steam_boiler_electric.setGuiID(MachineGUIRegistry.addGUI(new ElectricBoilerGUI()),PowerAdvantage.getInstance());
-		Blocks.steam_boiler_geothermal.setGuiID(MachineGUIRegistry.addGUI(new GeothermalBoilerGUI()),PowerAdvantage.getInstance());
-		Blocks.steam_boiler_oil.setGuiID(MachineGUIRegistry.addGUI(new OilBoilerGUI()),PowerAdvantage.getInstance());
-		Blocks.steam_still.setGuiID(MachineGUIRegistry.addGUI(new SteamStillGUI()),PowerAdvantage.getInstance());
-		Blocks.steam_pump.setGuiID(MachineGUIRegistry.addGUI(new SteamPumpGUI()),PowerAdvantage.getInstance());
-		
+		Blocks.steam_boiler_coal.setGuiID(GUIRegistry.addGUI(new CoalBoilerGUI()), SteamAdvantage.getInstance());
+		Blocks.steam_tank.setGuiID(GUIRegistry.addGUI(new SteamTankGUI()),SteamAdvantage.getInstance());
+		Blocks.steam_furnace.setGuiID(GUIRegistry.addGUI(new BlastFurnaceGUI()),SteamAdvantage.getInstance());
+		Blocks.steam_crusher.setGuiID(GUIRegistry.addGUI(new RockCrusherGUI()),SteamAdvantage.getInstance());
+		Blocks.steam_drill.setGuiID(GUIRegistry.addGUI(new SteamDrillGUI()),SteamAdvantage.getInstance());
+		Blocks.steam_boiler_electric.setGuiID(GUIRegistry.addGUI(new ElectricBoilerGUI()),SteamAdvantage.getInstance());
+		Blocks.steam_boiler_geothermal.setGuiID(GUIRegistry.addGUI(new GeothermalBoilerGUI()),SteamAdvantage.getInstance());
+		Blocks.steam_boiler_oil.setGuiID(GUIRegistry.addGUI(new OilBoilerGUI()),SteamAdvantage.getInstance());
+		Blocks.steam_still.setGuiID(GUIRegistry.addGUI(new SteamStillGUI()),SteamAdvantage.getInstance());
+		Blocks.steam_pump.setGuiID(GUIRegistry.addGUI(new SteamPumpGUI()),SteamAdvantage.getInstance());
+
 		
 		initDone = true;
 	}
