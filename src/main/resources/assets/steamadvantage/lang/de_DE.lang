@@ -1,43 +1,43 @@
 language_support_goals=english (en_US,en_EN,en_CA,en_GB, en_AU, en_PT), spanish (es_MX,es_ES), chinese (zh_CN), japanese (ja_JA), portugese (pt_BR), german (de_DE), italian (it_IT), korean (ko_KR)
 
-item.steamadvantage.steam_governor.name=Dampfkraft Steuerventil
+item.steamadvantage.steam_governor.name=Fliehkraftregulator
 
-tile.steamadvantage.steam_pipe.name=Dampfrohr
-tile.steamadvantage.steam_boiler_coal.name=Dampfkraft Kessel
-tile.steamadvantage.steam_tank.name=Dampftank
-tile.steamadvantage.steam_furnace.name=Dampfkraft Ofen
-tile.steamadvantage.steam_crusher.name=Dampfkraft Steinbrecher
+tile.steamadvantage.steam_pipe.name=Messingdampfrohr
+tile.steamadvantage.steam_boiler_coal.name=Kohlebefeuerter Dampfkessel
+tile.steamadvantage.steam_tank.name=Dampfkesseltank
+tile.steamadvantage.steam_furnace.name=Dampfbetriebener Ofen
+tile.steamadvantage.steam_crusher.name=Dampfbetrieber Steinbreicher
 
 
 tile.steamadvantage.drillbit.name=Bohrer
-tile.steamadvantage.steam_drill.name=Dampfkraft Bohrmaschine
-item.steamadvantage.steam_drill_bit.name=Bohrer
-death.attack.steam_machine=%1$s wurde zwischen die Zahnräder einer Maschine geschliffen
-death.attack.steam_machine.player=%1$s wurde zwischen die Zahnräder einer Maschine von %2$s geschliffen
+tile.steamadvantage.steam_drill.name=Dampfbetriebene Bohrmaschine
+item.steamadvantage.steam_drill_bit.name=Bohrerbit
+death.attack.steam_machine=%1$s ist zwischen die Zahnräder einer Dampfaschine gefallen
+death.attack.steam_machine.player=%1$s wurde von %2$s zwischen die Zahnräder einer Dampfmaschine gestoßen
 
-tile.steamadvantage.steam_elevator.name=Dampfkraft Aufzug
-tile.steamadvantage.platform.name=Dampfkraft Aufzugplattform
+tile.steamadvantage.steam_elevator.name=Dampfbetriebener Aufzug
+tile.steamadvantage.platform.name=Dampfbetriebene Aufzugplattform
 death.attack.musket=%1$s wurde angeschossen
-death.attack.musket.player=%1$s schuss %2$s tot
-item.steamadvantage.blackpowder_cartridge.name=Schießpulver Patrone
-item.steamadvantage.musket.name=Schießpulver Muskete
-tooltip.musket.damage=Shot befasst %x Schäden
-tooltip.musket.ammo=Erfordert %x zu laden
+death.attack.musket.player=%1$s hat %2$s mit einer Muskete erschossen
+item.steamadvantage.blackpowder_cartridge.name=Schießpulverpatrone
+item.steamadvantage.musket.name=Schießpulvermuskete
+tooltip.musket.damage=Schuss verursacht %x Schaden
+tooltip.musket.ammo=Erfordert %x, um nachzuladen
 tooltip.musket.loaded=Geladen
 tooltip.musket.unloaded=Nicht geladen
 enchantment.powderless=Unendlich Munition
 enchantment.rapid_reload=Schnell neu laden
 enchantment.high_explosive=Bombe
 enchantment.recoil=Rückstoß
-tile.steamadvantage.steam_track.name=Dampfkraftzug
+tile.steamadvantage.steam_track.name=Dampfbetriebenes Gleis
 
 
 
-tile.steamadvantage.steam_boiler_electric.name=Elektro-Dampfkessel
-tile.steamadvantage.steam_boiler_geothermal.name=Geothermische Dampfkessel
+tile.steamadvantage.steam_boiler_electric.name=Elektrischer Dampfkessel
+tile.steamadvantage.steam_boiler_geothermal.name=Geothermischer Dampfkessel
 
 tile.steamadvantage.steam_switch.name=Dampfventil
-tile.steamadvantage.steam_still.name=Dampfkraft Brennerei
-tile.steamadvantage.steam_pump.name=Dampfkraft Pumpe
-tile.steamadvantage.steam_boiler_oil.name=Ölfeuerung Dampfkraft Kessel
+tile.steamadvantage.steam_still.name=Dampfbetriebene Destillerie
+tile.steamadvantage.steam_pump.name=Dampfbetriebene Pumpe
+tile.steamadvantage.steam_boiler_oil.name=Ölbefeuerter Dampfkessel
 tile.steamadvantage.pump_pipe_steam.name=Pumpenrohr
