@@ -6,13 +6,17 @@ buildscript {
             url = "http://files.minecraftforge.net/maven"
         }
         maven {
+            name = 'gradle'
+            url 'https://plugins.gradle.org/m2/'
+        }
+        maven {
             name = "sonatype"
             url = 'https://oss.sonatype.org/content/groups/public'
         }
     }
     dependencies {
         classpath "net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT"
-        classpath "com.matthewprenger:CurseGradle:1.0-SNAPSHOT"
+        classpath "gradle.plugin.com.matthewprenger:CurseGradle:1.0.10"
     }
 }
 
@@ -26,19 +30,15 @@ archivesBaseName = "SteamAdvantage_1.12.2"
 sourceCompatibility = targetCompatibility = "1.8"
 
 minecraft {
-    version = "1.12.2-14.23.2.2624"
+    version = "1.12.2-14.23.3.2655"
     runDir = "run"
-    mappings = "snapshot_20171003"
+    mappings = "snapshot_20180511"
 }
 
 repositories {
     maven {
         name "MMD"
         url "https://maven.mcmoddev.com/"
-    }
-    maven {
-        name "Dankhax"
-        url "http://maven.epoxide.org"
     }
     maven { // Mantle, TCon, JEI
         name "DVS1 Maven FS"
@@ -52,20 +52,21 @@ repositories {
     	name "Covers Maven"
     	url "http://maven.covers1624.net"
     }
-    maven {
-	    name "SpongePowered"
-        url 'https://repo.spongepowered.org/maven/'
-    }
+	maven {
+		name = "Modmuss50"
+		url = "http://maven.modmuss50.me/"
+	}
 }
 
 dependencies {
-    compile files(
-        'libs/BaseMetals-1.12-2.5.0-beta4.145.jar',
-        'libs/PowerAdvantage-1.12.2-2.4.0.jar',
-        'libs/RedstoneFlux-1.12-2.0.1.2-universal.jar',
-        'libs/RebornCore-1.12.2-3.6.8.214-universal.jar'
-
-   )
+  deobfCompile "net.darkhax.tesla:Tesla-${mc_version}.2:${tesla_version}"
+  deobfCompile "cofh:RedstoneFlux:${mc_version}-${rfapi_version}:universal"
+  deobfCompile "com.mcmoddev:BaseMetals:${mc_version}-${bme_version}"
+//  compile "codechicken:CodeChickenCore:${mc_version}-${ccc_version}:universal"
+//  compile "codechicken:NotEnoughItems:${mc_version}-${nei_version}:universal"
+  deobfCompile("RebornCore:RebornCore-${mc_version}.2:${reborncore_version}:universal") {
+    transitive = false
+  }
 }
 
 processResources {
