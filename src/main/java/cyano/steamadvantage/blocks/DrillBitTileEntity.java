@@ -72,7 +72,7 @@ public class DrillBitTileEntity extends TileEntity implements ITickable{
 	public void readFromNBT(NBTTagCompound root){
 		super.readFromNBT(root);
 		if(root.hasKey("dir")){
-			this.direction = EnumFacing.getFront(root.getByte("dir"));
+			this.direction = EnumFacing.byIndex(root.getByte("dir"));
 		}
 	}
 
@@ -92,7 +92,7 @@ public class DrillBitTileEntity extends TileEntity implements ITickable{
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
 		NBTTagCompound tag = packet.getNbtCompound();
 		if(tag.hasKey("d")){
-			this.direction = EnumFacing.getFront(tag.getByte("d"));
+			this.direction = EnumFacing.byIndex(tag.getByte("d"));
 		}
 	}
 }

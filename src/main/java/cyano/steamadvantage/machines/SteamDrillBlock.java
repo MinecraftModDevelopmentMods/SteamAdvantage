@@ -47,8 +47,8 @@ public class SteamDrillBlock extends GUIBlock implements ITypedConduit {
 	 * This method is called when the block is removed from the world by an entity.
 	 */
 	@Override
-	public void onBlockDestroyedByPlayer(World w, BlockPos coord, IBlockState state){
-		super.onBlockDestroyedByPlayer(w, coord, state);
+	public void onPlayerDestroy(World w, BlockPos coord, IBlockState state){
+		super.onPlayerDestroy(w, coord, state);
 		destroyNeighbors(w,coord,w.getBlockState(coord));
 		ConduitRegistry.getInstance().conduitBlockRemovedEvent(w, w.provider.getDimension(), coord, Power.steam_power);
 	}
@@ -56,8 +56,8 @@ public class SteamDrillBlock extends GUIBlock implements ITypedConduit {
 	 * This method is called when the block is destroyed by an explosion.
 	 */
 	@Override
-	public void onBlockDestroyedByExplosion(World w, BlockPos coord, Explosion boom){
-		super.onBlockDestroyedByExplosion(w, coord, boom);
+	public void onExplosionDestroy(World w, BlockPos coord, Explosion boom){
+		super.onExplosionDestroy(w, coord, boom);
 		destroyNeighbors(w,coord,w.getBlockState(coord));
 		ConduitRegistry.getInstance().conduitBlockRemovedEvent(w, w.provider.getDimension(), coord, Power.steam_power);
 	}
@@ -68,7 +68,7 @@ public class SteamDrillBlock extends GUIBlock implements ITypedConduit {
 		if(w.isRemote) return;
 		// destroy connected drill bits
 		for(int i = 0; i < 6; i++){
-			BlockPos pos = coord.offset(EnumFacing.getFront(i));
+			BlockPos pos = coord.offset(EnumFacing.byIndex(i));
 			if(w.getTileEntity(pos) instanceof DrillBitTileEntity){
 				DrillBitTileEntity te = (DrillBitTileEntity)w.getTileEntity(pos);
 				te.destroyLine();

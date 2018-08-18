@@ -80,22 +80,22 @@ public class DrillBitBlock extends Block implements ITileEntityProvider {
 
 
 	@Override
-	public void onEntityCollidedWithBlock(final World world, final BlockPos coord, final IBlockState bs, 
+	public void onEntityCollision(final World world, final BlockPos coord, final IBlockState bs, 
 			final Entity victim) {
 		victim.attackEntityFrom(Power.machine_damage, 2.0f);
 	}
 	
 	@Override
-	public void onBlockDestroyedByPlayer(World w, BlockPos coord, IBlockState state){
+	public void onPlayerDestroy(World w, BlockPos coord, IBlockState state){
 		destroyNeighbors(w,coord,w.getBlockState(coord));
-		super.onBlockDestroyedByPlayer(w, coord, state);
+		super.onPlayerDestroy(w, coord, state);
 		w.removeTileEntity(coord);
 	}
 
 	@Override
-	public void onBlockDestroyedByExplosion(World w, BlockPos coord, Explosion boom){
+	public void onExplosionDestroy(World w, BlockPos coord, Explosion boom){
 		destroyNeighbors(w,coord,w.getBlockState(coord));
-		super.onBlockDestroyedByExplosion(w, coord, boom);
+		super.onExplosionDestroy(w, coord, boom);
 		w.removeTileEntity(coord);
 	}
 
@@ -104,7 +104,7 @@ public class DrillBitBlock extends Block implements ITileEntityProvider {
 		if(w.isRemote) return;
 		// destroy connected drill bits
 		for(int i = 0; i < 6; i++){
-			BlockPos pos = coord.offset(EnumFacing.getFront(i));
+			BlockPos pos = coord.offset(EnumFacing.byIndex(i));
 			if(w.getTileEntity(pos) instanceof DrillBitTileEntity){
 				DrillBitTileEntity te = (DrillBitTileEntity)w.getTileEntity(pos);
 				te.destroyLine();

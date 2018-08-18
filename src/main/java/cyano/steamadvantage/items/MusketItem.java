@@ -160,7 +160,7 @@ public class MusketItem extends net.minecraft.item.Item{
 		playBigSoundAtPosition(playerEntity.posX,playerEntity.posY,playerEntity.posZ, SoundEvents.ENTITY_FIREWORK_BLAST,SoundCategory.PLAYERS,2F,0.5F,world);
 		
 		Vec3d start = new Vec3d(playerEntity.posX, playerEntity.posY+playerEntity.getEyeHeight(),playerEntity.posZ);
-		start.addVector(MAX_RANGE * lookVector.x, MAX_RANGE * lookVector.y, MAX_RANGE * lookVector.z);
+		start.add(MAX_RANGE * lookVector.x, MAX_RANGE * lookVector.y, MAX_RANGE * lookVector.z);
 		RayTraceResult rayTrace = rayTraceBlocksAndEntities(world,MAX_RANGE,playerEntity);
 		if(rayTrace == null){
 			// no collisions

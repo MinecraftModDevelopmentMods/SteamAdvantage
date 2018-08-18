@@ -75,15 +75,15 @@ public class PumpPipeBlock extends Block{
 
 
 	@Override
-	public void onBlockDestroyedByPlayer(World w, BlockPos coord, IBlockState state){
+	public void onPlayerDestroy(World w, BlockPos coord, IBlockState state){
 		destroyNeighbors(w,coord,w.getBlockState(coord));
-		super.onBlockDestroyedByPlayer(w, coord, state);
+		super.onPlayerDestroy(w, coord, state);
 	}
 
 	@Override
-	public void onBlockDestroyedByExplosion(World w, BlockPos coord, Explosion boom){
+	public void onExplosionDestroy(World w, BlockPos coord, Explosion boom){
 		destroyNeighbors(w,coord,w.getBlockState(coord));
-		super.onBlockDestroyedByExplosion(w, coord, boom);
+		super.onExplosionDestroy(w, coord, boom);
 	}
 
 	

@@ -56,7 +56,7 @@ public abstract class Items {
 	}
 	@SuppressWarnings("deprecation")
 	private static Item addItem(RegistryEvent.Register<Item> event, String unlocalizedName, Item i){
-		i.setUnlocalizedName(SteamAdvantage.MODID+"."+unlocalizedName);
+		i.setTranslationKey(SteamAdvantage.MODID+"."+unlocalizedName);
 		i.setRegistryName(SteamAdvantage.MODID, unlocalizedName);
 		event.getRegistry().register(i);
 		i.setCreativeTab(cyano.poweradvantage.init.ItemGroups.tab_powerAdvantage);

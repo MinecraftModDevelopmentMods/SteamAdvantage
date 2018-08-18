@@ -103,7 +103,7 @@ public abstract class Blocks {
 
 	@SuppressWarnings("deprecation")
 	private static Block addBlock(Block block, String name ){
-		block.setUnlocalizedName(SteamAdvantage.MODID+"."+name);
+		block.setTranslationKey(SteamAdvantage.MODID+"."+name);
 		block.setRegistryName(SteamAdvantage.MODID, name);
 		block.setCreativeTab(cyano.poweradvantage.init.ItemGroups.tab_powerAdvantage);
 		allBlocks.put(name, block);

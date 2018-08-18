@@ -71,16 +71,16 @@ public class SteamStillBlock extends cyano.poweradvantage.api.simple.BlockSimple
 	 * This method is called when the block is removed from the world by an entity.
 	 */
 	@Override
-	public void onBlockDestroyedByPlayer(World w, BlockPos coord, IBlockState state){
-		super.onBlockDestroyedByPlayer(w, coord, state);
+	public void onPlayerDestroy(World w, BlockPos coord, IBlockState state){
+		super.onPlayerDestroy(w, coord, state);
 		ConduitRegistry.getInstance().conduitBlockPlacedEvent(w, w.provider.getDimension(), coord, cyano.poweradvantage.init.Fluids.fluidConduit_general);
 	}
 	/**
 	 * This method is called when the block is destroyed by an explosion.
 	 */
 	@Override
-	public void onBlockDestroyedByExplosion(World w, BlockPos coord, Explosion boom){
-		super.onBlockDestroyedByExplosion(w, coord, boom);
+	public void onExplosionDestroy(World w, BlockPos coord, Explosion boom){
+		super.onExplosionDestroy(w, coord, boom);
 		ConduitRegistry.getInstance().conduitBlockPlacedEvent(w, w.provider.getDimension(), coord, Fluids.fluidConduit_general);
 	}
 
