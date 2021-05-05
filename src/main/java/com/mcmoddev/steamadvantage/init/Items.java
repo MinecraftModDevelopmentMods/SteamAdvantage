@@ -25,7 +25,7 @@ import com.mcmoddev.steamadvantage.items.MusketItem;
 public abstract class Items extends com.mcmoddev.lib.init.Items {	
 	@SubscribeEvent
 	public static void init(final MMDLibRegisterItems event) {
-		event.setActive(SteamAdvantage.MODID);
+//		event.setActive(SteamAdvantage.MODID);
 		addItem(new Item(), SteamAdvantageNames.STEAM_GOVERNOR, ItemGroups.getTab(SteamAdvantage.MODID, SharedStrings.TAB_ITEMS));
 		addItem(new Item(), SteamAdvantageNames.STEAM_DRILL_BIT, ItemGroups.getTab(SteamAdvantage.MODID, SharedStrings.TAB_TOOLS));
 		addItem(new Item(), SteamAdvantageNames.BLACKPOWDER_CARTRIDGE, ItemGroups.getTab(SteamAdvantage.MODID, SharedStrings.TAB_COMBAT));

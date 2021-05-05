@@ -27,7 +27,7 @@ import com.mcmoddev.steamadvantage.data.SteamAdvantageNames;
 public abstract class Blocks extends com.mcmoddev.lib.init.Blocks {
 	@SubscribeEvent
 	public static void init(final MMDLibRegisterBlocks event){
-		event.setActive(SteamAdvantage.MODID);
+//		event.setActive(SteamAdvantage.MODID);
 
 		addBlock(new SteamPipeBlock(),"steam_pipe", ItemGroups.getTab(SteamAdvantage.MODID, SharedStrings.TAB_BLOCKS));
 		addBlock(new SteamTrackBlock(),"steam_track", ItemGroups.getTab(SteamAdvantage.MODID, SharedStrings.TAB_BLOCKS));

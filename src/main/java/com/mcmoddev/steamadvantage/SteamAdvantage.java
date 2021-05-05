@@ -40,14 +40,15 @@ import com.mcmoddev.steamadvantage.init.*;
  * - Bioreactor (slowly makes liquid fuel from organic matter)
  */
 @Mod(modid = SteamAdvantage.MODID, version = SteamAdvantage.VERSION, name=SteamAdvantage.NAME, 
-		dependencies = "required-after:poweradvantage;required-after:basemetals")
+		dependencies = "required-after:mmdlib;required-after:poweradvantage;after:basemetals",
+		acceptedMinecraftVersions = "[1.12,1.12.2]")
 public class SteamAdvantage
 {/** The identifier for this mod */
 	public static final String MODID = "steamadvantage";
 	/** The display name for this mod */
 	public static final String NAME = "Steam Advantage";
 	/** The version of this mod, in the format major.minor.update */
-	public static final String VERSION = "2.2.0";
+	public static final String VERSION = "2.5.0-rc1";
 	private static SteamAdvantage instance;
 	public static float MUSKET_DAMAGE = 20;
 	public static int MUSKET_RELOAD = 20*5;
