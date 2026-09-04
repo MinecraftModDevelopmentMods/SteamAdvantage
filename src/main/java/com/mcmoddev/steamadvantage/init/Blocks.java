@@ -81,7 +81,7 @@ public abstract class Blocks {
 
 	@SuppressWarnings("deprecation")
 	private static Block addBlock(Block block, String name ){
-		block.setUnlocalizedName(SteamAdvantage.MODID+"."+name);
+		block.setTranslationKey(SteamAdvantage.MODID+"."+name);
 		ResourceLocation registryName = new ResourceLocation(SteamAdvantage.MODID, name);
 		block.setRegistryName(registryName);
 		ForgeRegistries.BLOCKS.register(block);

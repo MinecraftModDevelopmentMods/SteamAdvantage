@@ -228,6 +228,8 @@ public class GeothermalBoilerTileEntity extends cyano.poweradvantage.api.simple.
 			}
 		}
 		if(tagRoot.hasKey("Temperature")){
+			this.temperature = tagRoot.getFloat("Temperature");
+		} else if(tagRoot.hasKey("Tempoerature")){
 			this.temperature = tagRoot.getFloat("Tempoerature");
 		} else {
 			this.temperature = 0;

@@ -105,9 +105,9 @@ public class DrillBitTileEntity extends TileEntity implements ITickable{
 
 	private void readDirectionFromNBT(NBTTagCompound root) {
 		if(root.hasKey("dir")){
-			this.direction = EnumFacing.getFront(root.getByte("dir"));
+			this.direction = EnumFacing.byIndex(root.getByte("dir"));
 		} else if(root.hasKey("d")){
-			this.direction = EnumFacing.getFront(root.getByte("d"));
+			this.direction = EnumFacing.byIndex(root.getByte("d"));
 		}
 	}
 

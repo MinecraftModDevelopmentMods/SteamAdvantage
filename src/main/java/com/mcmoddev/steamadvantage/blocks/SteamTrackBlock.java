@@ -43,7 +43,7 @@ public class SteamTrackBlock extends cyano.poweradvantage.api.simple.BlockSimple
 
 	@SideOnly(Side.CLIENT)
 	@Override
-	public BlockRenderLayer getBlockLayer() {
+	public BlockRenderLayer getRenderLayer() {
 		return BlockRenderLayer.CUTOUT;
 	}
 

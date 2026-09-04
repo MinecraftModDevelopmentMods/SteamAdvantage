@@ -291,8 +291,9 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 	@Override
 	public void readFromNBT(final NBTTagCompound tagRoot) {
 		super.readFromNBT(tagRoot);
-		if (tagRoot.hasKey("Tank")) {
-			NBTTagCompound tankTag = tagRoot.getCompoundTag("TankOut");
+		String tankKey = tagRoot.hasKey("Tank") ? "Tank" : "TankOut";
+		if (tagRoot.hasKey(tankKey)) {
+			NBTTagCompound tankTag = tagRoot.getCompoundTag(tankKey);
 			getTank().readFromNBT(tankTag);
 			if(tankTag.hasKey("Empty")){
 				// empty the tank if NBT says its empty (not default behavior of Tank.readFromNBT(...) )

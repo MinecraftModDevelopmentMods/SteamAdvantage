@@ -1,0 +1,9 @@
+Steam Advantage 2.2.1.112021
+
+- Move the Minecraft 1.12.2 build to ForgeGradle 7 and Gradle 9.6.1.
+- Build with a Java 8 toolchain while running Gradle on Java 17.
+- Pin the required Power Advantage development artifact without restoring the retired MMD Maven dependency.
+- Add reproducible release jars, dependency and artifact audits, checksums, and GitHub CI.
+- Preserve drill facing, energy, inventory, and movement state across save reloads and track movement.
+- Restore steam pump fluid and geothermal boiler temperature from their saved NBT values.
+- Preserve Steam Advantage registry, tile entity, asset, configuration, and saved-world identities.

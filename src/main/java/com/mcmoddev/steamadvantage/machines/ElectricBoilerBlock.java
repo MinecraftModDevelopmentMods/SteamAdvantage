@@ -65,8 +65,8 @@ public class ElectricBoilerBlock  extends cyano.poweradvantage.api.simple.BlockS
 	 * This method is called when the block is removed from the world by an entity.
 	 */
 	@Override
-	public void onBlockDestroyedByPlayer(World w, BlockPos coord, IBlockState state){
-		super.onBlockDestroyedByPlayer(w, coord, state);
+	public void onPlayerDestroy(World w, BlockPos coord, IBlockState state){
+		super.onPlayerDestroy(w, coord, state);
 		ConduitRegistry.getInstance().conduitBlockRemovedEvent(w, w.provider.getDimension(), coord, ElectricBoilerTileEntity.ELECTRIC_POWER);
 		ConduitRegistry.getInstance().conduitBlockRemovedEvent(w, w.provider.getDimension(), coord, Fluids.fluidConduit_general);
 	}
@@ -74,8 +74,8 @@ public class ElectricBoilerBlock  extends cyano.poweradvantage.api.simple.BlockS
 	 * This method is called when the block is destroyed by an explosion.
 	 */
 	@Override
-	public void onBlockDestroyedByExplosion(World w, BlockPos coord, Explosion boom){
-		super.onBlockDestroyedByExplosion(w, coord, boom);
+	public void onBlockExploded(World w, BlockPos coord, Explosion boom){
+		super.onBlockExploded(w, coord, boom);
 		ConduitRegistry.getInstance().conduitBlockRemovedEvent(w, w.provider.getDimension(), coord, ElectricBoilerTileEntity.ELECTRIC_POWER);
 		ConduitRegistry.getInstance().conduitBlockRemovedEvent(w, w.provider.getDimension(), coord, Fluids.fluidConduit_general);
 	}

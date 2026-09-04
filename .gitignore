@@ -1,44 +1,67 @@
-# eclipse
-bin
-*.launch
-.settings
-.metadata
-.classpath
-.project
+# Eclipse
+/bin/
+/*.launch
+/.settings/
+/.metadata/
+/.classpath
+/.project
+/.eclipse/
 
-# idea
-out
+# IntelliJ IDEA
+/out/
 *.ipr
 *.iws
 *.iml
-.idea
+/.idea/
 
-# gradle
-build
-.gradle
+# Gradle, Forge, and generated dependency output
+/build/
+/.gradle/
+/eclipse/
+/run/
+/run-data/
+/run.*
+/*.log
+/classes/
+/logs/
+/mcmodsrepo/
+/.ci-dependencies/
 
-# compiled/build artifacts
+# Compiled and packaged artifacts
 *.class
 *.jar
-!gradle/wrapper/gradle-wrapper.jar
+!/gradle/wrapper/gradle-wrapper.jar
 *.zip
 
-# local agent/workspace files
-AGENT.md
-AGENTS.md
-agent-notes/
-.agent/
-.agents/
-.codex/
-.claude/
-CLAUDE.md
-.aider*
-.cursor/
-.cursorrules
+# Machine-specific agent context
+/AGENTS.md
+/AGENT.md
+/agent-notes/
+/.agent/
+/.agents/
+/.codex/
+/.claude/
+/.gemini/
+/.cursor/
+/CLAUDE.md
+/agent-*.md
+/codex-*.md
+/.aider*
+/.cursorrules
 
-# other
-eclipse
-run
+# Local verification and profiling evidence
+/run-*/
+/benchmark-*/
+/regression-*/
+/evidence/
+/evidence-*/
+/*-evidence/
+/*.jfr
+/*.hprof
+/hs_err_pid*.log
+/replay_pid*.log
 
+/secret.json
+/.DS_Store
 /README.txt
 /forge-*-changelog.txt

@@ -49,7 +49,7 @@ public abstract class Items {
 	}
 	@SuppressWarnings("deprecation")
 	private static Item addItem(String unlocalizedName, Item i){
-		i.setUnlocalizedName(SteamAdvantage.MODID+"."+unlocalizedName);
+		i.setTranslationKey(SteamAdvantage.MODID+"."+unlocalizedName);
 		i.setRegistryName(new ResourceLocation(SteamAdvantage.MODID, unlocalizedName));
 		ForgeRegistries.ITEMS.register(i);
 		i.setCreativeTab(com.mcmoddev.poweradvantage.init.ItemGroups.tab_powerAdvantage);

@@ -456,7 +456,7 @@ public class SteamDrillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 		if(tagRoot.hasKey("Facing")){
 			int facingIndex = tagRoot.getByte("Facing");
 			if(facingIndex >= 0 && facingIndex < EnumFacing.values().length){
-				savedFacing = EnumFacing.getFront(facingIndex);
+				savedFacing = EnumFacing.byIndex(facingIndex);
 			}
 		}
 		if(tagRoot.hasKey("progress")){
