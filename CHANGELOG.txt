@@ -1,3 +1,30 @@
+Steam Advantage 2.2.5.113021
+
+- Separate different steam equipment into distinct recipe-book cells while keeping same-output alternatives together.
+- Restore legacy steam-parts chest loot through Power Advantage's native fallback when Additional Loot Tables is absent.
+- Recheck all steam equipment acquisition and discovery paths in every recipe mode, including the electric boiler's wire ingredient.
+- Add ingredient-triggered recipe-book discoveries for every crafting variant, without exposing crushing recipes or bypassing recipe modes.
+- Prevent Eclipse builds from replacing processed mod metadata with unresolved source templates.
+- Fix literal 1.13 blockstate model paths and replace removed normal selectors, preserving every orientation and registry identity.
+- Add modern language aliases alongside legacy GUI keys and audit native client resources in the combined Advantage launch.
+- Point generated Eclipse mod discovery at bin/main and audit it, preventing launches that omit Steam Advantage.
+- Make tile-type registration generic inference explicit for Eclipse's compiler.
+- Fix drill output into empty vanilla rear inventories and mark both inventories dirty after transfer.
+- Preserve unfinished drill progress across chunk reloads and full restarts; reset it when a saved target state has changed.
+- Keep legacy progress and target-coordinate NBT readable, with optional target-state snapshots for new saves.
+
+- Migrate minecraft-prefixed dotted tile IDs from pre-modernization 1.12 saves without resetting machine contents, pressure, progress, or temperature.
+
+- Port Steam Advantage to Minecraft 1.13.2, Forge 25.0.223, and the zone.moddev.mc implementation namespace.
+- Register legacy block-state, tile, item, and NBT migrations with Power Advantage for direct 1.10 and 1.12 upgrades.
+- Preserve drill facing, energy, inventory, movement, output, and helper-bit state through migration and full restart.
+- Restore pump fluid from Tank with TankOut fallback and geothermal temperature from Temperature with Tempoerature fallback.
+- Register all musket enchantments on the Forge mod registry bus.
+- Restore vanilla-style crusher comparator levels from 0 through 15.
+- Accept Power and Mineralogy crude-oil aliases in the oil boiler without changing configured fuel overrides.
+- Guard tagged recipes so reduced mod sets cannot drop required material ingredients.
+- Add reproducible 1.13 release artifacts, dependency audits, Eclipse metadata, and Advantage Works coverage.
+
 Steam Advantage 2.2.1.112021
 
 - Move the Minecraft 1.12.2 build to ForgeGradle 7 and Gradle 9.6.1.

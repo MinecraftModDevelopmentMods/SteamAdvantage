@@ -1,0 +1,39 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "gXg",
+    "pmp"
+  ],
+  "key": {
+    "X": {
+      "item": "steamadvantage:steam_drill_bit"
+    },
+    "g": {
+      "tag": "forge:governors"
+    },
+    "p": {
+      "tag": "forge:plates/iron"
+    },
+    "m": {
+      "tag": "forge:frames/steel"
+    }
+  },
+  "result": {
+    "item": "steamadvantage:steam_drill"
+  },
+  "group": "steamadvantage:steam_drill",
+  "conditions": [
+    {
+      "type": "poweradvantage:tag_not_empty",
+      "tag": "forge:frames/steel"
+    },
+    {
+      "type": "poweradvantage:tag_not_empty",
+      "tag": "forge:governors"
+    },
+    {
+      "type": "poweradvantage:tag_not_empty",
+      "tag": "forge:plates/iron"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ssf",
+    "  w"
+  ],
+  "key": {
+    "f": {
+      "item": "minecraft:flint_and_steel"
+    },
+    "s": {
+      "tag": "forge:ingots/steel"
+    },
+    "w": {
+      "tag": "minecraft:planks"
+    }
+  },
+  "result": {
+    "item": "steamadvantage:musket"
+  },
+  "conditions": [
+    {
+      "type": "steamadvantage:recipe_mode",
+      "mode": "TECH_PROGRESSION"
+    },
+    {
+      "type": "steamadvantage:musket_enabled"
+    },
+    {
+      "type": "poweradvantage:tag_not_empty",
+      "tag": "forge:ingots/steel"
+    }
+  ],
+  "group": "steamadvantage:musket"
+}

@@ -1,0 +1,6 @@
+{
+  "type": "basemetals:crushing",
+  "ingredient": { "item": "steamadvantage:steam_boiler_electric" },
+  "result": { "item": "steamadvantage:steam_governor", "count": 2 },
+  "conditions": [{ "type": "steamadvantage:recipe_mode", "mode": "APOCALYPTIC" }]
+}

@@ -1,0 +1,54 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_ingredient_1": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "minecraft:flint_and_steel"
+          }
+        ]
+      }
+    },
+    "has_ingredient_2": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "tag": "forge:ingots/steel"
+          }
+        ]
+      }
+    },
+    "has_ingredient_3": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "tag": "minecraft:planks"
+          }
+        ]
+      }
+    },
+    "has_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "steamadvantage:musket_right_normal"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_ingredient_1",
+      "has_ingredient_2",
+      "has_ingredient_3",
+      "has_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "steamadvantage:musket_right_normal"
+    ]
+  }
+}

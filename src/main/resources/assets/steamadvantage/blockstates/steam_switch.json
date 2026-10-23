@@ -1,6 +1,6 @@
 {
     "variants": {
-        "active=false":  { "model": "steamadvantage:steam_switch_off"},
-        "active=true":   { "model": "steamadvantage:steam_switch_on"}
+        "active=false":  { "model": "steamadvantage:block/steam_switch_off"},
+        "active=true":   { "model": "steamadvantage:block/steam_switch_on"}
     }
 }

@@ -1,5 +1,5 @@
 {
     "variants": {
-        "normal": { "model": "steamadvantage:drillbit" }
+        "": { "model": "steamadvantage:block/drillbit" }
     }
 }

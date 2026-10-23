@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " L ",
+    "pfp"
+  ],
+  "key": {
+    "L": {
+      "item": "minecraft:lever"
+    },
+    "p": {
+      "tag": "forge:conduits/steam"
+    },
+    "f": {
+      "tag": "forge:frames/steel"
+    }
+  },
+  "result": {
+    "item": "steamadvantage:steam_switch"
+  },
+  "group": "steamadvantage:steam_switch",
+  "conditions": [
+    {
+      "type": "poweradvantage:tag_not_empty",
+      "tag": "forge:conduits/steam"
+    },
+    {
+      "type": "poweradvantage:tag_not_empty",
+      "tag": "forge:frames/steel"
+    }
+  ]
+}

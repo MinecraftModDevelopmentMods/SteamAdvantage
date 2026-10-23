@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "steamadvantage:steam_pipe"
+    },
+    {
+      "item": "poweradvantage:steel_frame"
+    }
+  ],
+  "result": {
+    "item": "steamadvantage:steam_track"
+  },
+  "group": "steamadvantage:steam_track"
+}

@@ -1,8 +1,8 @@
 {
     "variants": {
-        "facing=east": { "model": "steamadvantage:steam_tank", "y": 90, "uvlock": true },
-        "facing=north": { "model": "steamadvantage:steam_tank", "uvlock": true },
-        "facing=south": { "model": "steamadvantage:steam_tank", "y": 180, "uvlock": true },
-        "facing=west": { "model": "steamadvantage:steam_tank", "y": 270, "uvlock": true }
+        "facing=east": { "model": "steamadvantage:block/steam_tank", "y": 90, "uvlock": true },
+        "facing=north": { "model": "steamadvantage:block/steam_tank", "uvlock": true },
+        "facing=south": { "model": "steamadvantage:block/steam_tank", "y": 180, "uvlock": true },
+        "facing=west": { "model": "steamadvantage:block/steam_tank", "y": 270, "uvlock": true }
     }
 }

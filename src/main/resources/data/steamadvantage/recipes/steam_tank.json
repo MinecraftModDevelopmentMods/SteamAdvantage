@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "xgx",
+    "xpx",
+    "xxx"
+  ],
+  "key": {
+    "x": {
+      "tag": "forge:plates/copper"
+    },
+    "p": {
+      "tag": "forge:conduits/steam"
+    },
+    "g": {
+      "tag": "forge:governors"
+    }
+  },
+  "result": {
+    "item": "steamadvantage:steam_tank"
+  },
+  "group": "steamadvantage:steam_tank",
+  "conditions": [
+    {
+      "type": "poweradvantage:tag_not_empty",
+      "tag": "forge:conduits/steam"
+    },
+    {
+      "type": "poweradvantage:tag_not_empty",
+      "tag": "forge:governors"
+    },
+    {
+      "type": "poweradvantage:tag_not_empty",
+      "tag": "forge:plates/copper"
+    }
+  ]
+}

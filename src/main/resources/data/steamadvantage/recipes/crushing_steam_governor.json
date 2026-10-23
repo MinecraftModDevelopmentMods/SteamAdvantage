@@ -1,0 +1,6 @@
+{
+  "type": "basemetals:crushing",
+  "ingredient": { "item": "steamadvantage:steam_governor" },
+  "result": { "item": "poweradvantage:sprocket", "count": 2 },
+  "conditions": [{ "type": "steamadvantage:recipe_mode", "mode": "APOCALYPTIC" }]
+}
