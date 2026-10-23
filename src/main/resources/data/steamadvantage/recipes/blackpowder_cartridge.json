@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "L",
+    "g",
+    "p"
+  ],
+  "key": {
+    "L": {
+      "tag": "forge:nuggets/lead"
+    },
+    "g": {
+      "item": "minecraft:gunpowder"
+    },
+    "p": {
+      "item": "minecraft:paper"
+    }
+  },
+  "result": {
+    "item": "steamadvantage:blackpowder_cartridge"
+  },
+  "group": "steamadvantage:blackpowder_cartridge",
+  "conditions": [
+    {
+      "type": "poweradvantage:tag_not_empty",
+      "tag": "forge:nuggets/lead"
+    }
+  ]
+}

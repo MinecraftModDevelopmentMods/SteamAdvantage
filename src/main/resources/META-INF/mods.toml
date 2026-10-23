@@ -1,0 +1,40 @@
+modLoader="javafml"
+loaderVersion="${loader_version_range}"
+license="GPL-3.0-only"
+issueTrackerURL="https://github.com/MinecraftModDevelopmentMods/SteamAdvantage/issues"
+
+[[mods]]
+modId="steamadvantage"
+version="${version}"
+displayName="Steam Advantage"
+displayURL="https://www.curseforge.com/minecraft/mc-mods/steam-advantage"
+authors="DrCyano, the MMD Team"
+description='''Steam-powered machines and infrastructure for the Power Advantage platform.'''
+
+[[dependencies.steamadvantage]]
+modId="poweradvantage"
+mandatory=true
+versionRange="[2.4.4.113021,3.0.0)"
+ordering="AFTER"
+side="BOTH"
+
+[[dependencies.steamadvantage]]
+modId="basemetals"
+mandatory=false
+versionRange="[3.0.1.113021,4.0.0)"
+ordering="AFTER"
+side="BOTH"
+
+[[dependencies.steamadvantage]]
+modId="forge"
+mandatory=true
+versionRange="${forge_version_range}"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.steamadvantage]]
+modId="minecraft"
+mandatory=true
+versionRange="${minecraft_version_range}"
+ordering="NONE"
+side="BOTH"

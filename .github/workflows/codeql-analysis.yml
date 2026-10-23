@@ -2,12 +2,9 @@ name: CodeQL
 
 on:
   push:
-    branches:
-      - master-1.12.2
-      - 'feature/**'
+    branches: [master-1.13.2, 'feature/**']
   pull_request:
-    branches:
-      - master-1.12.2
+    branches: [master-1.13.2]
   schedule:
     - cron: '53 7 * * 4'
 
@@ -20,62 +17,74 @@ jobs:
   analyze:
     name: Analyze Java
     runs-on: ubuntu-latest
-    timeout-minutes: 60
-
+    timeout-minutes: 90
     steps:
       - name: Check out SteamAdvantage
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-
-      - name: Check out pinned PowerAdvantage
+      - name: Check out pinned OreSpawn
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          repository: MinecraftModDevelopmentMods/OreSpawn
+          ref: 6a7c2bb07b9a7771128812fcc07d185f7d9df58b
+          path: .ci-dependencies/OreSpawn
+      - name: Use canonical LF dependency inputs
+        # Base Metals predates archive text normalization; its LF artifact is separately pinned.
+        run: git config --global core.autocrlf false
+      - name: Check out pinned Base Metals
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          repository: MinecraftModDevelopmentMods/BaseMetals
+          ref: 1376a20d7d5ba22d3abc77dc34b49a2c88943697
+          path: .ci-dependencies/BaseMetals
+      - name: Check out PowerAdvantage 1.13.2
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: MinecraftModDevelopmentMods/PowerAdvantage
-          ref: 40811a0be37174a0633998eb3d820d95755d35e8
+          ref: 6a845ad68eb1e34dcdd793dceb9cb528be22cedf
           path: .ci-dependencies/PowerAdvantage
-
       - name: Install Java 8 toolchain
         uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           distribution: temurin
           java-version: '8.0.502+7'
-
       - name: Install Java 17 for Gradle
         uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           distribution: microsoft
           java-version: '17'
-
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
-
-      - name: Build pinned PowerAdvantage development jar
-        id: poweradvantage
+      - name: Build 1.13.2 dependency chain
+        id: dependencies
         shell: bash
         run: |
           set -euo pipefail
-          dependency="$GITHUB_WORKSPACE/.ci-dependencies/PowerAdvantage"
-          mirror="$RUNNER_TEMP/reborncore-mirror"
-          chmod +x "$dependency/gradlew"
-          (
-            cd "$dependency"
-            bash gradle/stage-reborncore-release.sh "$mirror"
-            ./gradlew deobfJar verifyReleaseDependencies \
-              -PrebornCoreVerificationRepository="$mirror" --no-daemon --stacktrace
-          )
-          jar="$dependency/build/libs-dev/PowerAdvantage-2.4.1.112021-deobf.jar"
-          test -f "$jar"
-          echo "jar=$jar" >> "$GITHUB_OUTPUT"
-
+          orespawn="$GITHUB_WORKSPACE/.ci-dependencies/OreSpawn"
+          basemetals="$GITHUB_WORKSPACE/.ci-dependencies/BaseMetals"
+          power="$GITHUB_WORKSPACE/.ci-dependencies/PowerAdvantage"
+          chmod +x "$orespawn/gradlew" "$basemetals/gradlew" "$power/gradlew"
+          (cd "$orespawn" && ./gradlew jar --no-daemon --stacktrace)
+          (cd "$basemetals" && ./gradlew jar --no-daemon --stacktrace)
+          osjar="$orespawn/build/libs-dev/OreSpawn-4.1.0.113021-deobf.jar"
+          bmjar="$basemetals/build/libs-dev/BaseMetals-3.0.1.113021-deobf.jar"
+          (cd "$power" && ./gradlew jar verifyReleaseDependencies             -PbaseMetalsDeobfJar="$bmjar" -PoreSpawnDeobfJar="$osjar"             --no-daemon --stacktrace)
+          powerjar="$power/build/libs-dev/PowerAdvantage-2.4.4.113021-deobf.jar"
+          test -f "$osjar" && test -f "$bmjar" && test -f "$powerjar"
+          echo "orespawn=$osjar" >> "$GITHUB_OUTPUT"
+          echo "basemetals=$bmjar" >> "$GITHUB_OUTPUT"
+          echo "power=$powerjar" >> "$GITHUB_OUTPUT"
+          echo "power_ref=$(git -C "$power" rev-parse HEAD)" >> "$GITHUB_OUTPUT"
       - name: Initialize CodeQL
         uses: github/codeql-action/init@db488ddef3bf6cb639b32c2e9a7c0a7ea8271d28 # v4
         with:
           languages: java-kotlin
-
       - name: Compile SteamAdvantage production code
         run: |
           chmod +x ./gradlew
           ./gradlew clean classes --rerun-tasks --no-build-cache --no-daemon --stacktrace \
-            -PpowerAdvantageDeobfJar=${{ steps.poweradvantage.outputs.jar }}
-
+            -PpowerAdvantageDeobfJar=${{ steps.dependencies.outputs.power }} \
+            -Ppoweradvantage_source_ref=${{ steps.dependencies.outputs.power_ref }} \
+            -PbaseMetalsDeobfJar=${{ steps.dependencies.outputs.basemetals }} \
+            -PoreSpawnDeobfJar=${{ steps.dependencies.outputs.orespawn }}
       - name: Analyze
         uses: github/codeql-action/analyze@db488ddef3bf6cb639b32c2e9a7c0a7ea8271d28 # v4

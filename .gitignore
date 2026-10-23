@@ -21,6 +21,9 @@
 /run/
 /run-data/
 /run.*
+/$run/
+/eula.txt
+/server.properties
 /*.log
 /classes/
 /logs/
@@ -62,6 +65,25 @@
 /replay_pid*.log
 
 /secret.json
+# Nested local tooling and generated output
+AGENTS.md
+AGENT.md
+CLAUDE.md
+GEMINI.md
+ARCHITECT.md
+agent-notes/
+.codex/
+.agent/
+.agents/
+.claude/
+.gemini/
+.cursor/
+agent-*.md
+codex-*.md
+*.log
+*.class
+__pycache__/
+*.pyc
 /.DS_Store
 /README.txt
 /forge-*-changelog.txt

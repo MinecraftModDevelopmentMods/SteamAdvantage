@@ -1,0 +1,43 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " Y ",
+    "gXg",
+    "pmp"
+  ],
+  "key": {
+    "X": {
+      "item": "minecraft:furnace"
+    },
+    "Y": {
+      "item": "minecraft:bucket"
+    },
+    "g": {
+      "tag": "forge:governors"
+    },
+    "p": {
+      "tag": "forge:plates/iron"
+    },
+    "m": {
+      "tag": "forge:frames/steel"
+    }
+  },
+  "result": {
+    "item": "steamadvantage:steam_boiler_oil"
+  },
+  "group": "steamadvantage:steam_boiler_oil",
+  "conditions": [
+    {
+      "type": "poweradvantage:tag_not_empty",
+      "tag": "forge:frames/steel"
+    },
+    {
+      "type": "poweradvantage:tag_not_empty",
+      "tag": "forge:governors"
+    },
+    {
+      "type": "poweradvantage:tag_not_empty",
+      "tag": "forge:plates/iron"
+    }
+  ]
+}

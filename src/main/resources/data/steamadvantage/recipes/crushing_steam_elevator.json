@@ -1,0 +1,6 @@
+{
+  "type": "basemetals:crushing",
+  "ingredient": { "item": "steamadvantage:steam_elevator" },
+  "result": { "item": "steamadvantage:steam_governor", "count": 3 },
+  "conditions": [{ "type": "steamadvantage:recipe_mode", "mode": "APOCALYPTIC" }]
+}

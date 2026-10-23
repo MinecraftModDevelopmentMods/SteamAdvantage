@@ -1,6 +1,0 @@
-{
-	"conditions": {
-		"recipe_mode": "com.mcmoddev.steamadvantage.recipe.condition.RecipeModeConditionFactory",
-		"musket_enabled": "com.mcmoddev.steamadvantage.recipe.condition.MusketEnabledConditionFactory"
-	}
-}

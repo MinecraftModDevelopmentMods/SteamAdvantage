@@ -1,0 +1,43 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "gXg",
+    "pmp"
+  ],
+  "key": {
+    "X": {
+      "item": "minecraft:diamond_pickaxe"
+    },
+    "g": {
+      "tag": "forge:governors"
+    },
+    "p": {
+      "tag": "forge:plates/iron"
+    },
+    "m": {
+      "tag": "forge:frames/steel"
+    }
+  },
+  "result": {
+    "item": "steamadvantage:steam_drill"
+  },
+  "conditions": [
+    {
+      "type": "steamadvantage:recipe_mode",
+      "mode": "NORMAL"
+    },
+    {
+      "type": "poweradvantage:tag_not_empty",
+      "tag": "forge:frames/steel"
+    },
+    {
+      "type": "poweradvantage:tag_not_empty",
+      "tag": "forge:governors"
+    },
+    {
+      "type": "poweradvantage:tag_not_empty",
+      "tag": "forge:plates/iron"
+    }
+  ],
+  "group": "steamadvantage:steam_drill"
+}
