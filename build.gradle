@@ -70,6 +70,7 @@ tasks.withType(Javadoc).configureEach {
 }
 
 tasks.withType(AbstractArchiveTask).configureEach {
+    includeEmptyDirs = false
     preserveFileTimestamps = false
     reproducibleFileOrder = true
 }
@@ -379,7 +380,7 @@ tasks.register('verifyReleaseConfiguration') {
                 || !mainSource.contains('VERSION = "2.2.5.113021"')) {
             throw new GradleException('SteamAdvantage source identity changed')
         }
-        String metadata = file('src/main/resources/META-INF/mods.toml').getText('UTF-8')
+        String metadata = file('src/main/resources/META-INF/mods.toml').getText('UTF-8').replace('\r\n', '\n')
         ['modId="steamadvantage"', 'modId="poweradvantage"', 'modId="basemetals"',
          'versionRange="[2.4.4.113021,3.0.0)"'].each { marker ->
             if (!metadata.contains(marker)) {

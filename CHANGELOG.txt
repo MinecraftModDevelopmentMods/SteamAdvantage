@@ -1,5 +1,6 @@
 Steam Advantage 2.2.5.113021
 
+- Keep development archives identical in existing workspaces and fresh CI checkouts.
 - Separate different steam equipment into distinct recipe-book cells while keeping same-output alternatives together.
 - Restore legacy steam-parts chest loot through Power Advantage's native fallback when Additional Loot Tables is absent.
 - Recheck all steam equipment acquisition and discovery paths in every recipe mode, including the electric boiler's wire ingredient.

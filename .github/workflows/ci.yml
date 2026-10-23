@@ -40,7 +40,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: MinecraftModDevelopmentMods/PowerAdvantage
-          ref: c3de64731919d78e215dfc0754aa7f7e0e9a8cca
+          ref: 6a845ad68eb1e34dcdd793dceb9cb528be22cedf
           path: .ci-dependencies/PowerAdvantage
       - name: Install Java 8 toolchain
         uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
