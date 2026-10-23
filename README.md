@@ -2,6 +2,12 @@
 
 Steam Advantage adds steam-powered machines and infrastructure to Power Advantage for Minecraft 1.12.2.
 
+## Drill Reload Fix
+
+Version `2.2.2.112021` keeps unfinished drill work when a chunk or world reloads.
+Existing inventories, energy, orientation and saved-world names are unchanged.
+The regression tests cover resumed progress and full server restarts.
+
 ## Building Minecraft 1.12.2
 
 The `master-1.12.2` build uses ForgeGradle 7.0.34 and Gradle 9.6.1. Run Gradle with Java 17; Gradle resolves the Java 8 toolchain used for compilation.

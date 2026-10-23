@@ -1,3 +1,10 @@
+Steam Advantage 2.2.2.112021
+
+- Retain unfinished drill progress when rebuilding the mining target after a world or chunk reload.
+- Clear stale deferred target data when loading an untargeted tile; clamp restored progress to current target hardness.
+- Refresh the drill's redstone state before its first resumed tick so saved work is not discarded by an uninitialized control cache.
+- Preserve registry identities, saved target coordinates, inventories, energy and the existing progress NBT key.
+
 Steam Advantage 2.2.1.112021
 
 - Move the Minecraft 1.12.2 build to ForgeGradle 7 and Gradle 9.6.1.
