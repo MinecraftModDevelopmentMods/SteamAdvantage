@@ -59,7 +59,7 @@ public class SteamDrillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	public void tickUpdate(boolean isServerWorld) {
 		if(isServerWorld){
 			if(deferred){
-				targetBlock(targetBlockCoord);
+				restoreTargetBlock();
 			}
 			EnumFacing face = this.getFacing();
 			if(oldDir == null){
@@ -226,7 +226,7 @@ public class SteamDrillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	private int oldProgress = 0;
 	@Override public void powerUpdate(){
 		if(deferred){
-			targetBlock(targetBlockCoord);
+			restoreTargetBlock();
 		}
 		super.powerUpdate();
 		boolean flagSync = progress != oldProgress || oldEnergy != getEnergy(Power.steam_power);
@@ -334,12 +334,21 @@ public class SteamDrillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 		deferred = false;
 	}
 	
+	private void restoreTargetBlock(){
+		int savedProgress = progress;
+		// Rebuild transient drops and hardness without discarding saved work.
+		targetBlock(targetBlockCoord);
+		progress = Math.max(0, Math.min(savedProgress, progressGoal));
+		redstone = hasRedstoneSignal();
+	}
+
 	private void deferredTargetBlock (BlockPos n){
 		targetBlockCoord = n;
 		deferred = true;
 	}
 	
 	private void untargetBlock(){
+		deferred = false;
 		progress = 0;
 		progressGoal = 0;
 		targetBlockCoord = null;
@@ -453,6 +462,7 @@ public class SteamDrillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	@Override
 	public void readFromNBT(NBTTagCompound tagRoot){
 		super.readFromNBT(tagRoot);
+		untargetBlock();
 		if(tagRoot.hasKey("Facing")){
 			int facingIndex = tagRoot.getByte("Facing");
 			if(facingIndex >= 0 && facingIndex < EnumFacing.values().length){
@@ -470,7 +480,8 @@ public class SteamDrillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 			if(powerAdvantageWorld() == null){
 				this.deferredTargetBlock(new BlockPos(x,y,z));
 			} else {
-				this.targetBlock(new BlockPos(x,y,z));
+				this.deferredTargetBlock(new BlockPos(x,y,z));
+				this.restoreTargetBlock();
 			}
 		}
 	}
