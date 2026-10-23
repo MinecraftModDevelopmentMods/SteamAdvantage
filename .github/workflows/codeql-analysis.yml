@@ -27,6 +27,9 @@ jobs:
           repository: MinecraftModDevelopmentMods/OreSpawn
           ref: 6a7c2bb07b9a7771128812fcc07d185f7d9df58b
           path: .ci-dependencies/OreSpawn
+      - name: Use canonical LF dependency inputs
+        # Base Metals predates archive text normalization; its LF artifact is separately pinned.
+        run: git config --global core.autocrlf false
       - name: Check out pinned Base Metals
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -37,7 +40,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: MinecraftModDevelopmentMods/PowerAdvantage
-          ref: 49b2fc37371a4d4ed330cdffc79233e408dbf851
+          ref: c3de64731919d78e215dfc0754aa7f7e0e9a8cca
           path: .ci-dependencies/PowerAdvantage
       - name: Install Java 8 toolchain
         uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5

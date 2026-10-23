@@ -420,7 +420,8 @@ tasks.register('verifyReleaseDependencies') {
         }
         String actualBaseMetalsHash = MessageDigest.getInstance('SHA-256')
                 .digest(baseMetalsDeobfJar.bytes).encodeHex().toString().toUpperCase()
-        if (actualBaseMetalsHash != project.basemetals_deobf_sha256) {
+        if (!(actualBaseMetalsHash in [project.basemetals_deobf_sha256,
+                                      project.basemetals_deobf_lf_sha256])) {
             throw new GradleException("Base Metals SHA-256 is ${actualBaseMetalsHash}, expected "
                     + project.basemetals_deobf_sha256)
         }
