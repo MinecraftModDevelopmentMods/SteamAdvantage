@@ -1,3 +1,10 @@
+Steam Advantage 2.2.5.110021
+
+- Retain unfinished drill progress when rebuilding the mining target after a world or chunk reload.
+- Clear stale deferred target data when loading an untargeted tile; clamp restored progress to current target hardness.
+- Refresh the drill's redstone state before its first resumed tick so saved work is not discarded by an uninitialized control cache.
+- Preserve registry identities, saved target coordinates, inventories, energy and the existing progress NBT key.
+
 Steam Advantage 2.2.4.110021
 
 - Move the implementation namespace to zone.moddev.mc.steamadvantage while preserving runtime identities.

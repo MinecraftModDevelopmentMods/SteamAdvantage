@@ -8,6 +8,12 @@ tile-entity, asset, configuration, and saved-world identities are unchanged.
 
 The cross-mod [Advantage Works 1.10.2 Handbook](https://github.com/MinecraftModDevelopmentMods/PowerAdvantage/blob/master-1.10.2/docs/1.10/README.md) includes the Steam Engineer's Handbook, rated figures, commissioning layouts, and persistence tests. The [MMD material and fluid compatibility specification](https://github.com/MinecraftModDevelopmentMods/PowerAdvantage/blob/master-1.10.2/docs/1.10/mmd-material-fluid-compatibility.md) defines crude-oil aliases and OreSpawn ownership.
 
+## Drill Reload Fix
+
+Version `2.2.5.110021` keeps unfinished drill work when a chunk or world reloads.
+Existing inventories, energy, orientation and saved-world names are unchanged.
+The regression tests cover resumed progress and full server restarts.
+
 ## Building Minecraft 1.10.2
 
 The `master-1.10.2` build uses ForgeGradle 7.0.34 and Gradle 9.6.1. Run Gradle with Java 17; Gradle resolves the Java 8 toolchain used for compilation.

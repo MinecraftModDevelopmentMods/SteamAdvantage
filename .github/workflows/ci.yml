@@ -108,9 +108,9 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           path: |
-            build/libs/SteamAdvantage-2.2.4.110021.jar
-            build/libs/SteamAdvantage-2.2.4.110021-sources.jar
-            build/libs/SteamAdvantage-2.2.4.110021-javadoc.jar
+            build/libs/SteamAdvantage-2.2.5.110021.jar
+            build/libs/SteamAdvantage-2.2.5.110021-sources.jar
+            build/libs/SteamAdvantage-2.2.5.110021-javadoc.jar
             build/release/SHA256SUMS
             CHANGELOG.txt
 
