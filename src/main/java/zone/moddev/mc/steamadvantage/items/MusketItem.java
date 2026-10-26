@@ -32,7 +32,6 @@ import net.minecraft.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.play.server.SEntityVelocityPacket;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.particles.IParticleData;
 import net.minecraft.util.ResourceLocation;
@@ -113,18 +112,18 @@ public class MusketItem extends net.minecraft.item.Item{
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity playerEntity, Hand hand){
 		ItemStack srcItemStack = playerEntity.getHeldItem(hand);
-		if(hand != Hand.MAIN_HAND) return ActionResult.newResult(ActionResultType.PASS,srcItemStack);
-		if(!hasAmmo(playerEntity, srcItemStack)) return ActionResult.newResult(ActionResultType.FAIL,srcItemStack);
+		if(hand != Hand.MAIN_HAND) return ActionResult.resultPass(srcItemStack);
+		if(!hasAmmo(playerEntity, srcItemStack)) return ActionResult.resultFail(srcItemStack);
 		if(isNotLoaded(srcItemStack) && EnchantmentHelper.getEnchantmentLevel(Enchantments.rapid_reload, srcItemStack) > 0){
 			// instant reload
 			decrementAmmo(playerEntity,srcItemStack);
 			startLoad(srcItemStack);
 			playSound(SoundEvents.BLOCK_LEVER_CLICK,world,playerEntity);
 			finishLoad(srcItemStack);
-			return ActionResult.newResult(ActionResultType.SUCCESS,srcItemStack);
+			return ActionResult.resultSuccess(srcItemStack);
 		}
 		playerEntity.setActiveHand(hand);
-		return ActionResult.newResult(ActionResultType.SUCCESS,srcItemStack);
+		return ActionResult.resultSuccess(srcItemStack);
 	}
 	
 	@Override
@@ -167,15 +166,15 @@ public class MusketItem extends net.minecraft.item.Item{
 		}
 		Vec3d lookVector = playerEntity.getLookVec();
 		spawnParticle(ParticleTypes.EXPLOSION_EMITTER, world,
-				playerEntity.posX+lookVector.x, playerEntity.posY+playerEntity.getEyeHeight()+lookVector.y, playerEntity.posZ + lookVector.z);
+				playerEntity.getPosX()+lookVector.x, playerEntity.getPosY()+playerEntity.getEyeHeight()+lookVector.y, playerEntity.getPosZ() + lookVector.z);
 		if(world.isRemote){
 			playerEntity.rotationPitch -= 15;
 			return;
 		}
 		playSound(SoundEvents.ITEM_FLINTANDSTEEL_USE,world,playerEntity);
-		playBigSoundAtPosition(playerEntity.posX,playerEntity.posY,playerEntity.posZ, SoundEvents.ENTITY_FIREWORK_ROCKET_BLAST,SoundCategory.PLAYERS,2F,0.5F,world);
+		playBigSoundAtPosition(playerEntity.getPosX(),playerEntity.getPosY(),playerEntity.getPosZ(), SoundEvents.ENTITY_FIREWORK_ROCKET_BLAST,SoundCategory.PLAYERS,2F,0.5F,world);
 		
-		Vec3d start = new Vec3d(playerEntity.posX, playerEntity.posY+playerEntity.getEyeHeight(),playerEntity.posZ);
+		Vec3d start = new Vec3d(playerEntity.getPosX(), playerEntity.getPosY()+playerEntity.getEyeHeight(),playerEntity.getPosZ());
 		start.add(MAX_RANGE * lookVector.x, MAX_RANGE * lookVector.y, MAX_RANGE * lookVector.z);
 		RayTraceResult rayTrace = rayTraceBlocksAndEntities(world,MAX_RANGE,playerEntity);
 		if(rayTrace == null){
@@ -188,11 +187,11 @@ public class MusketItem extends net.minecraft.item.Item{
 			e.attackEntityFrom(Power.musket_damage, getShotDamage());
 			if(EnchantmentHelper.getEnchantmentLevel(Enchantments.high_explosive, srcItemStack) > 0){
 				int lvl = EnchantmentHelper.getEnchantmentLevel(Enchantments.high_explosive, srcItemStack);
-				world.createExplosion(playerEntity, e.posX, e.posY+0.5, e.posZ, 
+				world.createExplosion(playerEntity, e.getPosX(), e.getPosY()+0.5, e.getPosZ(),
 						explodeFactor * lvl, 
 						Explosion.Mode.BREAK);
-				AxisAlignedBB fireArea = new AxisAlignedBB(e.posX-lvl, e.posY-lvl, e.posZ-lvl,
-						e.posX+lvl, e.posY+lvl, e.posZ+lvl);
+				AxisAlignedBB fireArea = new AxisAlignedBB(e.getPosX()-lvl, e.getPosY()-lvl, e.getPosZ()-lvl,
+						e.getPosX()+lvl, e.getPosY()+lvl, e.getPosZ()+lvl);
 				List<LivingEntity> collateralDamage = world.getEntitiesWithinAABB(LivingEntity.class, fireArea);
 				for(LivingEntity victim : collateralDamage){
 					victim.setFire(lvl);
@@ -274,7 +273,7 @@ public class MusketItem extends net.minecraft.item.Item{
 	protected void playSound(SoundEvent sound, World world, Entity e){
 		if (!world.isRemote)
 		{
-			playSoundAtPosition(e.posX, e.posY, e.posZ, sound,SoundCategory.PLAYERS,1F,1F,world);
+			playSoundAtPosition(e.getPosX(), e.getPosY(), e.getPosZ(), sound,SoundCategory.PLAYERS,1F,1F,world);
 		}
 	}
 	
@@ -368,7 +367,7 @@ public class MusketItem extends net.minecraft.item.Item{
 	
 	public static RayTraceResult rayTraceBlocksAndEntities(World w, double maxRange, LivingEntity source){
 		double rangeSqr = maxRange * maxRange;
-		Vec3d rayOrigin = new Vec3d(source.posX, source.posY + source.getEyeHeight(), source.posZ);
+		Vec3d rayOrigin = new Vec3d(source.getPosX(), source.getPosY() + source.getEyeHeight(), source.getPosZ());
 		Vec3d rayDirection = source.getLookVec();
 		BlockPos srcPos = source.getPosition();
 		AxisAlignedBB aoi = new AxisAlignedBB(srcPos.getX() - maxRange, srcPos.getY() - maxRange, srcPos.getZ() - maxRange,
@@ -377,7 +376,7 @@ public class MusketItem extends net.minecraft.item.Item{
 		double closestDistSqr = Double.MAX_VALUE;
 		Entity closestEntity = null;
 		for(Entity e : entities){
-			double distSqr = e.getDistanceSq(source.posX, source.posY, source.posZ);
+			double distSqr = e.getDistanceSq(source.getPosX(), source.getPosY(), source.getPosZ());
 			if(distSqr < rangeSqr){
 				// e is within range
 				AxisAlignedBB box = e.getBoundingBox();
@@ -395,7 +394,7 @@ public class MusketItem extends net.minecraft.item.Item{
 			return w.rayTraceBlocks(new RayTraceContext(rayOrigin, rayOrigin.add(mul(rayDirection, maxRange)),
 					RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.SOURCE_ONLY, source));
 		} else {
-			Vec3d pos = new Vec3d(closestEntity.posX, closestEntity.posY+closestEntity.getEyeHeight(), closestEntity.posZ);
+			Vec3d pos = new Vec3d(closestEntity.getPosX(), closestEntity.getPosY()+closestEntity.getEyeHeight(), closestEntity.getPosZ());
 			RayTraceResult entityCollision = new EntityRayTraceResult(closestEntity, pos);
 			return entityCollision;
 		}

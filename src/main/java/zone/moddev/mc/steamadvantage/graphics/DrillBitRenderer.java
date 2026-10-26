@@ -1,121 +1,87 @@
 package zone.moddev.mc.steamadvantage.graphics;
 
-import zone.moddev.mc.steamadvantage.SteamAdvantage;
-import zone.moddev.mc.steamadvantage.blocks.DrillBitTileEntity;
-import net.minecraft.client.Minecraft;
-import com.mojang.blaze3d.platform.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.BufferBuilder;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import zone.moddev.mc.steamadvantage.SteamAdvantage;
+import zone.moddev.mc.steamadvantage.blocks.DrillBitTileEntity;
 
-@OnlyIn(Dist.CLIENT) // This is needed for classes that extend client-only classes
-public class DrillBitRenderer extends TileEntityRenderer<DrillBitTileEntity>{
+@OnlyIn(Dist.CLIENT)
+public class DrillBitRenderer extends TileEntityRenderer<DrillBitTileEntity> {
+    private static final ResourceLocation TEXTURE =
+            new ResourceLocation(SteamAdvantage.MODID, "textures/entity/drill_bit.png");
 
+    public DrillBitRenderer(TileEntityRendererDispatcher dispatcher) {
+        super(dispatcher);
+    }
 
-	private final ResourceLocation texture = new ResourceLocation(SteamAdvantage.MODID+":textures/entity/drill_bit.png");
+    @Override
+    public void render(DrillBitTileEntity tile, float partialTick, MatrixStack matrices,
+            IRenderTypeBuffer buffers, int light, int overlay) {
+        renderGeometry(tile.getDirection(), tile.rotation + DrillBitTileEntity.ROTATION_PER_TICK * partialTick,
+                matrices, buffers.getBuffer(RenderType.getEntityTranslucent(TEXTURE)), light, overlay);
+    }
 
-	public DrillBitRenderer() {
-	}
+    static void renderGeometry(Direction.Axis axis, float rotation, MatrixStack matrices,
+            IVertexBuilder vertices, int light, int overlay) {
+        matrices.push();
+        try {
+            matrices.translate(0.5D, 0.5D, 0.5D);
+            if (axis != Direction.Axis.Y) {
+                matrices.rotate(Vector3f.XP.rotationDegrees(90.0F));
+                if (axis != Direction.Axis.Z) matrices.rotate(Vector3f.ZP.rotationDegrees(90.0F));
+            }
+            matrices.rotate(Vector3f.YP.rotationDegrees(rotation));
+            MatrixStack.Entry transform = matrices.getLast();
+            final float radius = 0.25F;
+            // Retain the original six quads and UV layout; native buffers supply lighting and overlay.
+            vertex(transform, vertices, radius, 0.5F, -radius, 0, 0, 0, 0, -1, light, overlay);
+            vertex(transform, vertices, radius, -0.5F, -radius, 0, 1, 0, 0, -1, light, overlay);
+            vertex(transform, vertices, -radius, -0.5F, -radius, 0.5F, 1, 0, 0, -1, light, overlay);
+            vertex(transform, vertices, -radius, 0.5F, -radius, 0.5F, 0, 0, 0, -1, light, overlay);
 
+            vertex(transform, vertices, -radius, 0.5F, radius, 0, 0, 0, 0, 1, light, overlay);
+            vertex(transform, vertices, -radius, -0.5F, radius, 0, 1, 0, 0, 1, light, overlay);
+            vertex(transform, vertices, radius, -0.5F, radius, 0.5F, 1, 0, 0, 1, light, overlay);
+            vertex(transform, vertices, radius, 0.5F, radius, 0.5F, 0, 0, 0, 1, light, overlay);
 
-	@Override
-	public void render(final DrillBitTileEntity te, final double x, final double y, final double z, final float partialTick, final int destroyStage) {
-		GlStateManager.pushMatrix();
-		try {
-			GlStateManager.translated(x, y, z);
-			render(te,te.getWorld(),te.getPos(),partialTick);
-		} finally {
-			GlStateManager.enableCull();
-			GlStateManager.disableBlend();
-			GlStateManager.shadeModel(7424);
-			RenderHelper.enableStandardItemLighting();
-			GlStateManager.popMatrix();
-		}
-	}
+            vertex(transform, vertices, -radius, 0.5F, -radius, 0, 0, -1, 0, 0, light, overlay);
+            vertex(transform, vertices, -radius, -0.5F, -radius, 0, 1, -1, 0, 0, light, overlay);
+            vertex(transform, vertices, -radius, -0.5F, radius, 0.5F, 1, -1, 0, 0, light, overlay);
+            vertex(transform, vertices, -radius, 0.5F, radius, 0.5F, 0, -1, 0, 0, light, overlay);
 
-	private void render(DrillBitTileEntity e, World world, BlockPos pos, float partialTick){
-		final Tessellator instance = Tessellator.getInstance();
-		final BufferBuilder worldRenderer = instance.getBuffer();
+            vertex(transform, vertices, radius, 0.5F, radius, 0, 0, 1, 0, 0, light, overlay);
+            vertex(transform, vertices, radius, -0.5F, radius, 0, 1, 1, 0, 0, light, overlay);
+            vertex(transform, vertices, radius, -0.5F, -radius, 0.5F, 1, 1, 0, 0, light, overlay);
+            vertex(transform, vertices, radius, 0.5F, -radius, 0.5F, 0, 1, 0, 0, light, overlay);
 
-		this.bindTexture(texture);
+            vertex(transform, vertices, -radius, 0.5F, -radius, 0.5F, 0, 0, 1, 0, light, overlay);
+            vertex(transform, vertices, -radius, 0.5F, radius, 0.5F, 0.5F, 0, 1, 0, light, overlay);
+            vertex(transform, vertices, radius, 0.5F, radius, 1, 0.5F, 0, 1, 0, light, overlay);
+            vertex(transform, vertices, radius, 0.5F, -radius, 1, 0, 0, 1, 0, light, overlay);
 
-		//This will make your block brightness dependent from surroundings lighting.
-        RenderHelper.disableStandardItemLighting();
-        GlStateManager.blendFunc(770, 771);
-        GlStateManager.enableBlend();
-        GlStateManager.disableCull();
-
-        if (Minecraft.isAmbientOcclusionEnabled())
-        {
-            GlStateManager.shadeModel(7425);
+            vertex(transform, vertices, -radius, -0.5F, radius, 0.5F, 0, 0, -1, 0, light, overlay);
+            vertex(transform, vertices, -radius, -0.5F, -radius, 0.5F, 0.5F, 0, -1, 0, light, overlay);
+            vertex(transform, vertices, radius, -0.5F, -radius, 1, 0.5F, 0, -1, 0, light, overlay);
+            vertex(transform, vertices, radius, -0.5F, radius, 1, 0, 0, -1, 0, light, overlay);
+        } finally {
+            matrices.pop();
         }
-        else
-        {
-            GlStateManager.shadeModel(7424);
-        }
+    }
 
-		final float sideU0 = 0;
-		final float sideU1 = 0.5f;
-		final float sideV0 = 0;
-		final float sideV1 = 1f;
-		final float endU0 = 0.5f;
-		final float endU1 = 1;
-		final float endV0 = 0;
-		final float endV1 = 0.5f;
-		final float radius = 0.25f;
-
-		GlStateManager.translatef(0.5f, 0.5f, 0.5f);
-		if(e.getDirection() != Direction.Axis.Y){
-			GlStateManager.rotatef(90, 1.0f, 0.0f, 0.0f);
-			if(e.getDirection() != Direction.Axis.Z){
-				GlStateManager.rotatef(90, 0.0f, 0.0f, 1.0f);
-			}
-		}
-		GlStateManager.rotatef(e.rotation + DrillBitTileEntity.ROTATION_PER_TICK * partialTick, 0.0f, 1.0f, 0.0f);
-
-		worldRenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
-		worldRenderer.pos( radius, 0.5f, -radius).tex( sideU0, sideV0).endVertex();
-		worldRenderer.pos( radius,-0.5f, -radius).tex( sideU0, sideV1).endVertex();
-		worldRenderer.pos(-radius,-0.5f, -radius).tex( sideU1, sideV1).endVertex();
-		worldRenderer.pos(-radius, 0.5f, -radius).tex( sideU1, sideV0).endVertex();
-
-		worldRenderer.pos(-radius, 0.5f,  radius).tex( sideU0, sideV0).endVertex();
-		worldRenderer.pos(-radius,-0.5f,  radius).tex( sideU0, sideV1).endVertex();
-		worldRenderer.pos( radius,-0.5f,  radius).tex( sideU1, sideV1).endVertex();
-		worldRenderer.pos( radius, 0.5f,  radius).tex( sideU1, sideV0).endVertex();
-
-		worldRenderer.pos(-radius, 0.5f, -radius).tex( sideU0, sideV0).endVertex();
-		worldRenderer.pos(-radius,-0.5f, -radius).tex( sideU0, sideV1).endVertex();
-		worldRenderer.pos(-radius,-0.5f,  radius).tex( sideU1, sideV1).endVertex();
-		worldRenderer.pos(-radius, 0.5f,  radius).tex( sideU1, sideV0).endVertex();
-
-		worldRenderer.pos( radius, 0.5f,  radius).tex( sideU0, sideV0).endVertex();
-		worldRenderer.pos( radius,-0.5f,  radius).tex( sideU0, sideV1).endVertex();
-		worldRenderer.pos( radius,-0.5f, -radius).tex( sideU1, sideV1).endVertex();
-		worldRenderer.pos( radius, 0.5f, -radius).tex( sideU1, sideV0).endVertex();
-
-		worldRenderer.pos(-radius, 0.5f, -radius).tex( endU0, endV0).endVertex();
-		worldRenderer.pos(-radius, 0.5f,  radius).tex( endU0, endV1).endVertex();
-		worldRenderer.pos( radius, 0.5f,  radius).tex( endU1, endV1).endVertex();
-		worldRenderer.pos( radius, 0.5f, -radius).tex( endU1, endV0).endVertex();
-
-		worldRenderer.pos(-radius,-0.5f,  radius).tex( endU0, endV0).endVertex();
-		worldRenderer.pos(-radius,-0.5f, -radius).tex( endU0, endV1).endVertex();
-		worldRenderer.pos( radius,-0.5f, -radius).tex( endU1, endV1).endVertex();
-		worldRenderer.pos( radius,-0.5f,  radius).tex( endU1, endV0).endVertex();
-
-		instance.draw();
-        RenderHelper.enableStandardItemLighting();
-
-	}
-
-
+    private static void vertex(MatrixStack.Entry transform, IVertexBuilder vertices,
+            float x, float y, float z, float u, float v,
+            float normalX, float normalY, float normalZ, int light, int overlay) {
+        vertices.pos(transform.getMatrix(), x, y, z).color(255, 255, 255, 255).tex(u, v)
+                .overlay(overlay).lightmap(light)
+                .normal(transform.getNormal(), normalX, normalY, normalZ).endVertex();
+    }
 }

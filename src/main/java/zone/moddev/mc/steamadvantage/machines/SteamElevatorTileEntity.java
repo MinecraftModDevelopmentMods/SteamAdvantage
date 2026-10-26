@@ -79,7 +79,7 @@ public class SteamElevatorTileEntity extends cyano.poweradvantage.api.simple.Til
 						getPos().getX()+1, topPos.getY(), getPos().getZ()+1));
 
 		for(Entity e : passengers){
-			e.setPositionAndUpdate(e.posX,topPos.getY()+smallAmount, e.posZ);
+			e.setPositionAndUpdate(e.getPosX(),topPos.getY()+smallAmount, e.getPosZ());
 			e.fallDistance = 0;
 		}
 		return true;
@@ -106,7 +106,7 @@ public class SteamElevatorTileEntity extends cyano.poweradvantage.api.simple.Til
 				new AxisAlignedBB(p.getX(),p.getY(),p.getZ(), p.getX()+1, p.getY()+2, p.getZ()+1));
 		
 		for(Entity e : passengers){
-			e.setPositionAndUpdate(e.posX, destination.getY()+smallAmount,e.posZ);
+			e.setPositionAndUpdate(e.getPosX(), destination.getY()+smallAmount,e.getPosZ());
 			e.fallDistance = 0;
 		}
 		return true;
