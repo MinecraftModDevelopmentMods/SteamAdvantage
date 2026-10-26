@@ -6,7 +6,7 @@ import zone.moddev.mc.poweradvantage.conduitnetwork.ConduitRegistry;
 import zone.moddev.mc.poweradvantage.init.Fluids;
 import zone.moddev.mc.steamadvantage.init.Power;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
@@ -23,12 +23,12 @@ public class GeothermalBoilerBlock extends cyano.poweradvantage.api.simple.Block
 	}
 
 	@Override
-	public boolean hasComparatorInputOverride(IBlockState bs) {
+	public boolean hasComparatorInputOverride(BlockState bs) {
 		return true;
 	}
 
 	@Override
-	public int getComparatorInputOverride(IBlockState bs, World world, BlockPos coord) {
+	public int getComparatorInputOverride(BlockState bs, World world, BlockPos coord) {
 		if(world.getTileEntity(coord) instanceof GeothermalBoilerTileEntity){
 			return ((GeothermalBoilerTileEntity)world.getTileEntity(coord)).getComparatorOutput();
 		}

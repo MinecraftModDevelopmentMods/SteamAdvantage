@@ -30,12 +30,12 @@ import zone.moddev.mc.steamadvantage.init.Villages;
 import zone.moddev.mc.steamadvantage.migration.SteamLegacyMigrations;
 import zone.moddev.mc.steamadvantage.recipe.RecipeConditions;
 
-/** Forge 1.13 entry point for Steam Advantage. */
+/** Forge 1.14 entry point for Steam Advantage. */
 @Mod(SteamAdvantage.MODID)
 public final class SteamAdvantage {
     public static final String MODID = "steamadvantage";
     public static final String NAME = "Steam Advantage";
-    public static final String VERSION = "2.2.5.113021";
+    public static final String VERSION = "2.2.6.114041";
     public static final Logger LOGGER = LogManager.getLogger(MODID);
 
     public static float MUSKET_DAMAGE = 20.0F;

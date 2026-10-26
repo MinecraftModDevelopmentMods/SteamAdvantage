@@ -2,16 +2,16 @@ package zone.moddev.mc.steamadvantage.machines;
 
 import cyano.poweradvantage.api.ConduitType;
 import zone.moddev.mc.steamadvantage.init.Power;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.item.ItemStack;
-import net.minecraft.inventory.InventoryBasic;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraftforge.common.crafting.VanillaRecipeTypes;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntityFurnace;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.item.crafting.IRecipeType;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.AbstractFurnaceTileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -252,17 +252,17 @@ public class BlastFurnaceTileEntity extends cyano.poweradvantage.api.simple.Tile
 	
 
 	@Override
-	public NBTTagCompound write(NBTTagCompound tagRoot){
+	public CompoundNBT write(CompoundNBT tagRoot){
 		super.write(tagRoot);
 		prepareDataFieldsForSync();
-		tagRoot.setIntArray("Data", getDataFieldArray());
+		tagRoot.putIntArray("Data", getDataFieldArray());
 		return tagRoot;
 	}
 	
 	@Override
-	public void read(NBTTagCompound tagRoot){
+	public void read(CompoundNBT tagRoot){
 		super.read(tagRoot);
-		if(tagRoot.hasKey("Data")){
+		if(tagRoot.contains("Data")){
 			int[] data = tagRoot.getIntArray("Data");
 			System.arraycopy(data, 0, this.getDataFieldArray(), 0, Math.min(data.length,this.getDataFieldArray().length));
 			onDataFieldUpdate();
@@ -284,17 +284,17 @@ public class BlastFurnaceTileEntity extends cyano.poweradvantage.api.simple.Tile
 	///// Item Handling (for hoppers) /////
 
 	@Override
-	public int[] getSlotsForFace(EnumFacing side) {
+	public int[] getSlotsForFace(Direction side) {
 		return allSlots;
 	}
 	
 	@Override
-	public boolean canExtractItem(final int slot, final ItemStack targetItem, final EnumFacing side) {
+	public boolean canExtractItem(final int slot, final ItemStack targetItem, final Direction side) {
 		return slot >= 4 && slot < this.getInventory().length;
 	}
 
 	@Override
-	public boolean canInsertItem(final int slot, final ItemStack srcItem, final EnumFacing side) {
+	public boolean canInsertItem(final int slot, final ItemStack srcItem, final Direction side) {
 		return this.isItemValidForSlot(slot, srcItem) && slot <= 3;
 	}
 	
@@ -318,10 +318,10 @@ public class BlastFurnaceTileEntity extends cyano.poweradvantage.api.simple.Tile
 
 	private ItemStack getSmeltingResult(ItemStack input) {
 		if (input == null || input.isEmpty() || getWorld() == null) return ItemStack.EMPTY;
-		InventoryBasic inventory = new InventoryBasic(new TextComponentString("steamadvantage.smelting"), 1);
+		Inventory inventory = new Inventory(1);
 		inventory.setInventorySlotContents(0, input);
-		IRecipe recipe = getWorld().getRecipeManager().getRecipe(inventory, getWorld(), VanillaRecipeTypes.SMELTING);
-		return recipe == null ? ItemStack.EMPTY : recipe.getCraftingResult(inventory);
+		return getWorld().getRecipeManager().getRecipe(IRecipeType.SMELTING, inventory, getWorld())
+				.map(recipe -> recipe.getCraftingResult(inventory)).orElse(ItemStack.EMPTY);
 	}
 
 
@@ -336,7 +336,7 @@ public class BlastFurnaceTileEntity extends cyano.poweradvantage.api.simple.Tile
 	}
 
 	@Override
-	public boolean isUsableByPlayer(EntityPlayer player) {
+	public boolean isUsableByPlayer(PlayerEntity player) {
 		return true;
 	}
 }

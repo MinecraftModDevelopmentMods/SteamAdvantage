@@ -2,14 +2,17 @@ package zone.moddev.mc.steamadvantage.blocks;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.IntegerProperty;
 import net.minecraft.state.StateContainer;
-import net.minecraft.util.NonNullList;
+import java.util.Collections;
+import java.util.List;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import zone.moddev.mc.steamadvantage.init.Blocks;
@@ -30,15 +33,15 @@ public class PlatformBlock extends Block {
         setDefaultState(getStateContainer().getBaseState().with(HEIGHT, 1));
     }
 
-    @Override protected void fillStateContainer(StateContainer.Builder<Block, IBlockState> builder) { builder.add(HEIGHT); }
-    @Override public VoxelShape getShape(IBlockState state, IBlockReader world, BlockPos pos) { return SHAPES[state.get(HEIGHT)]; }
-    @Override public VoxelShape getCollisionShape(IBlockState state, IBlockReader world, BlockPos pos) { return SHAPES[state.get(HEIGHT)]; }
-    @Override public boolean isNormalCube(IBlockState state) { return false; }
-    @Override public boolean isSolid(IBlockState state) { return false; }
-    @Override public void getDrops(IBlockState state, NonNullList<ItemStack> drops, World world, BlockPos pos, int fortune) {}
+    @Override protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) { builder.add(HEIGHT); }
+    @Override public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) { return SHAPES[state.get(HEIGHT)]; }
+    @Override public VoxelShape getCollisionShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) { return SHAPES[state.get(HEIGHT)]; }
+    @Override public boolean isNormalCube(BlockState state, IBlockReader world, BlockPos pos) { return false; }
+    @Override public boolean isSolid(BlockState state) { return false; }
+    @Override public List<ItemStack> getDrops(BlockState state, LootContext.Builder context) { return Collections.emptyList(); }
 
     @Override
-    public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block, BlockPos fromPos) {
+    public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean moving) {
         if (!canBlockStay(world, pos)) world.destroyBlock(pos, true);
     }
 

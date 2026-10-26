@@ -1,21 +1,23 @@
 package zone.moddev.mc.steamadvantage.blocks;
 
 import zone.moddev.mc.steamadvantage.init.Blocks;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.block.BlockState;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
+import net.minecraft.util.Direction;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import java.util.ArrayList;
+import java.util.List;
 
-public class DrillBitTileEntity extends TileEntity implements ITickable{
+public class DrillBitTileEntity extends TileEntity implements ITickableTileEntity{
 
 	public final static float ROTATION_PER_TICK = 360f / 20f; // in degrees, 20 ticks per revolution
 	public float rotation = 0;
-	private EnumFacing direction = EnumFacing.DOWN;
+	private Direction direction = Direction.DOWN;
 	
 	public DrillBitTileEntity(){
 		super(zone.moddev.mc.steamadvantage.init.Entities.DRILLBIT);
@@ -23,48 +25,58 @@ public class DrillBitTileEntity extends TileEntity implements ITickable{
 	
 	@Override
 	public void tick(){
-		if(getWorld().isRemote){
+		if(hasWorld() && getWorld().isRemote){
 			rotation = ROTATION_PER_TICK * (getWorld().getGameTime() % 20);
 		}
 	}
-	public void setDirection(EnumFacing dir){
+	public void setDirection(Direction dir){
 		if(dir == null || dir == this.direction) return;
 		this.direction = dir;
 		syncDirection();
 	}
 	
-	public EnumFacing.Axis getDirection(){
+	public Direction.Axis getDirection(){
 		return direction.getAxis();
 	}
 	
-	public static void createDrillBitBlock(World w, BlockPos coord, EnumFacing dir){
+	public static void createDrillBitBlock(World w, BlockPos coord, Direction dir){
 		w.setBlockState(coord, zone.moddev.mc.steamadvantage.init.Blocks.drillbit.getDefaultState());
-		DrillBitTileEntity te = new DrillBitTileEntity();
-		te.direction = dir;
-		w.setTileEntity(coord, te);
+		TileEntity tile = w.getTileEntity(coord);
+		if(tile instanceof DrillBitTileEntity) ((DrillBitTileEntity) tile).setDirection(dir);
 	}
 	
 	/**
 	 * Destroys all drillbits connected to this one
 	 */
 	public void destroyLine(){
-		this.destroy(this.direction);
-		this.destroy(this.direction.getOpposite());
-		getWorld().removeBlock(getPos()); // redundant because this is being called on block destruction
+		destroyLine(true);
+	}
+
+	public void destroyLine(boolean removeOrigin){
+		if(!hasWorld() || getWorld().isRemote) return;
+		List<BlockPos> line = new ArrayList<>();
+		line.add(getPos());
+		collectLine(line, direction);
+		collectLine(line, direction.getOpposite());
+		// Detach all helpers before block replacement callbacks can re-enter this line.
+		for(BlockPos coord : line) getWorld().removeTileEntity(coord);
+		for(BlockPos coord : line) {
+			if(removeOrigin || !coord.equals(getPos())) getWorld().removeBlock(coord, false);
+		}
 	}
 	/**
 	 * destroys upstream drillbit
 	 */
-	private void destroy(EnumFacing f){
+	private void collectLine(List<BlockPos> line, Direction f){
 		BlockPos coord = this.getPos().offset(f);
-		while(getWorld().getBlockState(coord).getBlock() == Blocks.drillbit){
-			getWorld().removeBlock(coord);
+		while(getWorld().isBlockLoaded(coord) && getWorld().getBlockState(coord).getBlock() == Blocks.drillbit){
+			line.add(coord);
 			coord = coord.offset(f);
 		}
 	}
 	
 	@Override
-	public NBTTagCompound write(NBTTagCompound root){
+	public CompoundNBT write(CompoundNBT root){
 		super.write(root);
 		writeDirectionToNBT(root);
 		return root;
@@ -72,49 +84,53 @@ public class DrillBitTileEntity extends TileEntity implements ITickable{
 	
 
 	@Override
-	public void read(NBTTagCompound root){
+	public void read(CompoundNBT root){
 		super.read(root);
 		readDirectionFromNBT(root);
 	}
 
 	@Override
-	public NBTTagCompound getUpdateTag() {
-		return write(new NBTTagCompound());
+	public CompoundNBT getUpdateTag() {
+		return write(new CompoundNBT());
 	}
 
 	/**
 	 * Turns the data field NBT into a network packet
 	 */
 	@Override 
-	public SPacketUpdateTileEntity getUpdatePacket(){
-		NBTTagCompound nbtTag = new NBTTagCompound();
+	public SUpdateTileEntityPacket getUpdatePacket(){
+		CompoundNBT nbtTag = new CompoundNBT();
 		writeDirectionToNBT(nbtTag);
-		return new SPacketUpdateTileEntity(this.getPos(), 0, nbtTag);
+		return new SUpdateTileEntityPacket(this.getPos(), 0, nbtTag);
 	}
 	/**
 	 * Receives the network packet made by <code>getDescriptionPacket()</code>
 	 */
 	@Override
-	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
+	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
 		readDirectionFromNBT(packet.getNbtCompound());
 	}
 
-	private void writeDirectionToNBT(NBTTagCompound root) {
-		root.setByte("dir", (byte)direction.getIndex());
+	private void writeDirectionToNBT(CompoundNBT root) {
+		root.putByte("dir", (byte)direction.getIndex());
 	}
 
-	private void readDirectionFromNBT(NBTTagCompound root) {
-		if(root.hasKey("dir")){
-			this.direction = EnumFacing.byIndex(root.getByte("dir"));
-		} else if(root.hasKey("d")){
-			this.direction = EnumFacing.byIndex(root.getByte("d"));
+	private void readDirectionFromNBT(CompoundNBT root) {
+		if(root.contains("dir")){
+			this.direction = decodeDirection(root.getByte("dir"));
+		} else if(root.contains("d")){
+			this.direction = decodeDirection(root.getByte("d"));
 		}
+	}
+
+	private static Direction decodeDirection(int index) {
+		return index >= 0 && index < Direction.values().length ? Direction.byIndex(index) : Direction.DOWN;
 	}
 
 	private void syncDirection() {
 		if(hasWorld() && !getWorld().isRemote) {
 			markDirty();
-			IBlockState state = getWorld().getBlockState(getPos());
+			BlockState state = getWorld().getBlockState(getPos());
 			getWorld().notifyBlockUpdate(getPos(), state, state, 3);
 		}
 	}

@@ -5,13 +5,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import cyano.poweradvantage.api.migration.LegacyMigrationApi;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 import org.junit.Test;
 
 public class SteamLegacyMigrationsTest {
     @Test public void preservesAllSixDrillFacings() {
-        for (EnumFacing facing : EnumFacing.values()) {
+        for (Direction facing : Direction.values()) {
             assertEquals(facing, SteamLegacyMigrations.legacyDrillFacing(facing.getIndex()));
         }
     }
@@ -23,24 +23,24 @@ public class SteamLegacyMigrationsTest {
     }
 
     @Test public void repairsLegacyPumpAndGeothermalKeysWithoutOverwritingCanonicalState() {
-        NBTTagCompound pump = new NBTTagCompound();
-        pump.setString("id", "steamadvantage.steam_pump");
-        NBTTagCompound oldTank = new NBTTagCompound();
-        oldTank.setInt("Amount", 1250);
-        pump.setTag("TankOut", oldTank);
+        CompoundNBT pump = new CompoundNBT();
+        pump.putString("id", "steamadvantage.steam_pump");
+        CompoundNBT oldTank = new CompoundNBT();
+        oldTank.putInt("Amount", 1250);
+        pump.put("TankOut", oldTank);
         assertTrue(SteamLegacyMigrations.repairPersistenceKeys(pump));
         assertEquals(1250, pump.getCompound("Tank").getInt("Amount"));
 
-        NBTTagCompound boiler = new NBTTagCompound();
-        boiler.setString("id", "steamadvantage:steam_boiler_geothermal");
-        boiler.setFloat("Tempoerature", 412.5F);
+        CompoundNBT boiler = new CompoundNBT();
+        boiler.putString("id", "steamadvantage:steam_boiler_geothermal");
+        boiler.putFloat("Tempoerature", 412.5F);
         assertTrue(SteamLegacyMigrations.repairPersistenceKeys(boiler));
         assertEquals(412.5F, boiler.getFloat("Temperature"), 0.0F);
 
-        NBTTagCompound canonical = new NBTTagCompound();
-        canonical.setString("id", "steamadvantage:steam_boiler_geothermal");
-        canonical.setFloat("Temperature", 500.0F);
-        canonical.setFloat("Tempoerature", 100.0F);
+        CompoundNBT canonical = new CompoundNBT();
+        canonical.putString("id", "steamadvantage:steam_boiler_geothermal");
+        canonical.putFloat("Temperature", 500.0F);
+        canonical.putFloat("Tempoerature", 100.0F);
         assertFalse(SteamLegacyMigrations.repairPersistenceKeys(canonical));
         assertEquals(500.0F, canonical.getFloat("Temperature"), 0.0F);
     }

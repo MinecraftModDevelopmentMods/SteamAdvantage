@@ -9,6 +9,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import cyano.poweradvantage.api.fluid.FluidStack;
 
+@net.minecraftforge.api.distmarker.OnlyIn(net.minecraftforge.api.distmarker.Dist.CLIENT)
 public abstract class GUIHelper {
 
 
@@ -92,7 +93,7 @@ public abstract class GUIHelper {
 		int h = (int)(flameHeight*height);
 		if(h == 0 ) h = 1;
 		if(h > 0){
-			gc.drawTexturedModalRect(x, y+h, flameTexX, flameTexY+h, width, height - h);
+			gc.blit(x, y+h, flameTexX, flameTexY+h, width, height - h);
 		}
 	}
 	
@@ -107,9 +108,9 @@ public abstract class GUIHelper {
 		if(barHeight > 0){
 			FluidTankGUI.drawFluidFilledRectangle(guiContainer,fs,x+xPos, y+yPos+barSlotHeight-h,w, h,z);
 		}
-			guiContainer.mc.getTextureManager().bindTexture(displayImage);
+			net.minecraft.client.Minecraft.getInstance().getTextureManager().bindTexture(displayImage);
 		
-		guiContainer.drawTexturedModalRect(x+xPos-texMarginW, y+yPos-texMarginH, texOverlayX, texOverlayY, texOverlayW, texOverlayH); // x, y, textureOffsetX, textureOffsetY, width, height)
+		guiContainer.blit(x+xPos-texMarginW, y+yPos-texMarginH, texOverlayX, texOverlayY, texOverlayW, texOverlayH); // x, y, textureOffsetX, textureOffsetY, width, height)
 	}
 	
 
@@ -124,7 +125,7 @@ public abstract class GUIHelper {
 		int h = (int)(progress*height);
 		if(h == 0 ) h = 1;
 		if(h > 0){
-			gc.drawTexturedModalRect(x, y, arrowTexX, arrowTexY, width, h);
+			gc.blit(x, y, arrowTexX, arrowTexY, width, h);
 		}
 	}
 }

@@ -1,53 +1,60 @@
 package zone.moddev.mc.steamadvantage.init;
 
-import net.minecraft.entity.passive.EntityVillager;
+import java.util.List;
+import java.util.Random;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.merchant.villager.VillagerProfession;
+import net.minecraft.entity.merchant.villager.VillagerTrades;
 import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.fml.common.registry.VillagerRegistry;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.MerchantOffer;
+import net.minecraftforge.event.village.VillagerTradesEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import zone.moddev.mc.steamadvantage.SteamAdvantage;
 
-public abstract class Villages {
-	// TODO: add machinist villager
-	private static final ResourceLocation[] PROFESSION_LIST = {
-			new ResourceLocation("minecraft:farmer"),
-			new ResourceLocation("minecraft:librarian"),
-			new ResourceLocation("minecraft:priest"),
-			new ResourceLocation("minecraft:smith"),
-			new ResourceLocation("minecraft:butcher")
-	};
+/** Legacy smith careers map to their native 1.14 professions; prices and levels are unchanged. */
+@Mod.EventBusSubscriber(modid = SteamAdvantage.MODID)
+public final class Villages {
+    private Villages() {}
+    public static void init() {}
 
-	private static boolean initDone = false;
-	public static void init(){
-		if(initDone) return;
-		
-		Entities.init();
+    @SubscribeEvent
+    public static void addTrades(VillagerTradesEvent event) {
+        VillagerProfession profession = event.getType();
+        List<VillagerTrades.ITrade> novice = event.getTrades().get(1);
+        if (profession == VillagerProfession.ARMORER || profession == VillagerProfession.TOOLSMITH
+                || profession == VillagerProfession.WEAPONSMITH || profession == VillagerProfession.LIBRARIAN) {
+            novice.add(sell(Items.steam_governor, -4, -1));
+        }
+        if (profession == VillagerProfession.LIBRARIAN) novice.add(sell(Blocks.steam_pipe.asItem(), -8, -4));
+        if (profession == VillagerProfession.WEAPONSMITH || profession == VillagerProfession.TOOLSMITH) {
+            novice.add(sell(Items.blackpowder_cartridge, -7, -5));
+            novice.add(sell(Items.blackpowder_musket, 10, 15));
+        }
+        if (profession == VillagerProfession.CLERIC) {
+            event.getTrades().get(3).add((trader, random) -> {
+                int enchantmentLevel = 5 + random.nextInt(15);
+                ItemStack musket = EnchantmentHelper.addRandomEnchantment(random,
+                        new ItemStack(Items.blackpowder_musket), enchantmentLevel, false);
+                int price = Math.min(randomPrice(random, 15, 25) + enchantmentLevel, 64);
+                return offer(price, musket);
+            });
+        }
+    }
 
-		try {
-			insertTrades(3, 3, 1, new EntityVillager.ListItemForEmeralds(Items.steam_governor, new EntityVillager.PriceInfo(-4,-1)));
-			insertTrades(3, 2, 1, new EntityVillager.ListItemForEmeralds(Items.steam_governor, new EntityVillager.PriceInfo(-4,-1)));
-			insertTrades(3, 1, 1, new EntityVillager.ListItemForEmeralds(Items.steam_governor, new EntityVillager.PriceInfo(-4,-1)));
-			insertTrades(1, 1, 1, new EntityVillager.ListItemForEmeralds(Items.steam_governor, new EntityVillager.PriceInfo(-4,-1)));
-			insertTrades(1, 1, 1, new EntityVillager.ListItemForEmeralds(Item.getItemFromBlock(Blocks.steam_pipe), new EntityVillager.PriceInfo(-8,-4)));
-			insertTrades(3, 2, 1, new EntityVillager.ListItemForEmeralds(Items.blackpowder_cartridge, new EntityVillager.PriceInfo(-7,-5)));
-			insertTrades(3, 2, 1, new EntityVillager.ListItemForEmeralds(Items.blackpowder_musket, new EntityVillager.PriceInfo(10,15)));
-			insertTrades(3, 3, 1, new EntityVillager.ListItemForEmeralds(Items.blackpowder_cartridge, new EntityVillager.PriceInfo(-7,-5)));
-			insertTrades(3, 3, 1, new EntityVillager.ListItemForEmeralds(Items.blackpowder_musket, new EntityVillager.PriceInfo(10,15)));
-			insertTrades(2, 1, 3,
-					new EntityVillager.ListEnchantedItemForEmeralds(Items.blackpowder_musket, new EntityVillager.PriceInfo(15, 25)));
-		} catch (RuntimeException e) {
-			SteamAdvantage.LOGGER.error("Failed to add trades to villagers", e);
-		}
-		
-		initDone = true;
-	}
+    private static VillagerTrades.ITrade sell(Item item, int min, int max) {
+        return (trader, random) -> {
+            int price = randomPrice(random, min, max);
+            return offer(price < 0 ? 1 : price, new ItemStack(item, price < 0 ? -price : 1));
+        };
+    }
 
-	private static void insertTrades(int professionID, int careerID, int tradeLevel, EntityVillager.ITradeList... trades) {
-		VillagerRegistry.VillagerProfession profession = ForgeRegistries.VILLAGER_PROFESSIONS.getValue(PROFESSION_LIST[professionID]);
-		if (profession == null) {
-			throw new IllegalStateException("No villager profession registered for " + PROFESSION_LIST[professionID]);
-		}
-		VillagerRegistry.VillagerCareer career = profession.getCareer(careerID - 1);
-		career.addTrade(tradeLevel, trades);
-	}
+    private static int randomPrice(Random random, int min, int max) {
+        return min + random.nextInt(max - min + 1);
+    }
+
+    private static MerchantOffer offer(int emeralds, ItemStack output) {
+        return new MerchantOffer(new ItemStack(net.minecraft.item.Items.EMERALD, emeralds), output, 7, 1, 0.0F);
+    }
 }

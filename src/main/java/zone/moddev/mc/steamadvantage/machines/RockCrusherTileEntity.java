@@ -1,11 +1,11 @@
 package zone.moddev.mc.steamadvantage.machines;
 
 import cyano.poweradvantage.api.ConduitType;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 import zone.moddev.mc.steamadvantage.compat.BaseMetalsCompat;
 import zone.moddev.mc.steamadvantage.init.Power;
 import net.minecraft.util.SoundCategory;
@@ -101,7 +101,7 @@ public class RockCrusherTileEntity extends cyano.poweradvantage.api.simple.TileE
 	}
 
 	@Override
-	public boolean isUsableByPlayer(EntityPlayer player) {
+	public boolean isUsableByPlayer(PlayerEntity player) {
 		return true;
 	}
 	
@@ -182,16 +182,16 @@ public class RockCrusherTileEntity extends cyano.poweradvantage.api.simple.TileE
 	}
 	
 	@Override
-	public NBTTagCompound write(NBTTagCompound tagRoot){
+	public CompoundNBT write(CompoundNBT tagRoot){
 		super.write(tagRoot);
-		tagRoot.setShort("progress",(short)progress);
+		tagRoot.putShort("progress",(short)progress);
 		return tagRoot;
 	}
 	
 	@Override
-	public void read(NBTTagCompound tagRoot){
+	public void read(CompoundNBT tagRoot){
 		super.read(tagRoot);
-		if(tagRoot.hasKey("progress")){
+		if(tagRoot.contains("progress")){
 			progress = tagRoot.getShort("progress");
 		}
 	}
@@ -206,17 +206,17 @@ public class RockCrusherTileEntity extends cyano.poweradvantage.api.simple.TileE
 ///// Item Handling (for hoppers) /////
 
 	@Override
-	public int[] getSlotsForFace(EnumFacing side) {
+	public int[] getSlotsForFace(Direction side) {
 		return allSlots;
 	}
 	
 	@Override
-	public boolean canExtractItem(final int slot, final ItemStack targetItem, final EnumFacing side) {
+	public boolean canExtractItem(final int slot, final ItemStack targetItem, final Direction side) {
 		return slot > 0 && slot < this.getInventory().length;
 	}
 
 	@Override
-	public boolean canInsertItem(final int slot, final ItemStack srcItem, final EnumFacing side) {
+	public boolean canInsertItem(final int slot, final ItemStack srcItem, final Direction side) {
 		return this.isItemValidForSlot(slot, srcItem) && slot <= 0;
 	}
 	

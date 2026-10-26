@@ -5,9 +5,9 @@ import java.util.Map;
 
 import cyano.poweradvantage.api.GUIBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.item.BlockItem;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -44,7 +44,7 @@ public final class Blocks {
     public static GUIBlock steam_drill;
     public static GUIBlock steam_elevator;
     public static Block steam_elevator_platform;
-    public static IBlockState[] steam_elevator_platforms;
+    public static BlockState[] steam_elevator_platforms;
     public static Block steam_pipe;
     public static Block drillbit;
     public static Block steam_track;
@@ -71,7 +71,7 @@ public final class Blocks {
         steam_drill = (GUIBlock) add(new SteamDrillBlock(), "steam_drill");
         drillbit = add(new DrillBitBlock(), "drillbit");
         steam_elevator_platform = add(new PlatformBlock(), "platform");
-        steam_elevator_platforms = new IBlockState[5];
+        steam_elevator_platforms = new BlockState[5];
         for (int i = 0; i < steam_elevator_platforms.length; i++) {
             steam_elevator_platforms[i] = steam_elevator_platform.getDefaultState().with(PlatformBlock.HEIGHT, i);
         }
@@ -104,7 +104,7 @@ public final class Blocks {
             if (!"pump_pipe_steam".equals(entry.getKey()) && !"drillbit".equals(entry.getKey())) {
                 properties.group(ItemGroups.tab_powerAdvantage);
             }
-            ItemBlock item = new ItemBlock(entry.getValue(), properties);
+            BlockItem item = new BlockItem(entry.getValue(), properties);
             item.setRegistryName(SteamAdvantage.MODID, entry.getKey());
             event.getRegistry().register(item);
         }

@@ -4,10 +4,10 @@ import cyano.poweradvantage.api.ConduitType;
 import zone.moddev.mc.steamadvantage.init.Blocks;
 import zone.moddev.mc.steamadvantage.init.Power;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -99,7 +99,7 @@ public class SteamElevatorTileEntity extends cyano.poweradvantage.api.simple.Til
 		// remove piston
 		BlockPos i = p.down();
 		for(; i.getY() > getPos().getY(); i = i.down()){
-			getWorld().removeBlock(i);
+			getWorld().removeBlock(i, false);
 		}
 		// move people
 		List<Entity> passengers = getWorld().getEntitiesWithinAABB(Entity.class, 
@@ -167,16 +167,16 @@ public class SteamElevatorTileEntity extends cyano.poweradvantage.api.simple.Til
 
 	
 	@Override
-	public NBTTagCompound write(NBTTagCompound tagRoot){
+	public CompoundNBT write(CompoundNBT tagRoot){
 		super.write(tagRoot);
-		tagRoot.setBoolean("up",up);
+		tagRoot.putBoolean("up",up);
 		return tagRoot;
 	}
 	
 	@Override
-	public void read(NBTTagCompound tagRoot){
+	public void read(CompoundNBT tagRoot){
 		super.read(tagRoot);
-		if(tagRoot.hasKey("up")){
+		if(tagRoot.contains("up")){
 			up = tagRoot.getBoolean("up");
 		}
 	}
@@ -200,7 +200,7 @@ public class SteamElevatorTileEntity extends cyano.poweradvantage.api.simple.Til
 	}
 
 	@Override
-	public boolean isUsableByPlayer(EntityPlayer player) {
+	public boolean isUsableByPlayer(PlayerEntity player) {
 		return true;
 	}
 }

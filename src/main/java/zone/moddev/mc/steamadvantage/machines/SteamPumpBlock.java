@@ -7,7 +7,7 @@ import zone.moddev.mc.poweradvantage.init.Fluids;
 import zone.moddev.mc.steamadvantage.init.Blocks;
 import zone.moddev.mc.steamadvantage.init.Power;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
@@ -32,12 +32,12 @@ public class SteamPumpBlock extends cyano.poweradvantage.api.simple.BlockSimpleP
 	}
 
 	@Override
-	public boolean hasComparatorInputOverride(IBlockState bs) {
+	public boolean hasComparatorInputOverride(BlockState bs) {
 		return true;
 	}
 
 	@Override
-	public int getComparatorInputOverride(IBlockState bs, World world, BlockPos coord) {
+	public int getComparatorInputOverride(BlockState bs, World world, BlockPos coord) {
 		if(world.getTileEntity(coord) instanceof SteamPumpTileEntity){
 			return ((SteamPumpTileEntity)world.getTileEntity(coord)).getComparatorOutput();
 		}
@@ -57,7 +57,7 @@ public class SteamPumpBlock extends cyano.poweradvantage.api.simple.BlockSimpleP
 		return !ConduitType.areSameType(Power.steam_power, type);
 	}
 	@Override
-	public void onReplaced(IBlockState state, World w, BlockPos coord, IBlockState newState, boolean isMoving) {
+	public void onReplaced(BlockState state, World w, BlockPos coord, BlockState newState, boolean isMoving) {
 		if (state.getBlock() != newState.getBlock()) destroyPipe(w, coord);
 		super.onReplaced(state, w, coord, newState, isMoving);
 	}
@@ -74,7 +74,7 @@ public class SteamPumpBlock extends cyano.poweradvantage.api.simple.BlockSimpleP
 		// destroy connected drill bits
 		BlockPos c = coord.down();
 		while(c.getY() > 0 && w.getBlockState(c).getBlock() == Blocks.pump_pipe_steam){
-			w.removeBlock(c);
+			w.removeBlock(c, false);
 			c = c.down();
 		}
 	}

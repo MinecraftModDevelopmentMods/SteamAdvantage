@@ -1,7 +1,7 @@
 package zone.moddev.mc.steamadvantage.util;
 
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.network.play.server.SPacketCustomSound;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.network.play.server.SPlaySoundPacket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
@@ -23,11 +23,11 @@ public class SoundHelper {
 	public static void playSoundAtPosition(double x, double y, double z, SoundEvent sound, SoundCategory soundType, float volume, float pitch, World serverWorld){
 		if(serverWorld.isRemote) return;
 		final double range = 16;
-		List<EntityPlayerMP> players = serverWorld.getEntitiesWithinAABB(EntityPlayerMP.class, new AxisAlignedBB(
+		List<ServerPlayerEntity> players = serverWorld.getEntitiesWithinAABB(ServerPlayerEntity.class, new AxisAlignedBB(
 				x - range, y - range, z - range,
 				x + range, y + range, z + range));
-		for(EntityPlayerMP player : players){
-			player.connection.sendPacket(new SPacketCustomSound(sound.getRegistryName(), soundType,
+		for(ServerPlayerEntity player : players){
+			player.connection.sendPacket(new SPlaySoundPacket(sound.getRegistryName(), soundType,
 					new Vec3d(x, y, z), volume, pitch));
 		}
 	}
@@ -35,11 +35,11 @@ public class SoundHelper {
 	public static void playBigSoundAtPosition(double x, double y, double z, SoundEvent sound, SoundCategory soundType, float volume, float pitch, World serverWorld){
 		if(serverWorld.isRemote) return;
 		final double range = 50;
-		List<EntityPlayerMP> players = serverWorld.getEntitiesWithinAABB(EntityPlayerMP.class, new AxisAlignedBB(
+		List<ServerPlayerEntity> players = serverWorld.getEntitiesWithinAABB(ServerPlayerEntity.class, new AxisAlignedBB(
 				x - range, y - range, z - range,
 				x + range, y + range, z + range));
-		for(EntityPlayerMP player : players){
-			player.connection.sendPacket(new SPacketCustomSound(sound.getRegistryName(), soundType,
+		for(ServerPlayerEntity player : players){
+			player.connection.sendPacket(new SPlaySoundPacket(sound.getRegistryName(), soundType,
 					new Vec3d(x, y, z), volume, pitch));
 		}
 	}

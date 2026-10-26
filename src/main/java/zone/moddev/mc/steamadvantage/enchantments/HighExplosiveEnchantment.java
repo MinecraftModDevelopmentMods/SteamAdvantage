@@ -1,14 +1,14 @@
 package zone.moddev.mc.steamadvantage.enchantments;
 
 import zone.moddev.mc.steamadvantage.init.Items;
-import net.minecraft.enchantment.EnumEnchantmentType;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.enchantment.EnchantmentType;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 
 public class HighExplosiveEnchantment extends net.minecraft.enchantment.Enchantment{
 
 	public HighExplosiveEnchantment() {
-		super(Rarity.UNCOMMON,EnumEnchantmentType.ALL,new EntityEquipmentSlot[]{EntityEquipmentSlot.MAINHAND});
+		super(Rarity.UNCOMMON,EnchantmentType.ALL,new EquipmentSlotType[]{EquipmentSlotType.MAINHAND});
 	}
 
 

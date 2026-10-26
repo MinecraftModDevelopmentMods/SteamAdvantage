@@ -3,14 +3,17 @@ package zone.moddev.mc.steamadvantage.blocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.NonNullList;
+import net.minecraft.util.Direction;
+import java.util.Collections;
+import java.util.List;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
@@ -26,20 +29,25 @@ public class DrillBitBlock extends Block implements ITileEntityProvider {
     }
 
     @Override public TileEntity createNewTileEntity(IBlockReader world) { return new DrillBitTileEntity(); }
-    @Override public VoxelShape getShape(IBlockState state, IBlockReader world, BlockPos pos) { return SHAPE; }
-    @Override public VoxelShape getCollisionShape(IBlockState state, IBlockReader world, BlockPos pos) { return SHAPE; }
-    @Override public boolean isNormalCube(IBlockState state) { return false; }
-    @Override public boolean isSolid(IBlockState state) { return false; }
-    @Override public void getDrops(IBlockState state, NonNullList<ItemStack> drops, World world, BlockPos pos, int fortune) {}
+    @Override public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) { return SHAPE; }
+    @Override public VoxelShape getCollisionShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) { return SHAPE; }
+    @Override public boolean isNormalCube(BlockState state, IBlockReader world, BlockPos pos) { return false; }
+    @Override public boolean isSolid(BlockState state) { return false; }
+    @Override public List<ItemStack> getDrops(BlockState state, LootContext.Builder context) { return Collections.emptyList(); }
 
     @Override
-    public void onEntityCollision(IBlockState state, World world, BlockPos pos, Entity victim) {
+    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity victim) {
         victim.attackEntityFrom(Power.machine_damage, 2.0F);
     }
 
     @Override
-    public void onReplaced(IBlockState state, World world, BlockPos pos, IBlockState newState, boolean moving) {
-        if (state.getBlock() != newState.getBlock()) destroyNeighbors(world, pos);
+    public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moving) {
+        if (state.getBlock() != newState.getBlock()) {
+            TileEntity tile = world.getTileEntity(pos);
+            if (!world.isRemote && tile instanceof DrillBitTileEntity) {
+                ((DrillBitTileEntity) tile).destroyLine(false);
+            }
+        }
         super.onReplaced(state, world, pos, newState, moving);
     }
 
@@ -51,7 +59,7 @@ public class DrillBitBlock extends Block implements ITileEntityProvider {
 
     private void destroyNeighbors(World world, BlockPos pos) {
         if (world.isRemote) return;
-        for (EnumFacing side : EnumFacing.values()) {
+        for (Direction side : Direction.values()) {
             TileEntity tile = world.getTileEntity(pos.offset(side));
             if (tile instanceof DrillBitTileEntity) ((DrillBitTileEntity) tile).destroyLine();
         }

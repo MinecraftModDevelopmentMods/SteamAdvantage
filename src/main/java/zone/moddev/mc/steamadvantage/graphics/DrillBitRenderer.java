@@ -3,13 +3,13 @@ package zone.moddev.mc.steamadvantage.graphics;
 import zone.moddev.mc.steamadvantage.SteamAdvantage;
 import zone.moddev.mc.steamadvantage.blocks.DrillBitTileEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -29,9 +29,16 @@ public class DrillBitRenderer extends TileEntityRenderer<DrillBitTileEntity>{
 	@Override
 	public void render(final DrillBitTileEntity te, final double x, final double y, final double z, final float partialTick, final int destroyStage) {
 		GlStateManager.pushMatrix();
-		GlStateManager.translated(x, y, z);
-		render(te,te.getWorld(),te.getPos(),partialTick);
-		GlStateManager.popMatrix();
+		try {
+			GlStateManager.translated(x, y, z);
+			render(te,te.getWorld(),te.getPos(),partialTick);
+		} finally {
+			GlStateManager.enableCull();
+			GlStateManager.disableBlend();
+			GlStateManager.shadeModel(7424);
+			RenderHelper.enableStandardItemLighting();
+			GlStateManager.popMatrix();
+		}
 	}
 
 	private void render(DrillBitTileEntity e, World world, BlockPos pos, float partialTick){
@@ -66,9 +73,9 @@ public class DrillBitRenderer extends TileEntityRenderer<DrillBitTileEntity>{
 		final float radius = 0.25f;
 
 		GlStateManager.translatef(0.5f, 0.5f, 0.5f);
-		if(e.getDirection() != EnumFacing.Axis.Y){
+		if(e.getDirection() != Direction.Axis.Y){
 			GlStateManager.rotatef(90, 1.0f, 0.0f, 0.0f);
-			if(e.getDirection() != EnumFacing.Axis.Z){
+			if(e.getDirection() != Direction.Axis.Z){
 				GlStateManager.rotatef(90, 0.0f, 0.0f, 1.0f);
 			}
 		}
