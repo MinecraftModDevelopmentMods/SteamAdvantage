@@ -110,3 +110,4 @@ jobs:
             build/*-run/logs/**
             build/problems/**
             .ci-dependencies/PowerAdvantage/build/reports/**
+            .ci-dependencies/PowerAdvantage/build/libs-dev/*.jar
