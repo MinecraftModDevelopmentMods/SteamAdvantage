@@ -12,14 +12,14 @@ import zone.moddev.mc.poweradvantage.init.Fluids;
 import zone.moddev.mc.poweradvantage.registry.FuelRegistry;
 import zone.moddev.mc.steamadvantage.SteamAdvantage;
 import zone.moddev.mc.steamadvantage.init.Power;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.IRegistry;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.fluid.Fluid;
 import cyano.poweradvantage.api.fluid.FluidStack;
 import cyano.poweradvantage.api.fluid.FluidTank;
@@ -88,7 +88,7 @@ public class OilBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 	}
 
 	@Override
-	public boolean isUsableByPlayer(EntityPlayer player) {
+	public boolean isUsableByPlayer(PlayerEntity player) {
 		return true;
 	}
 
@@ -121,7 +121,7 @@ public class OilBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 			}
 			// second, check universal bucket fuel registry
 			int vol = FluidTank.BUCKET_VOLUME;
-			ItemStack bucket = fluid.getFilledBucket() == net.minecraft.init.Items.AIR
+			ItemStack bucket = fluid.getFilledBucket() == net.minecraft.item.Items.AIR
 					? ItemStack.EMPTY : new ItemStack(fluid.getFilledBucket());
 			if(bucket.isEmpty()){
 				flammibilityCache.put(fluid,0f);
@@ -143,7 +143,7 @@ public class OilBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 	}
 
 	private static Float getConfiguredBurnTimePerBucketFor(Fluid fluid) {
-		ResourceLocation id = IRegistry.field_212619_h.getKey(fluid);
+		ResourceLocation id = net.minecraftforge.registries.ForgeRegistries.FLUIDS.getKey(fluid);
 		if (id != null) {
 			if (SteamAdvantage.fluidBurnValues.containsKey(id.toString())) return SteamAdvantage.fluidBurnValues.get(id.toString());
 			if (SteamAdvantage.fluidBurnValues.containsKey(id.getPath())) return SteamAdvantage.fluidBurnValues.get(id.getPath());
@@ -241,13 +241,13 @@ public class OilBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 		dataSyncArray[4] = this.getFuelTank().getFluidAmount();
 		dataSyncArray[5] = (getFuelTank().getFluid() != null && getFuelTank().getFluid().getFluid() != null 
 				? FluidIdHelper.getFluidId(getFuelTank().getFluid().getFluid())
-						: FluidIdHelper.getFluidId(net.minecraft.init.Fluids.WATER));
+						: FluidIdHelper.getFluidId(net.minecraft.fluid.Fluids.WATER));
 	}
 
 	@Override
 	public void onDataFieldUpdate() {
 		this.setEnergy(Float.intBitsToFloat(dataSyncArray[0]), Power.steam_power);
-		this.getWaterTank().setFluid(new FluidStack(net.minecraft.init.Fluids.WATER,dataSyncArray[1]));
+		this.getWaterTank().setFluid(new FluidStack(net.minecraft.fluid.Fluids.WATER,dataSyncArray[1]));
 		this.burnTime = dataSyncArray[2];
 		this.totalBurnTime = dataSyncArray[3];
 		this.getFuelTank().setFluid(new FluidStack(FluidIdHelper.getFluid(dataSyncArray[5]),dataSyncArray[4]));
@@ -259,16 +259,16 @@ public class OilBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 	 * @param tagRoot An NBT tag
 	 */
 	@Override
-	public NBTTagCompound write(final NBTTagCompound tagRoot) {
+	public CompoundNBT write(final CompoundNBT tagRoot) {
 		super.write(tagRoot);
-		NBTTagCompound tankTag = new NBTTagCompound();
+		CompoundNBT tankTag = new CompoundNBT();
 		this.getWaterTank().writeToNBT(tankTag);
-		tagRoot.setTag("WaterTank", tankTag);
-		NBTTagCompound tankTag2 = new NBTTagCompound();
+		tagRoot.put("WaterTank", tankTag);
+		CompoundNBT tankTag2 = new CompoundNBT();
 		this.getFuelTank().writeToNBT(tankTag2);
-		tagRoot.setTag("FuelTank", tankTag2);
-		if(this.burnTime > 0)tagRoot.setInt("BurnTime", this.burnTime);
-		if(this.totalBurnTime > 0)tagRoot.setInt("BurnTimeTotal", this.totalBurnTime);
+		tagRoot.put("FuelTank", tankTag2);
+		if(this.burnTime > 0)tagRoot.putInt("BurnTime", this.burnTime);
+		if(this.totalBurnTime > 0)tagRoot.putInt("BurnTimeTotal", this.totalBurnTime);
 		return tagRoot;
 	}
 	/**
@@ -276,30 +276,30 @@ public class OilBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 	 * @param tagRoot An NBT tag
 	 */
 	@Override
-	public void read(final NBTTagCompound tagRoot) {
+	public void read(final CompoundNBT tagRoot) {
 		super.read(tagRoot);
-		if (tagRoot.hasKey("WaterTank")) {
-			NBTTagCompound tankTag = tagRoot.getCompound("WaterTank");
+		if (tagRoot.contains("WaterTank")) {
+			CompoundNBT tankTag = tagRoot.getCompound("WaterTank");
 			getWaterTank().readFromNBT(tankTag);
-			if(tankTag.hasKey("Empty")){
+			if(tankTag.contains("Empty")){
 				// empty the tank if NBT says its empty (not default behavior of Tank.read(...) )
 				getWaterTank().setFluid(null);
 			}
 		}
-		if (tagRoot.hasKey("FuelTank")) {
-			NBTTagCompound tankTag = tagRoot.getCompound("FuelTank");
+		if (tagRoot.contains("FuelTank")) {
+			CompoundNBT tankTag = tagRoot.getCompound("FuelTank");
 			getFuelTank().readFromNBT(tankTag);
-			if(tankTag.hasKey("Empty")){
+			if(tankTag.contains("Empty")){
 				// empty the tank if NBT says its empty (not default behavior of Tank.read(...) )
 				getFuelTank().setFluid(null);
 			}
 		}
-		if(tagRoot.hasKey("BurnTime")){
+		if(tagRoot.contains("BurnTime")){
 			this.burnTime = tagRoot.getInt("BurnTime");
 		} else {
 			this.burnTime = 0;
 		}
-		if(tagRoot.hasKey("BurnTimeTotal")){
+		if(tagRoot.contains("BurnTimeTotal")){
 			this.totalBurnTime = tagRoot.getInt("BurnTimeTotal");
 		} else {
 			this.totalBurnTime = 0;
@@ -350,7 +350,7 @@ public class OilBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 	public void setEnergy(float amount,ConduitType type) {
 		if(Fluids.isFluidType(type) && !ConduitType.areSameType(Fluids.fluidConduit_general,type)){
 			Fluid f = Fluids.conduitTypeToFluid(type);
-			if(f == net.minecraft.init.Fluids.WATER){
+			if(f == net.minecraft.fluid.Fluids.WATER){
 				this.getWaterTank().setFluid(new FluidStack(f,(int)amount));
 			}else{
 				this.getFuelTank().setFluid(new FluidStack(f,(int)amount));
@@ -383,7 +383,7 @@ public class OilBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 	@Override
 	public PowerRequest getPowerRequest(ConduitType offer) {
 		if(this.redstone) return PowerRequest.REQUEST_NOTHING;
-		if(Fluids.conduitTypeToFluid(offer) == net.minecraft.init.Fluids.WATER){
+		if(Fluids.conduitTypeToFluid(offer) == net.minecraft.fluid.Fluids.WATER){
 			PowerRequest request = new FluidRequest(FluidRequest.MEDIUM_PRIORITY+1,
 					(getWaterTank().getCapacity() - getWaterTank().getFluidAmount()),
 					this);
@@ -412,9 +412,9 @@ public class OilBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 	 * @param forReal if true, then the fluid in the tank will change
 	 */
 	@Override
-	public int fill(EnumFacing face, FluidStack fluid, boolean forReal) {
+	public int fill(Direction face, FluidStack fluid, boolean forReal) {
 		if(fluid == null) return 0;
-		if(fluid.getFluid() == net.minecraft.init.Fluids.WATER){
+		if(fluid.getFluid() == net.minecraft.fluid.Fluids.WATER){
 			if(getWaterTank().getFluidAmount() <= 0 || getWaterTank().getFluid().getFluid().equals(fluid.getFluid())){
 				return getWaterTank().fill(fluid, forReal);
 			}
@@ -432,9 +432,9 @@ public class OilBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 	 * @param forReal if true, then the fluid in the tank will change
 	 */
 	@Override
-	public FluidStack drain(EnumFacing face, FluidStack fluid, boolean forReal) {
+	public FluidStack drain(Direction face, FluidStack fluid, boolean forReal) {
 		if(fluid == null) return null;
-		if(fluid.getFluid() == net.minecraft.init.Fluids.WATER && getWaterTank().getFluidAmount() > 0 && getWaterTank().getFluid().getFluid().equals(net.minecraft.init.Fluids.WATER)){
+		if(fluid.getFluid() == net.minecraft.fluid.Fluids.WATER && getWaterTank().getFluidAmount() > 0 && getWaterTank().getFluid().getFluid().equals(net.minecraft.fluid.Fluids.WATER)){
 			return getWaterTank().drain(fluid.amount,forReal);
 		} else if(getFuelTank().getFluidAmount() > 0 && getFuelTank().getFluid().getFluid().equals(fluid.getFluid())){
 			return getFuelTank().drain(fluid.amount,forReal);
@@ -449,7 +449,7 @@ public class OilBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 	 * @param forReal if true, then the fluid in the tank will change
 	 */
 	@Override
-	public FluidStack drain(EnumFacing face, int amount, boolean forReal) {
+	public FluidStack drain(Direction face, int amount, boolean forReal) {
 		if(getWaterTank().getFluidAmount() > 0 ){
 			return getWaterTank().drain(amount,forReal);
 		} else if(getFuelTank().getFluidAmount() > 0 ){
@@ -464,8 +464,8 @@ public class OilBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 	 * @param fluid The fluid being added/removed
 	 */
 	@Override
-	public boolean canFill(EnumFacing face, Fluid fluid) {
-		if(fluid == net.minecraft.init.Fluids.WATER) {
+	public boolean canFill(Direction face, Fluid fluid) {
+		if(fluid == net.minecraft.fluid.Fluids.WATER) {
 			if(getWaterTank().getFluidAmount() <= 0) return true;
 			return getWaterTank().getFluidAmount() <= getWaterTank().getCapacity() && fluid.equals(getWaterTank().getFluid().getFluid());
 		} else if(getBurnTimePerBucketFor(fluid) > 0){
@@ -480,9 +480,9 @@ public class OilBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 	 * @param fluid The fluid being added/removed
 	 */
 	@Override
-	public boolean canDrain(EnumFacing face, Fluid fluid) {
+	public boolean canDrain(Direction face, Fluid fluid) {
 		if(fluid == null) return false;
-		if(fluid == net.minecraft.init.Fluids.WATER) {
+		if(fluid == net.minecraft.fluid.Fluids.WATER) {
 			return getWaterTank().getFluidAmount() > 0 && fluid.equals(getWaterTank().getFluid().getFluid());
 		} else {
 			return getFuelTank().getFluidAmount() > 0 && fluid.equals(getFuelTank().getFluid().getFluid());
@@ -495,7 +495,7 @@ public class OilBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 	 * @return array of FluidTankInfo describing all of the FluidTanks
 	 */
 	@Override
-	public FluidTankInfo[] getTankInfo(EnumFacing face) {
+	public FluidTankInfo[] getTankInfo(Direction face) {
 		FluidTankInfo[] arr = new FluidTankInfo[2];
 		arr[0] = getWaterTank().getInfo();
 		arr[1] = getFuelTank().getInfo();

@@ -1,3 +1,16 @@
+Steam Advantage 2.2.6.114041
+
+- Save the drill's cached facing without reloading a chunk during its unload-save.
+- Target Minecraft 1.14.4 / Forge 28.2.26 with snapshot 20190719-1.14.3 mappings and MCP 20190829.143755.
+- Adapt native block callbacks, tile validity, loot, recipe conditions, furnace recipes, musket hits and enchantments.
+- Keep native machine containers and client rendering on Power Advantage's shared API.
+- Detach drill helpers before line-removal callbacks; defer saved target loot restoration until server world attachment.
+- Preserve existing registry identities, NBT keys, recipes, machine costs, output quantities and migration codecs.
+- Replace removed villager careers with native profession trade events at the same levels and price ranges.
+- Add native block self-drop tables and focused direction, progress, inventory, energy, musket and resource tests.
+- Pass 27 unit/resource tests and combined-mod automated machine, migration, lifecycle and restart checks.
+- Keep coverage limited to the recorded scenarios; back up whole worlds and test upgrades on disposable copies.
+
 Steam Advantage 2.2.5.113021
 
 - Keep development archives identical in existing workspaces and fresh CI checkouts.

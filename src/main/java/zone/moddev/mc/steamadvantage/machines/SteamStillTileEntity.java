@@ -12,11 +12,11 @@ import zone.moddev.mc.poweradvantage.init.Fluids;
 import zone.moddev.mc.poweradvantage.registry.still.recipe.DistillationRecipe;
 import zone.moddev.mc.poweradvantage.registry.still.recipe.DistillationRecipeRegistry;
 import zone.moddev.mc.steamadvantage.init.Power;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.fluid.Fluid;
 import cyano.poweradvantage.api.fluid.FluidStack;
@@ -154,9 +154,9 @@ public class SteamStillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	public void prepareDataFieldsForSync() {
 		dataSyncArray[0] = Float.floatToRawIntBits(this.getEnergy(Power.steam_power));
 		dataSyncArray[1] = this.getOutputTank().getFluidAmount();
-		dataSyncArray[2] = FluidIdHelper.getFluidId(this.getOutputTank().getFluidAmount() > 0 ? this.getOutputTank().getFluid().getFluid() : net.minecraft.init.Fluids.WATER);
+		dataSyncArray[2] = FluidIdHelper.getFluidId(this.getOutputTank().getFluidAmount() > 0 ? this.getOutputTank().getFluid().getFluid() : net.minecraft.fluid.Fluids.WATER);
 		dataSyncArray[3] = inputTank.getFluidAmount();
-		dataSyncArray[4] = FluidIdHelper.getFluidId(inputTank.getFluidAmount() > 0 ? inputTank.getFluid().getFluid() : net.minecraft.init.Fluids.WATER);
+		dataSyncArray[4] = FluidIdHelper.getFluidId(inputTank.getFluidAmount() > 0 ? inputTank.getFluid().getFluid() : net.minecraft.fluid.Fluids.WATER);
 	}
 
 	@Override
@@ -172,14 +172,14 @@ public class SteamStillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	 * @param tagRoot An NBT tag
 	 */
 	@Override
-	public NBTTagCompound write(final NBTTagCompound tagRoot) {
+	public CompoundNBT write(final CompoundNBT tagRoot) {
 		super.write(tagRoot);
-		NBTTagCompound tankTag = new NBTTagCompound();
+		CompoundNBT tankTag = new CompoundNBT();
 		this.getOutputTank().writeToNBT(tankTag);
-		tagRoot.setTag("TankOut", tankTag);
-		NBTTagCompound tankTag2 = new NBTTagCompound();
+		tagRoot.put("TankOut", tankTag);
+		CompoundNBT tankTag2 = new CompoundNBT();
 		this.getInputTank().writeToNBT(tankTag2);
-		tagRoot.setTag("TankIn", tankTag2);
+		tagRoot.put("TankIn", tankTag2);
 		return tagRoot;
 	}
 	/**
@@ -187,21 +187,21 @@ public class SteamStillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	 * @param tagRoot An NBT tag
 	 */
 	@Override
-	public void read(final NBTTagCompound tagRoot) {
+	public void read(final CompoundNBT tagRoot) {
 		super.read(tagRoot);
-		if (tagRoot.hasKey("TankOut")) {
-			NBTTagCompound tankTag = tagRoot.getCompound("TankOut");
+		if (tagRoot.contains("TankOut")) {
+			CompoundNBT tankTag = tagRoot.getCompound("TankOut");
 			getOutputTank().readFromNBT(tankTag);
-			if(tankTag.hasKey("Empty")){
+			if(tankTag.contains("Empty")){
 				// empty the tank if NBT says its empty (not default behavior of Tank.read(...) )
 				getOutputTank().setFluid(null);
 			}
 		}
 
-		if (tagRoot.hasKey("TankIn")) {
-			NBTTagCompound tankTag = tagRoot.getCompound("TankIn");
+		if (tagRoot.contains("TankIn")) {
+			CompoundNBT tankTag = tagRoot.getCompound("TankIn");
 			getInputTank().readFromNBT(tankTag);
-			if(tankTag.hasKey("Empty")){
+			if(tankTag.contains("Empty")){
 				// empty the tank if NBT says its empty (not default behavior of Tank.read(...) )
 				getInputTank().setFluid(null);
 			}
@@ -319,7 +319,7 @@ public class SteamStillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	 * @return true if this conduit can flow the given energy type through the given face, false
 	 * otherwise
 	 */
-	public boolean canAcceptType(ConduitType type, EnumFacing blockFace){
+	public boolean canAcceptType(ConduitType type, Direction blockFace){
 		return ConduitType.areSameType(Power.steam_power, type) || ConduitType.areSameType(Fluids.fluidConduit_general, type);
 	}
 	/**
@@ -344,7 +344,7 @@ public class SteamStillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	 * @param forReal if true, then the fluid in the tank will change
 	 */
 	@Override
-	public int fill(EnumFacing face, FluidStack fluid, boolean forReal) {
+	public int fill(Direction face, FluidStack fluid, boolean forReal) {
 		if(fluid == null) return 0;
 		if(getInputTank().getFluidAmount() <= 0 || getInputTank().getFluid().getFluid().equals(fluid.getFluid())){
 			if(canDistill(fluid)){
@@ -360,7 +360,7 @@ public class SteamStillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	 * @param forReal if true, then the fluid in the tank will change
 	 */
 	@Override
-	public FluidStack drain(EnumFacing face, FluidStack fluid, boolean forReal) {
+	public FluidStack drain(Direction face, FluidStack fluid, boolean forReal) {
 		if(getOutputTank().getFluidAmount() > 0 && getOutputTank().getFluid().getFluid().equals(fluid.getFluid())){
 			return getOutputTank().drain(fluid.amount,forReal);
 		} else {
@@ -374,7 +374,7 @@ public class SteamStillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	 * @param forReal if true, then the fluid in the tank will change
 	 */
 	@Override
-	public FluidStack drain(EnumFacing face, int amount, boolean forReal) {
+	public FluidStack drain(Direction face, int amount, boolean forReal) {
 		if(getOutputTank().getFluidAmount() > 0 ){
 			return getOutputTank().drain(amount,forReal);
 		} else {
@@ -387,7 +387,7 @@ public class SteamStillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	 * @param fluid The fluid being added/removed
 	 */
 	@Override
-	public boolean canFill(EnumFacing face, Fluid fluid) {
+	public boolean canFill(Direction face, Fluid fluid) {
 		if(fluid == null) return false;
 		if(canDistill(fluid) == false) return false;
 		if(getInputTank().getFluidAmount() <= 0) return true;
@@ -399,7 +399,7 @@ public class SteamStillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	 * @param fluid The fluid being added/removed
 	 */
 	@Override
-	public boolean canDrain(EnumFacing face, Fluid fluid) {
+	public boolean canDrain(Direction face, Fluid fluid) {
 		if(fluid == null) return false;
 		return getOutputTank().getFluidAmount() > 0 && fluid.equals(getOutputTank().getFluid().getFluid());
 	}
@@ -410,7 +410,7 @@ public class SteamStillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	 * @return array of FluidTankInfo describing all of the FluidTanks
 	 */
 	@Override
-	public FluidTankInfo[] getTankInfo(EnumFacing face) {
+	public FluidTankInfo[] getTankInfo(Direction face) {
 		FluidTankInfo[] arr = new FluidTankInfo[2];
 		arr[0] = getInputTank().getInfo();
 		arr[1] = getOutputTank().getInfo();
@@ -425,7 +425,7 @@ public class SteamStillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	}
 
 	@Override
-	public boolean isUsableByPlayer(EntityPlayer player) {
+	public boolean isUsableByPlayer(PlayerEntity player) {
 		return true;
 	}
 }

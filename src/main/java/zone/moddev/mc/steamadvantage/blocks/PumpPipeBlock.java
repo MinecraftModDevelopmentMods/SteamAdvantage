@@ -2,12 +2,15 @@ package zone.moddev.mc.steamadvantage.blocks;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
+import java.util.Collections;
+import java.util.List;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
@@ -20,14 +23,14 @@ public class PumpPipeBlock extends Block {
         super(Block.Properties.create(Material.IRON).hardnessAndResistance(5.0F, 10.0F));
     }
 
-    @Override public VoxelShape getShape(IBlockState state, IBlockReader world, BlockPos pos) { return SHAPE; }
-    @Override public VoxelShape getCollisionShape(IBlockState state, IBlockReader world, BlockPos pos) { return SHAPE; }
-    @Override public boolean isNormalCube(IBlockState state) { return false; }
-    @Override public boolean isSolid(IBlockState state) { return false; }
-    @Override public void getDrops(IBlockState state, NonNullList<ItemStack> drops, World world, BlockPos pos, int fortune) {}
+    @Override public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) { return SHAPE; }
+    @Override public VoxelShape getCollisionShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) { return SHAPE; }
+    @Override public boolean isNormalCube(BlockState state, IBlockReader world, BlockPos pos) { return false; }
+    @Override public boolean isSolid(BlockState state) { return false; }
+    @Override public List<ItemStack> getDrops(BlockState state, LootContext.Builder context) { return Collections.emptyList(); }
 
     @Override
-    public void onReplaced(IBlockState state, World world, BlockPos pos, IBlockState newState, boolean moving) {
+    public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moving) {
         if (state.getBlock() != newState.getBlock()) destroyShaft(world, pos);
         super.onReplaced(state, world, pos, newState, moving);
     }

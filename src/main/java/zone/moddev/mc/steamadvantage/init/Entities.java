@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.block.Block;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -42,23 +43,23 @@ public final class Entities {
 
     @SubscribeEvent
     public static void register(RegistryEvent.Register<TileEntityType<?>> event) {
-        STEAM_BOILER_COAL = register(event, "steam_boiler_coal", CoalBoilerTileEntity::new);
-        STEAM_BOILER_ELECTRIC = register(event, "steam_boiler_electric", ElectricBoilerTileEntity::new);
-        STEAM_BOILER_GEOTHERMAL = register(event, "steam_boiler_geothermal", GeothermalBoilerTileEntity::new);
-        STEAM_TANK = register(event, "steam_tank", SteamTankTileEntity::new);
-        STEAM_FURNACE = register(event, "steam_furnace", BlastFurnaceTileEntity::new);
-        STEAM_CRUSHER = register(event, "steam_crusher", RockCrusherTileEntity::new);
-        STEAM_DRILL = register(event, "steam_drill", SteamDrillTileEntity::new);
-        STEAM_ELEVATOR = register(event, "steam_elevator", SteamElevatorTileEntity::new);
-        DRILLBIT = register(event, "drillbit", DrillBitTileEntity::new);
-        STEAM_STILL = register(event, "steam_still", SteamStillTileEntity::new);
-        STEAM_PUMP = register(event, "steam_pump", SteamPumpTileEntity::new);
-        STEAM_BOILER_OIL = register(event, "steam_boiler_oil", OilBoilerTileEntity::new);
+        STEAM_BOILER_COAL = register(event, "steam_boiler_coal", CoalBoilerTileEntity::new, Blocks.steam_boiler_coal);
+        STEAM_BOILER_ELECTRIC = register(event, "steam_boiler_electric", ElectricBoilerTileEntity::new, Blocks.steam_boiler_electric);
+        STEAM_BOILER_GEOTHERMAL = register(event, "steam_boiler_geothermal", GeothermalBoilerTileEntity::new, Blocks.steam_boiler_geothermal);
+        STEAM_TANK = register(event, "steam_tank", SteamTankTileEntity::new, Blocks.steam_tank);
+        STEAM_FURNACE = register(event, "steam_furnace", BlastFurnaceTileEntity::new, Blocks.steam_furnace);
+        STEAM_CRUSHER = register(event, "steam_crusher", RockCrusherTileEntity::new, Blocks.steam_crusher);
+        STEAM_DRILL = register(event, "steam_drill", SteamDrillTileEntity::new, Blocks.steam_drill);
+        STEAM_ELEVATOR = register(event, "steam_elevator", SteamElevatorTileEntity::new, Blocks.steam_elevator);
+        DRILLBIT = register(event, "drillbit", DrillBitTileEntity::new, Blocks.drillbit);
+        STEAM_STILL = register(event, "steam_still", SteamStillTileEntity::new, Blocks.steam_still);
+        STEAM_PUMP = register(event, "steam_pump", SteamPumpTileEntity::new, Blocks.steam_pump);
+        STEAM_BOILER_OIL = register(event, "steam_boiler_oil", OilBoilerTileEntity::new, Blocks.steam_boiler_oil);
     }
 
     private static <T extends TileEntity> TileEntityType<T> register(
-            RegistryEvent.Register<TileEntityType<?>> event, String id, Supplier<? extends T> factory) {
-        TileEntityType<T> type = TileEntityType.Builder.<T>create(factory).build(null);
+            RegistryEvent.Register<TileEntityType<?>> event, String id, Supplier<? extends T> factory, Block block) {
+        TileEntityType<T> type = TileEntityType.Builder.<T>create(factory, block).build(null);
         type.setRegistryName(SteamAdvantage.MODID, id);
         event.getRegistry().register(type);
         return type;

@@ -3,9 +3,9 @@ package zone.moddev.mc.steamadvantage.migration;
 import cyano.poweradvantage.api.migration.LegacyMigrationApi;
 import cyano.poweradvantage.api.simple.BlockSimplePowerMachine;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.block.BlockState;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import zone.moddev.mc.poweradvantage.blocks.BlockPowerSwitch;
 import zone.moddev.mc.steamadvantage.SteamAdvantage;
@@ -56,7 +56,7 @@ public final class SteamLegacyMigrations {
         LegacyMigrationApi.registerTileEntityAlias("minecraft:" + SteamAdvantage.MODID + "." + path, current);
     }
 
-    private static IBlockState decodeState(Block block, int metadata) {
+    private static BlockState decodeState(Block block, int metadata) {
         if (block instanceof SteamDrillBlock) {
             return block.getDefaultState().with(SteamDrillBlock.FACING, legacyDrillFacing(metadata));
         }
@@ -73,24 +73,24 @@ public final class SteamLegacyMigrations {
         return block.getDefaultState();
     }
 
-    static EnumFacing legacyDrillFacing(int metadata) {
-        return EnumFacing.byIndex(metadata % EnumFacing.values().length);
+    static Direction legacyDrillFacing(int metadata) {
+        return Direction.byIndex(metadata % Direction.values().length);
     }
 
     static int legacyPlatformHeight(int metadata) {
         return Math.min(metadata & 15, 4);
     }
 
-    static boolean repairPersistenceKeys(NBTTagCompound compound) {
+    static boolean repairPersistenceKeys(CompoundNBT compound) {
         String id = compound.getString("id");
         boolean changed = false;
         if (isTile(id, "steam_pump") && !compound.contains("Tank", 10) && compound.contains("TankOut", 10)) {
-            compound.setTag("Tank", compound.getCompound("TankOut").copy());
+            compound.put("Tank", compound.getCompound("TankOut").copy());
             changed = true;
         }
         if (isTile(id, "steam_boiler_geothermal")
                 && !compound.contains("Temperature", 99) && compound.contains("Tempoerature", 99)) {
-            compound.setFloat("Temperature", compound.getFloat("Tempoerature"));
+            compound.putFloat("Temperature", compound.getFloat("Tempoerature"));
             changed = true;
         }
         return changed;
