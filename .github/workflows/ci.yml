@@ -34,13 +34,15 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: MinecraftModDevelopmentMods/BaseMetals
-          ref: 1d166d917663d4b4a5a88a86440adc0ae761e393
+          # Local-only Base Metals source; publish upstream before PR/hosted builds.
+          ref: ac1781e7cade15045ffe0135077087b4d1722603
           path: .ci-dependencies/BaseMetals
       - name: Check out PowerAdvantage 1.15.2
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: MinecraftModDevelopmentMods/PowerAdvantage
-          ref: 75d24d2641e8123ff7a7f961d9a1e5a1d5203194
+          # Local-only Power source; publish upstream before PR/hosted builds.
+          ref: 6666099a734eba16561d98c86f3f4bb1b7c742f7
           path: .ci-dependencies/PowerAdvantage
       - name: Install pinned Java 25 Mavenizer runtime
         uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
@@ -78,7 +80,7 @@ jobs:
           (cd "$orespawn" && ./gradlew $MMD_GRADLE_TOOLCHAINS jar --no-daemon --stacktrace)
           (cd "$basemetals" && ./gradlew $MMD_GRADLE_TOOLCHAINS jar --no-daemon --stacktrace)
           osjar="$orespawn/build/libs-dev/OreSpawn-4.1.1.115021-deobf.jar"
-          bmjar="$basemetals/build/libs-dev/BaseMetals-3.0.1.115021-deobf.jar"
+          bmjar="$basemetals/build/libs-dev/BaseMetals-3.0.2.115021-deobf.jar"
           (cd "$power" && ./gradlew $MMD_GRADLE_TOOLCHAINS jar verifyReleaseDependencies \
             -PbaseMetalsDeobfJar="$bmjar" -PoreSpawnDeobfJar="$osjar" \
             --no-daemon --stacktrace)

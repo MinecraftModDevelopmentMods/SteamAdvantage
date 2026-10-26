@@ -179,7 +179,7 @@ if (!powerAdvantageDeobfJar.isFile()) {
 // here so another developer can override them without editing the script.
 def baseMetalsDeobfJar = file(providers.gradleProperty('baseMetalsDeobfJar')
         .getOrElse('../../../../BaseMetals/BaseMetals 115/BaseMetals/build/libs-dev/'
-                + 'BaseMetals-3.0.1.115021-deobf.jar'))
+                + 'BaseMetals-3.0.2.115021-deobf.jar'))
 if (!baseMetalsDeobfJar.isFile()) {
     throw new GradleException("Missing Base Metals deobf jar at ${baseMetalsDeobfJar}. "
             + "Build Base Metals 1.15 first, or pass -PbaseMetalsDeobfJar=<path>.")
