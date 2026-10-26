@@ -8,8 +8,8 @@ Steam Advantage 2.2.7.115021
 - Preserve registry identities, recipes, migration codecs, saved NBT, machine costs and output quantities.
 - Register recipe conditions after parallel setup to prevent intermittent missing recipes at startup.
 - Retain the steam track's light transmission and keep tracks and elevator platforms from conducting redstone through their full-cube shapes.
-- Pass 30 unit/resource tests, including all-facing renderer geometry, lighting/overlay and matrix-restoration regressions.
-- Keep combined server/client gameplay and disposable-copy migration checks separate; 1.14 results do not qualify 1.15 worlds.
+- Add all-facing renderer, lighting, matrix-restoration and native block-property regressions.
+- Record combined operating and disposable-copy migration results in Power Advantage's shared 1.15 test notes; manual acceptance remains separate.
 
 Steam Advantage 2.2.6.114041
 

@@ -1,9 +1,9 @@
 # SteamAdvantage
 
-**Minecraft 1.15.2 port, version 2.2.7.115021.** Native compilation and 30 unit/resource
-tests pass, including native drill-renderer geometry and matrix-stack checks.
-Combined-mod server, client-resource, connected-machine and disposable-copy migration
-checks have not yet been repeated for this port. The historical
+**Minecraft 1.15.2 port candidate, version 2.2.7.115021.** See the
+[shared test record](https://github.com/MinecraftModDevelopmentMods/PowerAdvantage/blob/master-1.15.2/docs/1.15/CURRENT-QUALIFICATION.md)
+for exact jars, automated machine and upgrade results, and remaining manual
+checks. This version is not published. The historical
 [1.14 test results](https://github.com/MinecraftModDevelopmentMods/PowerAdvantage/blob/master-1.14.4/docs/1.14/BROADER-QUALIFICATION.md)
 are not evidence of 1.15 gameplay or world-upgrade compatibility.
 
@@ -25,6 +25,11 @@ Build the matching 1.15 PowerAdvantage, Base Metals and OreSpawn deobf jars firs
 Dependency versions, checksums and the exact Power source reference belong in
 `gradle.properties`. Release audits reject missing or placeholder pins; do not
 bypass those checks or substitute a dependency from an earlier Minecraft version.
+Base Metals `3.0.2.115021` source `ac1781e7cade15045ffe0135077087b4d1722603`
+and Power source `6666099a734eba16561d98c86f3f4bb1b7c742f7` are local-only and
+unpublished. Publish both exact sources upstream before opening a PR or running
+hosted builds; hosted reproducibility and publication readiness are not established.
+
 With the standard sibling layout:
 
 ```text
