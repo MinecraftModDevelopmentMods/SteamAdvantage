@@ -58,11 +58,12 @@ jobs:
           distribution: temurin
           java-version: '17.0.1+12'
       - name: Use pinned build toolchains
+        # These are Gradle project properties, not JVM system properties.
         shell: bash
         run: >-
-          echo "GRADLE_OPTS=-Dorg.gradle.java.installations.paths=$JAVA_HOME,$JAVA_HOME_8_X64,$JAVA_HOME_25_X64
-          -Dorg.gradle.java.installations.auto-detect=false
-          -Dorg.gradle.java.installations.auto-download=false" >> "$GITHUB_ENV"
+          echo "MMD_GRADLE_TOOLCHAINS=-Porg.gradle.java.installations.paths=$JAVA_HOME,$JAVA_HOME_8_X64,$JAVA_HOME_25_X64
+          -Porg.gradle.java.installations.auto-detect=false
+          -Porg.gradle.java.installations.auto-download=false" >> "$GITHUB_ENV"
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
       - name: Build 1.15.2 dependency chain
@@ -74,11 +75,11 @@ jobs:
           basemetals="$GITHUB_WORKSPACE/.ci-dependencies/BaseMetals"
           power="$GITHUB_WORKSPACE/.ci-dependencies/PowerAdvantage"
           chmod +x "$orespawn/gradlew" "$basemetals/gradlew" "$power/gradlew"
-          (cd "$orespawn" && ./gradlew jar --no-daemon --stacktrace)
-          (cd "$basemetals" && ./gradlew jar --no-daemon --stacktrace)
+          (cd "$orespawn" && ./gradlew $MMD_GRADLE_TOOLCHAINS jar --no-daemon --stacktrace)
+          (cd "$basemetals" && ./gradlew $MMD_GRADLE_TOOLCHAINS jar --no-daemon --stacktrace)
           osjar="$orespawn/build/libs-dev/OreSpawn-4.1.1.115021-deobf.jar"
           bmjar="$basemetals/build/libs-dev/BaseMetals-3.0.1.115021-deobf.jar"
-          (cd "$power" && ./gradlew jar verifyReleaseDependencies \
+          (cd "$power" && ./gradlew $MMD_GRADLE_TOOLCHAINS jar verifyReleaseDependencies \
             -PbaseMetalsDeobfJar="$bmjar" -PoreSpawnDeobfJar="$osjar" \
             --no-daemon --stacktrace)
           powerjar="$power/build/libs-dev/PowerAdvantage-2.4.6.115021-deobf.jar"
@@ -89,7 +90,7 @@ jobs:
           echo "power_ref=$(git -C "$power" rev-parse HEAD)" >> "$GITHUB_OUTPUT"
       - name: Build and audit release artifacts
         run: >-
-          ./gradlew clean check build javadoc verifyReleaseDependencies verifyReleaseArtifacts
+          ./gradlew $MMD_GRADLE_TOOLCHAINS clean check build javadoc verifyReleaseDependencies verifyReleaseArtifacts
           writeReleaseChecksums verifyEclipseProductionClasspath
           -PpowerAdvantageDeobfJar=${{ steps.dependencies.outputs.power }}
           -Ppoweradvantage_source_ref=${{ steps.dependencies.outputs.power_ref }}
