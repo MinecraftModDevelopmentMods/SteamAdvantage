@@ -11,7 +11,11 @@ import net.minecraft.world.IBlockReader;
 import zone.moddev.mc.steamadvantage.init.Power;
 
 public class SteamTrackBlock extends BlockSimplePowerConduit {
-    public SteamTrackBlock() { super(Material.PISTON, 0.75F, 2.0F / 16.0F, Power.steam_power); }
+    public SteamTrackBlock() {
+        super(Properties.create(Material.PISTON).hardnessAndResistance(0.75F).notSolid(),
+                2.0F / 16.0F, Power.steam_power);
+    }
     @Override public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) { return VoxelShapes.fullCube(); }
     @Override public VoxelShape getCollisionShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) { return VoxelShapes.fullCube(); }
+    @Override public boolean isNormalCube(BlockState state, IBlockReader world, BlockPos pos) { return false; }
 }

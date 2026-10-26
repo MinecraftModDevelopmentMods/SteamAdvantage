@@ -6,6 +6,8 @@ Steam Advantage 2.2.7.115021
 - Register the steam track's cutout render layer on the client and retain non-solid helper blocks through native properties.
 - Use native entity position accessors and action-result factories for elevators and muskets.
 - Preserve registry identities, recipes, migration codecs, saved NBT, machine costs and output quantities.
+- Register recipe conditions after parallel setup to prevent intermittent missing recipes at startup.
+- Retain the steam track's light transmission and keep tracks and elevator platforms from conducting redstone through their full-cube shapes.
 - Pass 30 unit/resource tests, including all-facing renderer geometry, lighting/overlay and matrix-restoration regressions.
 - Keep combined server/client gameplay and disposable-copy migration checks separate; 1.14 results do not qualify 1.15 worlds.
 

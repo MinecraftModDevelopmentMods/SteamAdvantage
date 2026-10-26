@@ -50,7 +50,6 @@ public final class SteamAdvantage {
         Entities.init();
         Enchantments.init();
         GUI.init();
-        RecipeConditions.register();
 
         migrateLegacyConfiguration();
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, SteamAdvantageConfig.SPEC);
@@ -80,6 +79,8 @@ public final class SteamAdvantage {
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
+        // CraftingHelper's shared condition map is not safe during parallel loading.
+        net.minecraftforge.fml.DeferredWorkQueue.runLater(RecipeConditions::register);
         SteamAdvantageConfig.apply();
         Recipes.init();
         TreasureChests.init(FMLPaths.CONFIGDIR.get());

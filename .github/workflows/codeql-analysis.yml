@@ -40,7 +40,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: MinecraftModDevelopmentMods/PowerAdvantage
-          ref: b15e2091e9647860bd90284aef6135a311692864
+          ref: 75d24d2641e8123ff7a7f961d9a1e5a1d5203194
           path: .ci-dependencies/PowerAdvantage
       - name: Install pinned Java 25 Mavenizer runtime
         uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
