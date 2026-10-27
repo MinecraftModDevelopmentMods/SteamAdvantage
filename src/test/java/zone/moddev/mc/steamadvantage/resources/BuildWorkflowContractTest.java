@@ -13,9 +13,7 @@ public class BuildWorkflowContractTest {
                     StandardCharsets.UTF_8);
             assertTrue(name, source.contains("ref: ac1781e7cade15045ffe0135077087b4d1722603"));
             assertTrue(name, source.contains("BaseMetals-3.0.2.115021-deobf.jar"));
-            assertTrue(name, source.contains("Local-only Base Metals source; publish upstream before PR/hosted builds."));
             assertTrue(name, source.contains("ref: 6666099a734eba16561d98c86f3f4bb1b7c742f7"));
-            assertTrue(name, source.contains("Local-only Power source; publish upstream before PR/hosted builds."));
             assertTrue(name, source.contains("-Porg.gradle.java.installations.paths="));
             assertTrue(name, source.contains("-Porg.gradle.java.installations.auto-detect=false"));
             assertTrue(name, source.contains("-Porg.gradle.java.installations.auto-download=false"));

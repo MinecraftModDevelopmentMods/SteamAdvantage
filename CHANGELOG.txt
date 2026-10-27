@@ -10,6 +10,7 @@ Steam Advantage 2.2.7.115021
 - Retain the steam track's light transmission and keep tracks and elevator platforms from conducting redstone through their full-cube shapes.
 - Add all-facing renderer, lighting, matrix-restoration and native block-property regressions.
 - Record combined operating and disposable-copy migration results in Power Advantage's shared 1.15 test notes; manual acceptance remains separate.
+- Record the accepted in-game visuals and recipe unlocks; the shared test record retains the remaining limits.
 
 Steam Advantage 2.2.6.114041
 
