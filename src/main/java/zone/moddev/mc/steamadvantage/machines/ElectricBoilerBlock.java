@@ -21,19 +21,19 @@ public class ElectricBoilerBlock  extends cyano.poweradvantage.api.simple.BlockS
 	}
 
 	@Override
-	public PoweredEntity createNewTileEntity(net.minecraft.world.IBlockReader world) {
+	public PoweredEntity newBlockEntity(net.minecraft.world.IBlockReader world) {
 		return new ElectricBoilerTileEntity();
 	}
 
 	@Override
-	public boolean hasComparatorInputOverride(BlockState bs) {
+	public boolean hasAnalogOutputSignal(BlockState bs) {
 		return true;
 	}
 
 	@Override
-	public int getComparatorInputOverride(BlockState bs, World world, BlockPos coord) {
-		if(world.getTileEntity(coord) instanceof ElectricBoilerTileEntity){
-			return ((ElectricBoilerTileEntity)world.getTileEntity(coord)).getComparatorOutput();
+	public int getAnalogOutputSignal(BlockState bs, World world, BlockPos coord) {
+		if(world.getBlockEntity(coord) instanceof ElectricBoilerTileEntity){
+			return ((ElectricBoilerTileEntity)world.getBlockEntity(coord)).getComparatorOutput();
 		}
 		return 0;
 	}

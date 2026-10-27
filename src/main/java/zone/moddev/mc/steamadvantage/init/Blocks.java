@@ -73,7 +73,7 @@ public final class Blocks {
         steam_elevator_platform = add(new PlatformBlock(), "platform");
         steam_elevator_platforms = new BlockState[5];
         for (int i = 0; i < steam_elevator_platforms.length; i++) {
-            steam_elevator_platforms[i] = steam_elevator_platform.getDefaultState().with(PlatformBlock.HEIGHT, i);
+            steam_elevator_platforms[i] = steam_elevator_platform.defaultBlockState().setValue(PlatformBlock.HEIGHT, i);
         }
         steam_elevator = (GUIBlock) add(new SteamElevatorBlock(), "steam_elevator");
         steam_switch = add(new BlockPowerSwitch(Power.steam_power), "steam_switch");
@@ -102,7 +102,7 @@ public final class Blocks {
         for (Map.Entry<String, Block> entry : ALL_BLOCKS.entrySet()) {
             Item.Properties properties = new Item.Properties();
             if (!"pump_pipe_steam".equals(entry.getKey()) && !"drillbit".equals(entry.getKey())) {
-                properties.group(ItemGroups.tab_powerAdvantage);
+                properties.tab(ItemGroups.tab_powerAdvantage);
             }
             BlockItem item = new BlockItem(entry.getValue(), properties);
             item.setRegistryName(SteamAdvantage.MODID, entry.getKey());

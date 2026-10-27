@@ -1,3 +1,15 @@
+Steam Advantage 2.2.8.116051 (local port candidate)
+
+- Target Minecraft 1.16.5 / Forge 36.2.34 with official 1.16.5 mappings.
+- Keep Java 8 compilation and runtime with ForgeGradle 7.0.34 / Gradle 9.6.1.
+- Use world-only conduit callbacks and Power Advantage's native tile lifecycle.
+- Adapt native NBT load/save, client model predicates, rendering and item attributes.
+- Use queued setup and native Forge fuel calculation.
+- Preserve registry identities, recipe and trade quantities, machine ratios and NBT.
+- Retain exact track/platform opacity, collision and redstone behavior.
+- Add exact native level, persistence and callback regressions.
+- Pin Power's stable local API bootstrap; keep 1.16 runtime/manual qualification pending.
+
 Steam Advantage 2.2.7.115021
 
 - Target Minecraft 1.15.2 / Forge 31.2.57 with snapshot 20200514-1.15.1 mappings and MCP 20200515.085601.

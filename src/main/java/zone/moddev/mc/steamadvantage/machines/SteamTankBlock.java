@@ -16,18 +16,18 @@ public class SteamTankBlock extends cyano.poweradvantage.api.simple.BlockSimpleP
 	}
 
 	@Override
-	public PoweredEntity createNewTileEntity(net.minecraft.world.IBlockReader world) {
+	public PoweredEntity newBlockEntity(net.minecraft.world.IBlockReader world) {
 		return new SteamTankTileEntity();
 	}
 
 	@Override
-	public boolean hasComparatorInputOverride(BlockState bs) {
+	public boolean hasAnalogOutputSignal(BlockState bs) {
 		return true;
 	}
 
 	@Override
-	public int getComparatorInputOverride(BlockState bs, World world, BlockPos coord) {
-		TileEntity te = world.getTileEntity(coord);
+	public int getAnalogOutputSignal(BlockState bs, World world, BlockPos coord) {
+		TileEntity te = world.getBlockEntity(coord);
 		if(te instanceof SteamTankTileEntity){
 			return (int)(15 * ((SteamTankTileEntity)te).getSteamLevel());
 		} else{

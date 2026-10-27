@@ -58,10 +58,10 @@ public final class SteamLegacyMigrations {
 
     private static BlockState decodeState(Block block, int metadata) {
         if (block instanceof SteamDrillBlock) {
-            return block.getDefaultState().with(SteamDrillBlock.FACING, legacyDrillFacing(metadata));
+            return block.defaultBlockState().setValue(SteamDrillBlock.FACING, legacyDrillFacing(metadata));
         }
         if (block instanceof PlatformBlock) {
-            return block.getDefaultState().with(PlatformBlock.HEIGHT,
+            return block.defaultBlockState().setValue(PlatformBlock.HEIGHT,
                     Integer.valueOf(legacyPlatformHeight(metadata)));
         }
         if (block instanceof BlockPowerSwitch) {
@@ -70,11 +70,11 @@ public final class SteamLegacyMigrations {
         if (block instanceof BlockSimplePowerMachine) {
             return ((BlockSimplePowerMachine) block).getStateFromMeta(metadata);
         }
-        return block.getDefaultState();
+        return block.defaultBlockState();
     }
 
     static Direction legacyDrillFacing(int metadata) {
-        return Direction.byIndex(metadata % Direction.values().length);
+        return Direction.from3DDataValue(metadata % Direction.values().length);
     }
 
     static int legacyPlatformHeight(int metadata) {

@@ -33,7 +33,7 @@ public class SteamTankGUI extends SimpleMachineGUI{
 	 * @param guiContainer This is the instance of GUIContainer that is drawing 
 	 * the GUI. You need to use it to draw on the screen. For example:<br>
 	   <pre>
-net.minecraft.client.Minecraft.getInstance().getTextureManager().bindTexture(arrowTexture);
+net.minecraft.client.Minecraft.getInstance().getTextureManager().bind(arrowTexture);
 guiContainer.blit(x+79, y+35, 0, 0, arrowLength, 17); // x, y, textureOffsetX, textureOffsetY, width, height)
 	   </pre>
 	 * @param x This is the x coordinate (in pixels) from the top-left corner of 

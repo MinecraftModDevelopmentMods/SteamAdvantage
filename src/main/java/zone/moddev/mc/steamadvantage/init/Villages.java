@@ -35,7 +35,7 @@ public final class Villages {
         if (profession == VillagerProfession.CLERIC) {
             event.getTrades().get(3).add((trader, random) -> {
                 int enchantmentLevel = 5 + random.nextInt(15);
-                ItemStack musket = EnchantmentHelper.addRandomEnchantment(random,
+                ItemStack musket = EnchantmentHelper.enchantItem(random,
                         new ItemStack(Items.blackpowder_musket), enchantmentLevel, false);
                 int price = Math.min(randomPrice(random, 15, 25) + enchantmentLevel, 64);
                 return offer(price, musket);

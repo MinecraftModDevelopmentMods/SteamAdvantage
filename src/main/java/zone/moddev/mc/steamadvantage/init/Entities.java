@@ -59,7 +59,7 @@ public final class Entities {
 
     private static <T extends TileEntity> TileEntityType<T> register(
             RegistryEvent.Register<TileEntityType<?>> event, String id, Supplier<? extends T> factory, Block block) {
-        TileEntityType<T> type = TileEntityType.Builder.<T>create(factory, block).build(null);
+        TileEntityType<T> type = TileEntityType.Builder.<T>of(factory, block).build(null);
         type.setRegistryName(SteamAdvantage.MODID, id);
         event.getRegistry().register(type);
         return type;

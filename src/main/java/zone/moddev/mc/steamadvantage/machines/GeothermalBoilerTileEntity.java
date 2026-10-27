@@ -48,7 +48,7 @@ public class GeothermalBoilerTileEntity extends cyano.poweradvantage.api.simple.
 	}
 	
 	@Override
-	public boolean isUsableByPlayer(PlayerEntity player) {
+	public boolean stillValid(PlayerEntity player) {
 		return true;
 	}
 
@@ -63,12 +63,12 @@ public class GeothermalBoilerTileEntity extends cyano.poweradvantage.api.simple.
 			if(!redstone && tank.getFluidAmount() > 0 && temperature >= ACTIVATION_TEMPERATURE){
 				boilWater();
 				// play steam sounds occasionally
-				if(getWorld().rand.nextInt(100) == 0){
-					playSoundAtTileEntity( SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.AMBIENT, 0.5f, 1f, this);
+				if(getLevel().random.nextInt(100) == 0){
+					playSoundAtTileEntity( SoundEvents.FIRE_EXTINGUISH, SoundCategory.AMBIENT, 0.5f, 1f, this);
 				}
 				if(timeSinceSound > 200){
 					if(getTank().getFluidAmount() > 0){
-						playSoundAtTileEntity( SoundEvents.BLOCK_LAVA_AMBIENT, SoundCategory.AMBIENT, 0.3f, 1f, this);
+						playSoundAtTileEntity( SoundEvents.LAVA_AMBIENT, SoundCategory.AMBIENT, 0.3f, 1f, this);
 					}
 					timeSinceSound = 0;
 				}
@@ -82,7 +82,7 @@ public class GeothermalBoilerTileEntity extends cyano.poweradvantage.api.simple.
 
 
 	private boolean hasRedstoneSignal() {
-		return getWorld().isBlockPowered(getPos());
+		return getLevel().hasNeighborSignal(getBlockPos());
 	}
 
 
@@ -95,9 +95,9 @@ public class GeothermalBoilerTileEntity extends cyano.poweradvantage.api.simple.
 	private void updateTemperature(){
 		float themalInput = 0;
 		for(Direction f : Direction.values()){
-			BlockPos p = getPos().offset(f);
+			BlockPos p = getBlockPos().relative(f);
 			if(p.getY() >= 0 && p.getY() < 256){
-				themalInput += thermalEnergy(getWorld().getBlockState(p));
+				themalInput += thermalEnergy(getLevel().getBlockState(p));
 			}
 		}
 		float tSqr = temperature * temperature;
@@ -109,7 +109,7 @@ public class GeothermalBoilerTileEntity extends cyano.poweradvantage.api.simple.
 		Block b = bs.getBlock();
 		if(b == net.minecraft.block.Blocks.FIRE){
 			return 200;
-		} else if(bs.getFluidState().getFluid().isEquivalentTo(net.minecraft.fluid.Fluids.LAVA)) {
+		} else if(bs.getFluidState().getType().isSame(net.minecraft.fluid.Fluids.LAVA)) {
 			// Forge 1.13 native fluids no longer expose the old temperature property.
 			return (1300 - 372) * 0.5f;
 		} else {
@@ -208,8 +208,8 @@ public class GeothermalBoilerTileEntity extends cyano.poweradvantage.api.simple.
 	 * @param tagRoot An NBT tag
 	 */
 	@Override
-    public CompoundNBT write(final CompoundNBT tagRoot) {
-		super.write(tagRoot);
+    public CompoundNBT save(final CompoundNBT tagRoot) {
+		super.save(tagRoot);
         CompoundNBT tankTag = new CompoundNBT();
         this.getTank().writeToNBT(tankTag);
         tagRoot.put("Tank", tankTag);
@@ -221,8 +221,8 @@ public class GeothermalBoilerTileEntity extends cyano.poweradvantage.api.simple.
 	 * @param tagRoot An NBT tag
 	 */
 	@Override
-	public void read(final CompoundNBT tagRoot) {
-		super.read(tagRoot);
+	public void load(net.minecraft.block.BlockState state, final CompoundNBT tagRoot) {
+		super.load(state, tagRoot);
 		if (tagRoot.contains("Tank")) {
 			CompoundNBT tankTag = tagRoot.getCompound("Tank");
 			getTank().readFromNBT(tankTag);
@@ -408,7 +408,7 @@ public class GeothermalBoilerTileEntity extends cyano.poweradvantage.api.simple.
 	///// end of IFluidHandler methods /////
 	
 	@Override
-	public boolean isItemValidForSlot(final int slot, final ItemStack item) {
+	public boolean canPlaceItem(final int slot, final ItemStack item) {
 		return false;
 	}
 }

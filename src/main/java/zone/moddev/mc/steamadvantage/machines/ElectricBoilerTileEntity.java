@@ -55,12 +55,12 @@ public class ElectricBoilerTileEntity extends cyano.poweradvantage.api.simple.Ti
 			if(!redstone && getEnergy(ELECTRIC_POWER) >= ELECTRICITY_PER_TICK){
 				boilWater();
 				// play steam sounds occasionally
-				if(getWorld().rand.nextInt(100) == 0){
-					playSoundAtTileEntity( SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.AMBIENT, 0.5f, 1f, this);
+				if(getLevel().random.nextInt(100) == 0){
+					playSoundAtTileEntity( SoundEvents.FIRE_EXTINGUISH, SoundCategory.AMBIENT, 0.5f, 1f, this);
 				}
 				if(timeSinceSound > 200){
 					if(getTank().getFluidAmount() > 0){
-						playSoundAtTileEntity( SoundEvents.BLOCK_LAVA_AMBIENT, SoundCategory.AMBIENT, 0.3f, 1f, this);
+						playSoundAtTileEntity( SoundEvents.LAVA_AMBIENT, SoundCategory.AMBIENT, 0.3f, 1f, this);
 					}
 					timeSinceSound = 0;
 				}
@@ -73,7 +73,7 @@ public class ElectricBoilerTileEntity extends cyano.poweradvantage.api.simple.Ti
 
 
 	private boolean hasRedstoneSignal() {
-		return getWorld().isBlockPowered(getPos());
+		return getLevel().hasNeighborSignal(getBlockPos());
 	}
 
 
@@ -84,7 +84,7 @@ public class ElectricBoilerTileEntity extends cyano.poweradvantage.api.simple.Ti
 	}
 
 	@Override
-	public boolean isUsableByPlayer(PlayerEntity player) {
+	public boolean stillValid(PlayerEntity player) {
 		return true;
 	}
 	
@@ -174,8 +174,8 @@ public class ElectricBoilerTileEntity extends cyano.poweradvantage.api.simple.Ti
 	 * @param tagRoot An NBT tag
 	 */
 	@Override
-    public CompoundNBT write(final CompoundNBT tagRoot) {
-		super.write(tagRoot);
+    public CompoundNBT save(final CompoundNBT tagRoot) {
+		super.save(tagRoot);
         CompoundNBT tankTag = new CompoundNBT();
         this.getTank().writeToNBT(tankTag);
         tagRoot.put("Tank", tankTag);
@@ -187,8 +187,8 @@ public class ElectricBoilerTileEntity extends cyano.poweradvantage.api.simple.Ti
 	 * @param tagRoot An NBT tag
 	 */
 	@Override
-	public void read(final CompoundNBT tagRoot) {
-		super.read(tagRoot);
+	public void load(net.minecraft.block.BlockState state, final CompoundNBT tagRoot) {
+		super.load(state, tagRoot);
 		if (tagRoot.contains("Tank")) {
 			CompoundNBT tankTag = tagRoot.getCompound("Tank");
 			getTank().readFromNBT(tankTag);
@@ -372,7 +372,7 @@ public class ElectricBoilerTileEntity extends cyano.poweradvantage.api.simple.Ti
 	///// end of IFluidHandler methods /////
 	
 	@Override
-	public boolean isItemValidForSlot(final int slot, final ItemStack item) {
+	public boolean canPlaceItem(final int slot, final ItemStack item) {
 		return false;
 	}
 }

@@ -94,7 +94,7 @@ minecraft {
     def forgeRunModClassesDirectory = layout.buildDirectory.dir('forge-run-mod-classes/main')
     def forgeMainOutputPath = forgeRunModClassesDirectory.get().asFile.absolutePath
     def mainModClasses = "${mod_id}%%${forgeMainOutputPath}${File.pathSeparator}${mod_id}%%${forgeMainOutputPath}"
-    def forge31RunTargets = [client: 'fmluserdevclient', server: 'fmluserdevserver', data: 'fmluserdevdata']
+    def forge36RunTargets = [client: 'fmluserdevclient', server: 'fmluserdevserver', data: 'fmldatauserdev']
     runs {
         configureEach {
             mainClass = 'net.minecraftforge.userdev.LaunchTesting'
@@ -102,7 +102,7 @@ minecraft {
             systemProperty 'forge.logging.markers', 'REGISTRIES'
             systemProperty 'forge.logging.console.level', 'info'
             mods { steamadvantage { source sourceSets.main } }
-            environment 'target', forge31RunTargets[name]
+            environment 'target', forge36RunTargets[name]
             environment 'MCP_MAPPINGS', "${mapping_channel}_${mapping_version}"
             environment 'MCP_VERSION', mcp_version
             environment 'FORGE_VERSION', forge_version
@@ -130,12 +130,16 @@ sourceSets.main.resources {
 def forgeRunModClassesDirectory = layout.buildDirectory.dir('forge-run-mod-classes/main')
 def prepareForgeRunModClasses = tasks.register('prepareForgeRunModClasses', Sync) {
     group = 'ide'
-    description = 'Merges classes and processed resources for Forge 1.15 launches.'
+    description = 'Merges classes and processed resources for Forge 1.16 launches.'
     dependsOn tasks.named('classes')
     from sourceSets.main.output
     into forgeRunModClassesDirectory
 }
 tasks.withType(JavaExec).configureEach {
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(8)
+        vendor = JvmVendorSpec.ADOPTIUM
+    }
     if (name in ['runClient', 'runServer', 'runData']) {
         dependsOn prepareForgeRunModClasses
     }
@@ -178,18 +182,18 @@ if (!powerAdvantageDeobfJar.isFile()) {
 // These defaults follow the sibling MMD checkout layout. They are constants
 // here so another developer can override them without editing the script.
 def baseMetalsDeobfJar = file(providers.gradleProperty('baseMetalsDeobfJar')
-        .getOrElse('../../../../BaseMetals/BaseMetals 115/BaseMetals/build/libs-dev/'
-                + 'BaseMetals-3.0.2.115021-deobf.jar'))
+        .getOrElse('../../../../BaseMetals/BaseMetals 116/BaseMetals/build/libs-dev/'
+                + 'BaseMetals-3.1.1.116051-deobf.jar'))
 if (!baseMetalsDeobfJar.isFile()) {
     throw new GradleException("Missing Base Metals deobf jar at ${baseMetalsDeobfJar}. "
-            + "Build Base Metals 1.15 first, or pass -PbaseMetalsDeobfJar=<path>.")
+            + "Build Base Metals 1.16 first, or pass -PbaseMetalsDeobfJar=<path>.")
 }
 def oreSpawnDeobfJar = file(providers.gradleProperty('oreSpawnDeobfJar')
-        .getOrElse('../../../../MinecraftMineralogy/OS115/OreSpawn/build/libs-dev/'
-                + 'OreSpawn-4.1.1.115021-deobf.jar'))
+        .getOrElse('../../../../MinecraftMineralogy/OS116/OreSpawn/build/libs-dev/'
+                + 'OreSpawn-4.1.0.116051-deobf.jar'))
 if (!oreSpawnDeobfJar.isFile()) {
     throw new GradleException("Missing OreSpawn deobf jar at ${oreSpawnDeobfJar}. "
-            + "Build OreSpawn 1.15 first, or pass -PoreSpawnDeobfJar=<path>.")
+            + "Build OreSpawn 1.16 first, or pass -PoreSpawnDeobfJar=<path>.")
 }
 
 dependencies {
@@ -341,17 +345,17 @@ tasks.register('verifyReleaseConfiguration') {
     group = 'verification'
     description = 'Validates release identity, target metadata, and dependency policy.'
     doLast {
-        if (new JsonSlurper().parse(file('src/main/resources/pack.mcmeta')).pack.pack_format != 5) {
-            throw new GradleException('Minecraft 1.15.2 resources must use pack format 5')
+        if (new JsonSlurper().parse(file('src/main/resources/pack.mcmeta')).pack.pack_format != 6) {
+            throw new GradleException('Minecraft 1.16.5 resources must use pack format 6')
         }
-        if (project.mod_version != '2.2.7.115021') {
+        if (project.mod_version != '2.2.8.116051') {
             throw new GradleException("Unexpected SteamAdvantage release version: ${project.mod_version}")
         }
-        if (project.minecraft_version != '1.15.2'
-                || project.forge_version != '31.2.57'
-                || project.mapping_channel != 'snapshot'
-                || project.mapping_version != '20200514-1.15.1'
-                || project.mcp_version != '20200515.085601') {
+        if (project.minecraft_version != '1.16.5'
+                || project.forge_version != '36.2.34'
+                || project.mapping_channel != 'official'
+                || project.mapping_version != '1.16.5'
+                || project.mcp_version != '20210115.111550') {
             throw new GradleException('Unexpected Minecraft, Forge, or mappings target')
         }
         if (project.loader_name != 'forge' || project.loader_code != '1'
@@ -369,24 +373,24 @@ tasks.register('verifyReleaseConfiguration') {
         }
         if (project.cf_requirements != 'power-advantage,base-metals'
                 || project.cf_optionals != ''
-                || project.cf_versions != '1.15.2') {
+                || project.cf_versions != '1.16.5') {
             throw new GradleException('Unexpected CurseForge dependency or game-version metadata')
         }
-        if (project.poweradvantage_version != '2.4.6.115021'
+        if (project.poweradvantage_version != '2.4.7.116051'
                 || project.poweradvantage_source_repository != 'MinecraftModDevelopmentMods/PowerAdvantage'
-                || !(project.poweradvantage_source_ref ==~ /[a-f0-9]{40}/)
-                || !(project.poweradvantage_deobf_sha256 ==~ /[A-F0-9]{64}/)) {
+                || project.poweradvantage_source_ref != '098d4625abc8a849bd1a11dcf697b3fee0cade7b'
+                || project.poweradvantage_deobf_sha256 != '78E58DD2AB04E2B9F3267E5735C64AAE7E93EAC97571CB04485038862C853ED3') {
             throw new GradleException('Unexpected PowerAdvantage compile dependency identity')
         }
         String mainSource = file(
                 'src/main/java/zone/moddev/mc/steamadvantage/SteamAdvantage.java').getText('UTF-8')
         if (!mainSource.contains('MODID = "steamadvantage"')
-                || !mainSource.contains('VERSION = "2.2.7.115021"')) {
+                || !mainSource.contains('VERSION = "2.2.8.116051"')) {
             throw new GradleException('SteamAdvantage source identity changed')
         }
         String metadata = file('src/main/resources/META-INF/mods.toml').getText('UTF-8').replace('\r\n', '\n')
         ['modId="steamadvantage"', 'modId="poweradvantage"', 'modId="basemetals"',
-         'versionRange="[2.4.6.115021,3.0.0)"'].each { marker ->
+         'versionRange="[2.4.7.116051,3.0.0)"'].each { marker ->
             if (!metadata.contains(marker)) {
                 throw new GradleException("Source mods.toml is missing ${marker}")
             }
@@ -422,9 +426,9 @@ tasks.register('verifyReleaseDependencies') {
             if (manifest.getValue('Implementation-Version') != project.poweradvantage_version) {
                 throw new GradleException('PowerAdvantage dependency manifest has the wrong version')
             }
-            if (manifest.getValue('Built-On') != '1.15.2-31.2.57'
+            if (manifest.getValue('Built-On') != '1.16.5-36.2.34'
                     || manifest.getValue('Built-On-Java') != '8') {
-                throw new GradleException('PowerAdvantage must be the native 1.15.2 Java 8 dependency')
+                throw new GradleException('PowerAdvantage must be the native 1.16.5 Java 8 dependency')
             }
         }
         String actualBaseMetalsHash = MessageDigest.getInstance('SHA-256')
@@ -525,8 +529,8 @@ tasks.register('verifyReleaseArtifacts') {
             }
             def resourcePack = new JsonSlurper().parseText(zip.getInputStream(zip.getEntry('pack.mcmeta'))
                     .getText(StandardCharsets.UTF_8.name()))
-            if (resourcePack.pack.pack_format != 5) {
-                throw new GradleException('Packaged resources must use native 1.15 pack format 5')
+            if (resourcePack.pack.pack_format != 6) {
+                throw new GradleException('Packaged resources must use native 1.16 pack format 6')
             }
             ['agent-notes/', '.codex/', 'src/test/', 'fernflower_abstract_parameter_names.txt',
               'cyano/poweradvantage/',

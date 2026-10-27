@@ -12,7 +12,7 @@ import org.junit.Test;
 public class SteamLegacyMigrationsTest {
     @Test public void preservesAllSixDrillFacings() {
         for (Direction facing : Direction.values()) {
-            assertEquals(facing, SteamLegacyMigrations.legacyDrillFacing(facing.getIndex()));
+            assertEquals(facing, SteamLegacyMigrations.legacyDrillFacing(facing.get3DDataValue()));
         }
     }
 

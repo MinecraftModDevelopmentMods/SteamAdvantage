@@ -33,47 +33,47 @@ public class SteamDrillBlock extends GUIBlock implements ITypedConduit {
 
 	public SteamDrillBlock(){
 		super(Material.PISTON, 0.75f);
-		this.setDefaultState(getStateContainer().getBaseState().with(FACING, Direction.DOWN));
+		this.registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.DOWN));
 	}
 
 	/**
 	 * Override of default block behavior
 	 */
 	@Override
-	public void onBlockAdded(final BlockState state, final World world, final BlockPos coord, final BlockState oldState, final boolean moving) {
-		super.onBlockAdded(state, world, coord, oldState, moving);
-		ConduitRegistry.getInstance().conduitBlockPlacedEvent(world, world.dimension.getType().getId(), coord, Power.steam_power);
+	public void onPlace(final BlockState state, final World world, final BlockPos coord, final BlockState oldState, final boolean moving) {
+		super.onPlace(state, world, coord, oldState, moving);
+		ConduitRegistry.getInstance().conduitBlockPlacedEvent(world, coord, Power.steam_power);
 	}
 	/**
 	 * This method is called when the block is removed from the world by an entity.
 	 */
 	@Override
-	public void onReplaced(BlockState state, World w, BlockPos coord, BlockState newState, boolean isMoving){
+	public void onRemove(BlockState state, World w, BlockPos coord, BlockState newState, boolean isMoving){
 		if (state.getBlock() != newState.getBlock()) {
 			destroyNeighbors(w, coord, state);
-			ConduitRegistry.getInstance().conduitBlockRemovedEvent(w, w.dimension.getType().getId(), coord, Power.steam_power);
+			ConduitRegistry.getInstance().conduitBlockRemovedEvent(w, coord, Power.steam_power);
 		}
-		super.onReplaced(state, w, coord, newState, isMoving);
+		super.onRemove(state, w, coord, newState, isMoving);
 	}
 	/**
 	 * This method is called when the block is destroyed by an explosion.
 	 */
 	@Override
-	public void onExplosionDestroy(World w, BlockPos coord, Explosion boom){
+	public void wasExploded(World w, BlockPos coord, Explosion boom){
 		destroyNeighbors(w,coord,w.getBlockState(coord));
-		ConduitRegistry.getInstance().conduitBlockRemovedEvent(w, w.dimension.getType().getId(), coord, Power.steam_power);
-		super.onExplosionDestroy(w, coord, boom);
+		ConduitRegistry.getInstance().conduitBlockRemovedEvent(w, coord, Power.steam_power);
+		super.wasExploded(w, coord, boom);
 	}
 
 
 
 	private void destroyNeighbors(World w, BlockPos coord, BlockState state) {
-		if(w.isRemote) return;
+		if(w.isClientSide) return;
 		// destroy connected drill bits
 		for(int i = 0; i < 6; i++){
-			BlockPos pos = coord.offset(Direction.byIndex(i));
-			if(w.getTileEntity(pos) instanceof DrillBitTileEntity){
-				DrillBitTileEntity te = (DrillBitTileEntity)w.getTileEntity(pos);
+			BlockPos pos = coord.relative(Direction.from3DDataValue(i));
+			if(w.getBlockEntity(pos) instanceof DrillBitTileEntity){
+				DrillBitTileEntity te = (DrillBitTileEntity)w.getBlockEntity(pos);
 				te.destroyLine();
 			}
 		}
@@ -85,7 +85,7 @@ public class SteamDrillBlock extends GUIBlock implements ITypedConduit {
 	 * <b>TileEntitySimplePowerConsumer</b>.
 	 */
 	@Override
-	public PoweredEntity createNewTileEntity(final net.minecraft.world.IBlockReader world){
+	public PoweredEntity newBlockEntity(final net.minecraft.world.IBlockReader world){
 		return new SteamDrillTileEntity();
 	}
 
@@ -121,17 +121,17 @@ public class SteamDrillBlock extends GUIBlock implements ITypedConduit {
 	 */
 	@Override
 	public BlockState getStateForPlacement(final BlockItemUseContext context) {
-		return this.getDefaultState().with(FACING, context.getFace().getOpposite());
+		return this.defaultBlockState().setValue(FACING, context.getClickedFace().getOpposite());
 	}
 
 	/**
 	 * Creates the blockstate of this block when it is placed in the world
 	 */
 	@Override
-	public void onBlockPlacedBy(final World world, final BlockPos coord, final BlockState bs,
+	public void setPlacedBy(final World world, final BlockPos coord, final BlockState bs,
 			final LivingEntity placer, final ItemStack srcItemStack) {
-		if (srcItemStack.hasDisplayName()) {
-			final TileEntity tileEntity = world.getTileEntity(coord);
+		if (srcItemStack.hasCustomHoverName()) {
+			final TileEntity tileEntity = world.getBlockEntity(coord);
 			if (tileEntity instanceof PoweredEntity){
 				((PoweredEntity)tileEntity).setCustomInventoryName(srcItemStack.getDisplayName().getString());
 			}
@@ -162,7 +162,7 @@ public class SteamDrillBlock extends GUIBlock implements ITypedConduit {
 	 * false otherwise
 	 */
 	@Override
-	public boolean hasComparatorInputOverride(BlockState bs){
+	public boolean hasAnalogOutputSignal(BlockState bs){
 		return true;
 	}
 
@@ -183,8 +183,8 @@ public class SteamDrillBlock extends GUIBlock implements ITypedConduit {
 	 * @return a number from 0 to 15
 	 */
 	@Override
-	public int getComparatorInputOverride(BlockState bs, final World world, final BlockPos coord){
-		TileEntity te = world.getTileEntity(coord);
+	public int getAnalogOutputSignal(BlockState bs, final World world, final BlockPos coord){
+		TileEntity te = world.getBlockEntity(coord);
 		if(te instanceof SteamDrillTileEntity){
 			return ((SteamDrillTileEntity)te).getComparatorOutput();
 		} else {
@@ -196,7 +196,7 @@ public class SteamDrillBlock extends GUIBlock implements ITypedConduit {
 	 * Creates a blockstate
 	 */
 	@Override
-	protected void fillStateContainer(StateContainer.Builder<net.minecraft.block.Block, BlockState> builder) {
+	protected void createBlockStateDefinition(StateContainer.Builder<net.minecraft.block.Block, BlockState> builder) {
 		builder.add(FACING);
 	}
 

@@ -63,29 +63,29 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 			if(!redstone){
 				if(timeUntilNextPump > 0) timeUntilNextPump--;
 				if(timeUntilNextPump == 0 && getTank().getFluidAmount() <= 0){
-					World w = getWorld();
+					World w = getLevel();
 					boolean success = false;
-					BlockPos target = this.getPos().down();
+					BlockPos target = this.getBlockPos().below();
 					while(target.getY() > 0 && w.getBlockState(target).getBlock() == zone.moddev.mc.steamadvantage.init.Blocks.pump_pipe_steam){
-						target = target.down();
+						target = target.below();
 					}
-					if(target.getY() > 0 && w.isAirBlock(target) && getEnergy(Power.steam_power) >= ENERGY_COST_PIPE){
+					if(target.getY() > 0 && w.isEmptyBlock(target) && getEnergy(Power.steam_power) >= ENERGY_COST_PIPE){
 						// place pipe
-						w.setBlockState(target, zone.moddev.mc.steamadvantage.init.Blocks.pump_pipe_steam.getDefaultState());
+						w.setBlockAndUpdate(target, zone.moddev.mc.steamadvantage.init.Blocks.pump_pipe_steam.defaultBlockState());
 						this.subtractEnergy(ENERGY_COST_PIPE, Power.steam_power);
 						timeUntilNextPump = PIPE_INTERVAL;
-						playSoundAtTileEntity( SoundEvents.BLOCK_STONE_PLACE, SoundCategory.BLOCKS, 0.3f, 1f, this);
+						playSoundAtTileEntity( SoundEvents.STONE_PLACE, SoundCategory.BLOCKS, 0.3f, 1f, this);
 					} else {
 						// pump fluids
 						BlockPos fluidSource = null;
 						Set<BlockPos> searchSpace = new HashSet<>(limit + 1); // pre-allocate max memory usage
-						fluidSource = scan(searchSpace,target.down(), limit);
+						fluidSource = scan(searchSpace,target.below(), limit);
 						if(fluidSource == null) fluidSource = scan(searchSpace,target.north(), limit);
 						if(fluidSource == null) fluidSource = scan(searchSpace,target.west(), limit);
 						if(fluidSource == null) fluidSource = scan(searchSpace,target.south(), limit);
 						if(fluidSource == null) fluidSource = scan(searchSpace,target.east(), limit);
 						if(fluidSource != null){
-							float cost = ENERGY_COST_PUMP+ENERGY_COST_VERTICAL*(getPos().getY()-fluidSource.getY());
+							float cost = ENERGY_COST_PUMP+ENERGY_COST_VERTICAL*(getBlockPos().getY()-fluidSource.getY());
 							// Found a fluid to suck-up!
 							BlockState blockstate = w.getBlockState(fluidSource);
 							Fluid f = getFluid(blockstate);
@@ -99,15 +99,15 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 						timeUntilNextPump = PUMP_INTERVAL;
 					}
 					if(success){
-						playSoundAtTileEntity( SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.AMBIENT, 0.5f, 1f, this);
-						playSoundAtTileEntity( SoundEvents.BLOCK_PISTON_EXTEND, SoundCategory.BLOCKS, 0.3f, 1f, this);
+						playSoundAtTileEntity( SoundEvents.FIRE_EXTINGUISH, SoundCategory.AMBIENT, 0.5f, 1f, this);
+						playSoundAtTileEntity( SoundEvents.PISTON_EXTEND, SoundCategory.BLOCKS, 0.3f, 1f, this);
 						timeToSound = 14;
 					}
 				}
 			}
 			if(timeToSound == 1){
-				playSoundAtTileEntity( SoundEvents.BLOCK_PISTON_CONTRACT, SoundCategory.BLOCKS, 0.3f, 1f, this);
-				playSoundAtTileEntity( SoundEvents.ITEM_BUCKET_FILL, SoundCategory.BLOCKS, 1f, 1f, this);
+				playSoundAtTileEntity( SoundEvents.PISTON_CONTRACT, SoundCategory.BLOCKS, 0.3f, 1f, this);
+				playSoundAtTileEntity( SoundEvents.BUCKET_FILL, SoundCategory.BLOCKS, 1f, 1f, this);
 			}
 			if(timeToSound > 0) timeToSound--;
 			energyDecay();
@@ -117,7 +117,7 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 
 
 	private Fluid getFluid(BlockState blockstate) {
-		return blockstate.getFluidState().isEmpty() ? null : blockstate.getFluidState().getFluid();
+		return blockstate.getFluidState().isEmpty() ? null : blockstate.getFluidState().getType();
 	}
 
 
@@ -132,7 +132,7 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 				BlockPos next;
 				boolean nomore = true;
 				for(Direction dir : Direction.values()){
-					next = coord.offset(dir);
+					next = coord.relative(dir);
 					if(!searchSpace.contains(next) && isFluidBlock(next)){
 						coord = next;
 						nomore = false;
@@ -148,21 +148,21 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 	}
 
 	private boolean isSourceBlock( BlockPos coord){
-		return getWorld().getFluidState(coord).isSource();
+		return getLevel().getFluidState(coord).isSource();
 	}
 
 
 
 	private boolean isFluidBlock(BlockPos coord) {
-		World w = getWorld();
-		if(w.isBlockLoaded(coord) == false) return false;
+		World w = getLevel();
+		if(w.hasChunkAt(coord) == false) return false;
 		return !w.getFluidState(coord).isEmpty();
 	}
 
 
 
 	private boolean hasRedstoneSignal() {
-		return getWorld().isBlockPowered(getPos());
+		return getLevel().hasNeighborSignal(getBlockPos());
 	}
 
 
@@ -184,7 +184,7 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 			ConduitType type = Fluids.fluidToConduitType(fluid.getFluid());
 			float availableAmount = getTank().getFluidAmount();
 			float delta = ConduitRegistry.transmitPowerToConsumers(availableAmount, zone.moddev.mc.poweradvantage.init.Fluids.fluidConduit_general, type,
-					PowerRequest.LAST_PRIORITY, getWorld(), getPos(), this);
+					PowerRequest.LAST_PRIORITY, getLevel(), getBlockPos(), this);
 			if(delta > 0){
 				getTank().drain(Math.max((int)delta,1),true); // no free energy!
 			} else {
@@ -192,8 +192,8 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 				for(int i = 1; i < Direction.values().length; i++){
 					if(getTank().getFluidAmount() <= 0) break;
 					Direction dir = Direction.values()[i];
-					BlockPos nPos = getPos().offset(dir);
-					TileEntity neighbor = getWorld().getTileEntity(nPos);
+					BlockPos nPos = getBlockPos().relative(dir);
+					TileEntity neighbor = getLevel().getBlockEntity(nPos);
 					IAdvantageFluidHandler handler = FluidHandlerHelper.getHandler(neighbor, dir.getOpposite());
 					if(handler != null){
 						int d = handler.fill(dir.getOpposite(), fluid, true);
@@ -266,8 +266,8 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 	 * @param tagRoot An NBT tag
 	 */
 	@Override
-	public CompoundNBT write(final CompoundNBT tagRoot) {
-		super.write(tagRoot);
+	public CompoundNBT save(final CompoundNBT tagRoot) {
+		super.save(tagRoot);
 		CompoundNBT tankTag = new CompoundNBT();
 		this.getTank().writeToNBT(tankTag);
 		tagRoot.put("Tank", tankTag);
@@ -279,8 +279,8 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 	 * @param tagRoot An NBT tag
 	 */
 	@Override
-	public void read(final CompoundNBT tagRoot) {
-		super.read(tagRoot);
+	public void load(net.minecraft.block.BlockState state, final CompoundNBT tagRoot) {
+		super.load(state, tagRoot);
 		String tankKey = tagRoot.contains("Tank") ? "Tank" : "TankOut";
 		if (tagRoot.contains(tankKey)) {
 			CompoundNBT tankTag = tagRoot.getCompound(tankKey);
@@ -442,14 +442,14 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 	///// end of IFluidHandler methods /////
 
 	@Override
-	public boolean isItemValidForSlot(final int slot, final ItemStack item) {
+	public boolean canPlaceItem(final int slot, final ItemStack item) {
 		return false; // no inventory
 	}
 
 
 
 	@Override
-	public boolean isUsableByPlayer(PlayerEntity player) {
+	public boolean stillValid(PlayerEntity player) {
 		return true;
 	}
 }

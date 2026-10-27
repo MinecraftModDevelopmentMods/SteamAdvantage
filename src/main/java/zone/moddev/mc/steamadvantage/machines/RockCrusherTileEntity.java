@@ -43,7 +43,7 @@ public class RockCrusherTileEntity extends cyano.poweradvantage.api.simple.TileE
 		if(isServerWorld){
 			// reset progress when item in slot changes
 			ItemStack input = inventory[0];
-			if(itemCheck != null && (input == null || input.isEmpty() || ItemStack.areItemsEqual(itemCheck, input) == false)){
+			if(itemCheck != null && (input == null || input.isEmpty() || ItemStack.isSame(itemCheck, input) == false)){
 				progress = 0;
 			}
 			itemCheck  = (input == null || input.isEmpty()) ? null : input.copy();
@@ -71,7 +71,7 @@ public class RockCrusherTileEntity extends cyano.poweradvantage.api.simple.TileE
 							// play steam sounds occasionally
 							timeSinceLastSteamBurst++;
 							if(timeSinceLastSteamBurst > 50){
-								playSoundAtTileEntity( SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.AMBIENT, 0.5f, 1f, this);
+								playSoundAtTileEntity( SoundEvents.FIRE_EXTINGUISH, SoundCategory.AMBIENT, 0.5f, 1f, this);
 								timeSinceLastSteamBurst = 0;
 							}
 						} else if (progress > 0){
@@ -88,7 +88,7 @@ public class RockCrusherTileEntity extends cyano.poweradvantage.api.simple.TileE
 							inventory[0].shrink(1);
 							if(inventory[0].isEmpty()){inventory[0] = null;} // decrement the input slot
 							progress = 0;
-							playSoundAtTileEntity( SoundEvents.BLOCK_GRAVEL_BREAK, SoundCategory.AMBIENT, 0.5f, 0.2f, this);
+							playSoundAtTileEntity( SoundEvents.GRAVEL_BREAK, SoundCategory.AMBIENT, 0.5f, 0.2f, this);
 						}
 					} else if (progress > 0){
 						// cannot crush, undo progress
@@ -101,7 +101,7 @@ public class RockCrusherTileEntity extends cyano.poweradvantage.api.simple.TileE
 	}
 
 	@Override
-	public boolean isUsableByPlayer(PlayerEntity player) {
+	public boolean stillValid(PlayerEntity player) {
 		return true;
 	}
 	
@@ -131,11 +131,11 @@ public class RockCrusherTileEntity extends cyano.poweradvantage.api.simple.TileE
 	
 	private ItemStack getCrusherRecipeOutput(ItemStack item) {
 		if(item == null) return null;
-		return BaseMetalsCompat.getCrusherRecipeOutput(getWorld(), item);
+		return BaseMetalsCompat.getCrusherRecipeOutput(getLevel(), item);
 	}
 
 	private boolean hasRedstoneSignal() {
-		return getWorld().isBlockPowered(getPos());
+		return getLevel().hasNeighborSignal(getBlockPos());
 	}
 	
 	public float getProgressLevel(){
@@ -173,7 +173,7 @@ public class RockCrusherTileEntity extends cyano.poweradvantage.api.simple.TileE
 	private int canAddToOutputInventory(ItemStack output) {
 		for(int i = 1; i < inventory.length; i++){
 			if(inventory[i] == null) {return i;}
-			if(ItemStack.areItemsEqual(output, inventory[i]) && ItemStack.areItemStackTagsEqual(output, inventory[i])
+			if(ItemStack.isSame(output, inventory[i]) && ItemStack.tagMatches(output, inventory[i])
 					&& (inventory[i].getCount() + output.getCount()) <= inventory[i].getMaxStackSize()){
 				return i;
 			}
@@ -182,15 +182,15 @@ public class RockCrusherTileEntity extends cyano.poweradvantage.api.simple.TileE
 	}
 	
 	@Override
-	public CompoundNBT write(CompoundNBT tagRoot){
-		super.write(tagRoot);
+	public CompoundNBT save(CompoundNBT tagRoot){
+		super.save(tagRoot);
 		tagRoot.putShort("progress",(short)progress);
 		return tagRoot;
 	}
 	
 	@Override
-	public void read(CompoundNBT tagRoot){
-		super.read(tagRoot);
+	public void load(net.minecraft.block.BlockState state, CompoundNBT tagRoot){
+		super.load(state, tagRoot);
 		if(tagRoot.contains("progress")){
 			progress = tagRoot.getShort("progress");
 		}
@@ -211,20 +211,20 @@ public class RockCrusherTileEntity extends cyano.poweradvantage.api.simple.TileE
 	}
 	
 	@Override
-	public boolean canExtractItem(final int slot, final ItemStack targetItem, final Direction side) {
+	public boolean canTakeItemThroughFace(final int slot, final ItemStack targetItem, final Direction side) {
 		return slot > 0 && slot < this.getInventory().length;
 	}
 
 	@Override
-	public boolean canInsertItem(final int slot, final ItemStack srcItem, final Direction side) {
-		return this.isItemValidForSlot(slot, srcItem) && slot <= 0;
+	public boolean canPlaceItemThroughFace(final int slot, final ItemStack srcItem, final Direction side) {
+		return this.canPlaceItem(slot, srcItem) && slot <= 0;
 	}
 	
 	@Override
-	public boolean isItemValidForSlot(final int slot, final ItemStack item) {
+	public boolean canPlaceItem(final int slot, final ItemStack item) {
 		switch(slot){
 		case 0:
-			return BaseMetalsCompat.hasCrusherRecipe(getWorld(), item);
+			return BaseMetalsCompat.hasCrusherRecipe(getLevel(), item);
 		case 1:
 		case 2:
 		case 3:

@@ -3,14 +3,14 @@ package zone.moddev.mc.steamadvantage.items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import org.junit.Test;
 import org.junit.BeforeClass;
 import static org.junit.Assert.*;
 
 public class MusketPersistenceTest {
     @BeforeClass public static void bootstrapNativeRegistries() {
-        net.minecraft.util.registry.Bootstrap.register();
+        net.minecraft.util.registry.Bootstrap.bootStrap();
     }
 
     @Test public void loadingCycleKeepsLegacyByteValuesAndOtherNbt() {
@@ -32,10 +32,10 @@ public class MusketPersistenceTest {
     }
 
     @Test public void rayIntersectionSupportsEveryAxisAndRejectsTargetsBehind() {
-        Vec3d origin = new Vec3d(0, 0, 0);
+        Vector3d origin = new Vector3d(0, 0, 0);
         for (net.minecraft.util.Direction direction : net.minecraft.util.Direction.values()) {
-            Vec3d ray = new Vec3d(direction.getXOffset(), direction.getYOffset(), direction.getZOffset());
-            Vec3d center = ray.scale(5);
+            Vector3d ray = new Vector3d(direction.getStepX(), direction.getStepY(), direction.getStepZ());
+            Vector3d center = ray.scale(5);
             AxisAlignedBB ahead = new AxisAlignedBB(center.x - 0.5, center.y - 0.5, center.z - 0.5,
                     center.x + 0.5, center.y + 0.5, center.z + 0.5);
             assertTrue(MusketItem.rayIntersectsBoundingBox(origin, ray, ahead));

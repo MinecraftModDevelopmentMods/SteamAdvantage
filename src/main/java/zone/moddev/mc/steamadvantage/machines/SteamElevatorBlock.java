@@ -21,19 +21,19 @@ public class SteamElevatorBlock extends cyano.poweradvantage.api.simple.BlockSim
 	}
 
 	@Override
-	public PoweredEntity createNewTileEntity(net.minecraft.world.IBlockReader world) {
+	public PoweredEntity newBlockEntity(net.minecraft.world.IBlockReader world) {
 		return new SteamElevatorTileEntity();
 	}
 
 	@Override
-	public boolean hasComparatorInputOverride(BlockState bs) {
+	public boolean hasAnalogOutputSignal(BlockState bs) {
 		return true;
 	}
 
 	@Override
-	public int getComparatorInputOverride(BlockState bs, World world, BlockPos coord) {
-		if(world.getTileEntity(coord) instanceof SteamElevatorTileEntity){
-			return ((SteamElevatorTileEntity)world.getTileEntity(coord)).getComparatorOutput();
+	public int getAnalogOutputSignal(BlockState bs, World world, BlockPos coord) {
+		if(world.getBlockEntity(coord) instanceof SteamElevatorTileEntity){
+			return ((SteamElevatorTileEntity)world.getBlockEntity(coord)).getComparatorOutput();
 		}
 		return 0;
 	}

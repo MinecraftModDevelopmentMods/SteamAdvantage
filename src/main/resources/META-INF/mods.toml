@@ -14,14 +14,14 @@ description='''Steam-powered machines and infrastructure for the Power Advantage
 [[dependencies.steamadvantage]]
 modId="poweradvantage"
 mandatory=true
-versionRange="[2.4.6.115021,3.0.0)"
+versionRange="[2.4.7.116051,3.0.0)"
 ordering="AFTER"
 side="BOTH"
 
 [[dependencies.steamadvantage]]
 modId="basemetals"
 mandatory=false
-versionRange="[3.0.1.115021,4.0.0)"
+versionRange="[3.1.1.116051,4.0.0)"
 ordering="AFTER"
 side="BOTH"
 

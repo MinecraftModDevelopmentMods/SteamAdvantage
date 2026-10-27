@@ -25,8 +25,8 @@ public class DrillBitTileEntity extends TileEntity implements ITickableTileEntit
 	
 	@Override
 	public void tick(){
-		if(hasWorld() && getWorld().isRemote){
-			rotation = ROTATION_PER_TICK * (getWorld().getGameTime() % 20);
+		if(hasLevel() && getLevel().isClientSide){
+			rotation = ROTATION_PER_TICK * (getLevel().getGameTime() % 20);
 		}
 	}
 	public void setDirection(Direction dir){
@@ -40,8 +40,8 @@ public class DrillBitTileEntity extends TileEntity implements ITickableTileEntit
 	}
 	
 	public static void createDrillBitBlock(World w, BlockPos coord, Direction dir){
-		w.setBlockState(coord, zone.moddev.mc.steamadvantage.init.Blocks.drillbit.getDefaultState());
-		TileEntity tile = w.getTileEntity(coord);
+		w.setBlockAndUpdate(coord, zone.moddev.mc.steamadvantage.init.Blocks.drillbit.defaultBlockState());
+		TileEntity tile = w.getBlockEntity(coord);
 		if(tile instanceof DrillBitTileEntity) ((DrillBitTileEntity) tile).setDirection(dir);
 	}
 	
@@ -53,45 +53,45 @@ public class DrillBitTileEntity extends TileEntity implements ITickableTileEntit
 	}
 
 	public void destroyLine(boolean removeOrigin){
-		if(!hasWorld() || getWorld().isRemote) return;
+		if(!hasLevel() || getLevel().isClientSide) return;
 		List<BlockPos> line = new ArrayList<>();
-		line.add(getPos());
+		line.add(getBlockPos());
 		collectLine(line, direction);
 		collectLine(line, direction.getOpposite());
 		// Detach all helpers before block replacement callbacks can re-enter this line.
-		for(BlockPos coord : line) getWorld().removeTileEntity(coord);
+		for(BlockPos coord : line) getLevel().removeBlockEntity(coord);
 		for(BlockPos coord : line) {
-			if(removeOrigin || !coord.equals(getPos())) getWorld().removeBlock(coord, false);
+			if(removeOrigin || !coord.equals(getBlockPos())) getLevel().removeBlock(coord, false);
 		}
 	}
 	/**
 	 * destroys upstream drillbit
 	 */
 	private void collectLine(List<BlockPos> line, Direction f){
-		BlockPos coord = this.getPos().offset(f);
-		while(getWorld().isBlockLoaded(coord) && getWorld().getBlockState(coord).getBlock() == Blocks.drillbit){
+		BlockPos coord = this.getBlockPos().relative(f);
+		while(getLevel().hasChunkAt(coord) && getLevel().getBlockState(coord).getBlock() == Blocks.drillbit){
 			line.add(coord);
-			coord = coord.offset(f);
+			coord = coord.relative(f);
 		}
 	}
 	
 	@Override
-	public CompoundNBT write(CompoundNBT root){
-		super.write(root);
+	public CompoundNBT save(CompoundNBT root){
+		super.save(root);
 		writeDirectionToNBT(root);
 		return root;
 	}
 	
 
 	@Override
-	public void read(CompoundNBT root){
-		super.read(root);
+	public void load(net.minecraft.block.BlockState state, CompoundNBT root){
+		super.load(state, root);
 		readDirectionFromNBT(root);
 	}
 
 	@Override
 	public CompoundNBT getUpdateTag() {
-		return write(new CompoundNBT());
+		return save(new CompoundNBT());
 	}
 
 	/**
@@ -101,18 +101,18 @@ public class DrillBitTileEntity extends TileEntity implements ITickableTileEntit
 	public SUpdateTileEntityPacket getUpdatePacket(){
 		CompoundNBT nbtTag = new CompoundNBT();
 		writeDirectionToNBT(nbtTag);
-		return new SUpdateTileEntityPacket(this.getPos(), 0, nbtTag);
+		return new SUpdateTileEntityPacket(this.getBlockPos(), 0, nbtTag);
 	}
 	/**
 	 * Receives the network packet made by <code>getDescriptionPacket()</code>
 	 */
 	@Override
 	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket packet) {
-		readDirectionFromNBT(packet.getNbtCompound());
+		readDirectionFromNBT(packet.getTag());
 	}
 
 	private void writeDirectionToNBT(CompoundNBT root) {
-		root.putByte("dir", (byte)direction.getIndex());
+		root.putByte("dir", (byte)direction.get3DDataValue());
 	}
 
 	private void readDirectionFromNBT(CompoundNBT root) {
@@ -124,14 +124,14 @@ public class DrillBitTileEntity extends TileEntity implements ITickableTileEntit
 	}
 
 	private static Direction decodeDirection(int index) {
-		return index >= 0 && index < Direction.values().length ? Direction.byIndex(index) : Direction.DOWN;
+		return index >= 0 && index < Direction.values().length ? Direction.from3DDataValue(index) : Direction.DOWN;
 	}
 
 	private void syncDirection() {
-		if(hasWorld() && !getWorld().isRemote) {
-			markDirty();
-			BlockState state = getWorld().getBlockState(getPos());
-			getWorld().notifyBlockUpdate(getPos(), state, state, 3);
+		if(hasLevel() && !getLevel().isClientSide) {
+			setChanged();
+			BlockState state = getLevel().getBlockState(getBlockPos());
+			getLevel().sendBlockUpdated(getBlockPos(), state, state, 3);
 		}
 	}
 }

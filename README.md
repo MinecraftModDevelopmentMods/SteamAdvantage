@@ -1,82 +1,87 @@
 # SteamAdvantage
 
-**Minecraft 1.15.2, version 2.2.7.115021.** See the
-[shared test record](https://github.com/MinecraftModDevelopmentMods/PowerAdvantage/blob/master-1.15.2/docs/1.15/CURRENT-QUALIFICATION.md)
-for exact jars, automated machine and upgrade results, and remaining manual
-checks. Visuals and recipe unlocks were accepted on 27 October 2026. The historical
-[1.14 test results](https://github.com/MinecraftModDevelopmentMods/PowerAdvantage/blob/master-1.14.4/docs/1.14/BROADER-QUALIFICATION.md)
-are not evidence of 1.15 gameplay or world-upgrade compatibility.
+**Minecraft 1.16.5 port candidate, version 2.2.8.116051.**
+This branch is local work pending full verification and manual acceptance.
+No 1.16 gameplay, rendering, or world-upgrade
+qualification is claimed. Accepted 1.15 results do not qualify this candidate.
 
-Steam Advantage adds steam-powered machines and infrastructure to Power Advantage for Minecraft 1.15.2.
+Steam Advantage adds steam-powered machines and infrastructure to Power Advantage.
 
-Every crafting variant has an ingredient-triggered recipe-book discovery. See the [shared material checklist and discovery tests](https://github.com/MinecraftModDevelopmentMods/PowerAdvantage/blob/master-1.13.2/docs/1.13/RECIPE-DISCOVERY.md). Regenerate unlock JSON after recipe changes with `node tools/generate-recipe-unlocks.js`; `check` audits recipe coverage and criteria. Crushing recipes are deliberately excluded from the crafting book.
+## Build Target
 
-The historical [manufacturing progression protocol](https://github.com/MinecraftModDevelopmentMods/PowerAdvantage/blob/master-1.13.2/docs/1.13/MANUFACTURING-PROGRESSION.md) describes raw-material, processing and loot acquisition paths in every mode, including restart persistence. Earlier results do not establish those outcomes on 1.15.
+The `master-1.16.5` target uses Minecraft 1.16.5, Forge 36.2.34,
+official 1.16.5 mappings, and MCP config 20210115.111550.
+ForgeGradle 7.0.34 and Gradle 9.6.1 run on Temurin 17.0.1+12.
+Compilation and Minecraft launches use Temurin 8.0.502+7 and Java 8 bytecode;
+Mavenizer uses Temurin 25.0.3+9.0.LTS.
 
-## Building Minecraft 1.15.2
+Power Advantage 2.4.7.116051 remains a separate required mod. The stable local API
+bootstrap B source is `098d4625abc8a849bd1a11dcf697b3fee0cade7b`; its development jar SHA-256 is
+`78E58DD2AB04E2B9F3267E5735C64AAE7E93EAC97571CB04485038862C853ED3`.
+These exact pins are recorded in `gradle.properties` and audited during builds.
+Use an immutable development jar through `-PpowerAdvantageDeobfJar=<path>`.
+This API bootstrap is not runtime qualification and may be repinned after runtime
+fixes. Release audits reject missing or placeholder pins.
 
-The `master-1.15.2` build targets Forge 31.2.57, snapshot `20200514-1.15.1` mappings,
-and MCP `20200515.085601`. It uses ForgeGradle 7.0.34 and Gradle 9.6.1.
-Run Gradle with Temurin 17.0.1+12; production code is compiled with Temurin 8.0.502+7.
-The Forge Mavenizer also requires Temurin 25.0.3+9.0.LTS. CI installs all three
-explicitly and disables automatic toolchain detection and downloads.
+Steam's 87-test build and artifact evidence belongs to bootstrap A, not B.
+Bootstrap B initializes the GUI matrix before legacy direct decoration calls.
+Steam compilation and the full suite against B remain pending the next cache
+lease. Neither bootstrap has Steam runtime or manual acceptance.
 
-Build the matching 1.15 PowerAdvantage, Base Metals and OreSpawn deobf jars first.
-Dependency versions, checksums and the exact Power source reference belong in
-`gradle.properties`. Release audits reject missing or placeholder pins; do not
-bypass those checks or substitute a dependency from an earlier Minecraft version.
-Base Metals `3.0.2.115021` source `ac1781e7cade15045ffe0135077087b4d1722603`
-and Power source `6666099a734eba16561d98c86f3f4bb1b7c742f7` are the exact tested
-dependency pins. CI builds them before Steam Advantage; none is embedded in
-the Steam Advantage jar.
+The supplied native development dependencies are Base Metals 3.1.1.116051
+(source `995f6cc4dd2d5eecc628a42e5c43fa5390c24bca`) and OreSpawn 4.1.0.116051
+(source `a113e5d767169189f0e35ade1e173a12d550b00e`). Their exact jar hashes
+are recorded in `gradle.properties`. None of the dependencies is embedded.
 
-With the standard sibling layout:
-
-```text
-cd ..\..\PowerAdvantage
-gradlew.bat deobfJar
-```
-
-For local development, compile and run tests in SteamAdvantage:
+With matching native development jars available:
 
 ```text
-gradlew.bat compileJava test
+gradlew.bat compileJava compileTestJava -PpowerAdvantageDeobfJar=<path>
 ```
 
-With the exact Power dependency pinned, run the complete release gates:
+Alternative layouts may also pass `-PbaseMetalsDeobfJar=<path>` and
+`-PoreSpawnDeobfJar=<path>`. Explicit toolchain installations can be supplied
+through Gradle project properties. Do not use a dependency from an older target.
+
+With the exact dependency jars pinned, the full build gates are:
 
 ```text
 gradlew.bat clean check build javadoc verifyReleaseDependencies verifyReleaseArtifacts writeReleaseChecksums verifyEclipseProductionClasspath
 ```
 
-Alternative layouts may pass `-PpowerAdvantageDeobfJar=<path>`, `-PbaseMetalsDeobfJar=<path>`, and `-PoreSpawnDeobfJar=<path>`. None of those dependencies is embedded.
-
-For Eclipse, import this repository as an existing Gradle project and run:
-
-```text
-gradlew.bat cleanEclipse verifyEclipseProductionClasspath
-```
-
-Refresh the project in Eclipse, allow its Java build to finish, and launch the generated `runClient.launch`. Eclipse launches discover SteamAdvantage from `bin/main`; command-line Gradle launches use `build/forge-run-mod-classes/main`. The Eclipse audit checks that discovery points at the same production output Eclipse compiles into.
-
-The Eclipse resource root is `build/resources/main`, so its builder copies expanded mod metadata rather than raw source templates. Refresh the Gradle project and clean/rebuild after this setup changes. After resource/version edits, run `processResources` or refresh Gradle before launching; do not put `src/main/resources` back on the Eclipse Java build path.
+A compilation pass is not a test pass, release-audit pass, or runtime acceptance.
+Shared Gradle caches require exclusive ownership; do not run competing builds
+against the same cache or checkout.
 
 ## Compatibility
 
-The 1.15 source adaptations retain machine callbacks, all six drill directions, native
-helper-tile lifecycle, saved progress and target snapshots, energy/inventory NBT, legacy
-fluid contracts, musket loaded-state bytes and migration codecs. Native villager professions
-replace the removed smith careers (armorer, weaponsmith, toolsmith) and priest (cleric).
-Trades retain their legacy level and price ranges; 1.14 restocking and profession selection
-follow the native engine.
+Runtime identities remain `steamadvantage:*`; the implementation namespace remains
+`zone.moddev.mc.steamadvantage`. Registry names, tile IDs, resources, recipes,
+trade ranges, machine costs, output quantities, and persistent NBT remain stable.
 
-Automated coverage is bounded to the recorded scenarios. It does not establish every
-in-world GUI, rendering, sound, control or musket interaction, multiplayer behavior,
-or compatibility with arbitrary third-party mods. Unit/resource tests alone are not
-runtime or world-upgrade evidence.
+The native port uses world-only conduit callbacks. Power Advantage owns registry-key
+dimension handling, shared capability invalidation/revival, fluid adapters, and base
+tile lifecycle. Steam uses native `load(BlockState, CompoundNBT)` and
+`save(CompoundNBT)`, retaining deferred drill targets, cached facing, progress,
+inventory, energy, legacy tank aliases, and musket loaded-state bytes.
+Saving a drill must not reacquire its world or neighbouring chunks.
 
-The combined 1.15 harness must be prepared before an all-Advantage play-test. Its launch and resource probe belong to the sibling PowerAdvantage checkout. The [historical resource-probe protocol](https://github.com/MinecraftModDevelopmentMods/PowerAdvantage/blob/master-1.14.4/test-rig/client-resources/README.md) describes model, texture and name checks; its previous passes do not establish 1.15 rendering or gameplay results.
+Client setup registers native item model predicates, drill rendering, and the
+track's cutout layer. Native block predicates preserve non-occlusion and prevent
+full-collision tracks and platforms from conducting redstone. Existing renderer
+geometry, UVs, lighting, and animation axes are retained.
 
-The implementation namespace is `zone.moddev.mc.steamadvantage`. Runtime identities, registries, tile IDs, saved NBT, recipes, and assets remain stable. Steam registers its legacy state and NBT codecs with PowerAdvantage's shared migration hook so 1.10 and 1.12 worlds can be converted before Minecraft flattens old numeric block states.
+Every crafting variant has ingredient-triggered recipe-book discovery.
+Regenerate unlock JSON after recipe changes with
+`node tools/generate-recipe-unlocks.js`. Processing recipes remain outside the
+crafting book. Recipe conditions are registered on the queued setup thread.
 
-The historical [1.13 migration guide](https://github.com/MinecraftModDevelopmentMods/PowerAdvantage/blob/master-1.13.2/docs/1.13/MIGRATION.md) explains the legacy conversion and backup process; it is not a 1.15 migration qualification. Always make a whole-world backup before upgrading, keep the complete set of migration backups, and test only disposable copies. Check that every other mod supports the target version; these results do not qualify unrelated mods or an entire existing modpack.
+Unit tests cover native properties, exact levels and costs, persistence,
+world-only callbacks, recipe discovery, and resources. They do not establish
+in-world GUIs, sounds, interactions, multiplayer behavior, or arbitrary modpacks.
+
+Power Advantage supplies the combined-mod runtime harness and shared legacy
+migration hook. Upgrade testing must use disposable whole-world copies with
+pinned inputs. Preserve original worlds and backups; never open a world in an
+older Minecraft version after upgrading it. Manual acceptance and publication
+approval remain separate from automated evidence.

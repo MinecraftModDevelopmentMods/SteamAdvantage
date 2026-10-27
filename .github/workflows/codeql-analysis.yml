@@ -2,9 +2,9 @@ name: CodeQL
 
 on:
   push:
-    branches: [master-1.15.2, 'feature/**']
+    branches: [master-1.16.5, 'feature/**']
   pull_request:
-    branches: [master-1.15.2]
+    branches: [master-1.16.5]
   schedule:
     - cron: '53 7 * * 4'
 
@@ -21,11 +21,22 @@ jobs:
     steps:
       - name: Check out SteamAdvantage
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Validate final Power source pin
+        shell: bash
+        run: |
+          set -euo pipefail
+          power_ref=$(sed -n 's/^poweradvantage_source_ref=//p' gradle.properties | tr -d '\r')
+          power_hash=$(sed -n 's/^poweradvantage_deobf_sha256=//p' gradle.properties | tr -d '\r')
+          if [[ ! "$power_ref" =~ ^[a-f0-9]{40}$ || ! "$power_hash" =~ ^[A-F0-9]{64}$ ]]; then
+            echo "::error::Final Power 1.16 dependency pin is pending."
+            exit 1
+          fi
+          echo "POWERADVANTAGE_SOURCE_REF=$power_ref" >> "$GITHUB_ENV"
       - name: Check out pinned OreSpawn
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: MinecraftModDevelopmentMods/OreSpawn
-          ref: 5613baf876747ed071cb7ad7e2aff4e0ce4f0a03
+          ref: a113e5d767169189f0e35ade1e173a12d550b00e
           path: .ci-dependencies/OreSpawn
       - name: Use canonical LF dependency inputs
         # Use the same source bytes on hosted and local dependency builds.
@@ -34,13 +45,13 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: MinecraftModDevelopmentMods/BaseMetals
-          ref: ac1781e7cade15045ffe0135077087b4d1722603
+          ref: 995f6cc4dd2d5eecc628a42e5c43fa5390c24bca
           path: .ci-dependencies/BaseMetals
-      - name: Check out PowerAdvantage 1.15.2
+      - name: Check out PowerAdvantage 1.16.5
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: MinecraftModDevelopmentMods/PowerAdvantage
-          ref: 6666099a734eba16561d98c86f3f4bb1b7c742f7
+          ref: 098d4625abc8a849bd1a11dcf697b3fee0cade7b
           path: .ci-dependencies/PowerAdvantage
       - name: Install pinned Java 25 Mavenizer runtime
         uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
@@ -66,7 +77,7 @@ jobs:
           -Porg.gradle.java.installations.auto-download=false" >> "$GITHUB_ENV"
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6
-      - name: Build 1.15.2 dependency chain
+      - name: Build 1.16.5 dependency chain
         id: dependencies
         shell: bash
         run: |
@@ -77,12 +88,12 @@ jobs:
           chmod +x "$orespawn/gradlew" "$basemetals/gradlew" "$power/gradlew"
           (cd "$orespawn" && ./gradlew $MMD_GRADLE_TOOLCHAINS jar --no-daemon --stacktrace)
           (cd "$basemetals" && ./gradlew $MMD_GRADLE_TOOLCHAINS jar --no-daemon --stacktrace)
-          osjar="$orespawn/build/libs-dev/OreSpawn-4.1.1.115021-deobf.jar"
-          bmjar="$basemetals/build/libs-dev/BaseMetals-3.0.2.115021-deobf.jar"
+          osjar="$orespawn/build/libs-dev/OreSpawn-4.1.0.116051-deobf.jar"
+          bmjar="$basemetals/build/libs-dev/BaseMetals-3.1.1.116051-deobf.jar"
           (cd "$power" && ./gradlew $MMD_GRADLE_TOOLCHAINS jar verifyReleaseDependencies \
             -PbaseMetalsDeobfJar="$bmjar" -PoreSpawnDeobfJar="$osjar" \
             --no-daemon --stacktrace)
-          powerjar="$power/build/libs-dev/PowerAdvantage-2.4.6.115021-deobf.jar"
+          powerjar="$power/build/libs-dev/PowerAdvantage-2.4.7.116051-deobf.jar"
           test -f "$osjar" && test -f "$bmjar" && test -f "$powerjar"
           echo "orespawn=$osjar" >> "$GITHUB_OUTPUT"
           echo "basemetals=$bmjar" >> "$GITHUB_OUTPUT"

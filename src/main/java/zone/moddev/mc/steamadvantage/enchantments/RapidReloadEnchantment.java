@@ -8,28 +8,28 @@ import net.minecraft.item.ItemStack;
 public class RapidReloadEnchantment extends net.minecraft.enchantment.Enchantment{
 
 	public RapidReloadEnchantment() {
-		super(Rarity.RARE,EnchantmentType.ALL,new EquipmentSlotType[]{EquipmentSlotType.MAINHAND});
+		super(Rarity.RARE,EnchantmentType.BREAKABLE,new EquipmentSlotType[]{EquipmentSlotType.MAINHAND});
 	}
 
 	
 	@Override
-	public boolean canApply(ItemStack item){
+	public boolean canEnchant(ItemStack item){
 		return item.getItem() == Items.blackpowder_musket;
 	}
 	@Override
 	public boolean canApplyAtEnchantingTable(ItemStack item){
-		return canApply(item);
+		return canEnchant(item);
 	}
 	
 
 
 	@Override
-	public int getMinEnchantability(final int lvl) {
+	public int getMinCost(final int lvl) {
 		return 15;
 	}
 
 	@Override
-	public int getMaxEnchantability(final int lvl) {
+	public int getMaxCost(final int lvl) {
 		return 50;
 	}
 

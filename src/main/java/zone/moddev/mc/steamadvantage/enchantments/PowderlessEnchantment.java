@@ -8,28 +8,28 @@ import net.minecraft.item.ItemStack;
 public class PowderlessEnchantment extends net.minecraft.enchantment.Enchantment{
 
 	public PowderlessEnchantment() {
-		super(Rarity.VERY_RARE,EnchantmentType.ALL,new EquipmentSlotType[]{EquipmentSlotType.MAINHAND});
+		super(Rarity.VERY_RARE,EnchantmentType.BREAKABLE,new EquipmentSlotType[]{EquipmentSlotType.MAINHAND});
 	}
 
 	
 	@Override
-	public boolean canApply(ItemStack item){
+	public boolean canEnchant(ItemStack item){
 		return item.getItem() == Items.blackpowder_musket;
 	}
 	@Override
 	public boolean canApplyAtEnchantingTable(ItemStack item){
-		return canApply(item);
+		return canEnchant(item);
 	}
 	
 
 
 	@Override
-	public int getMinEnchantability(final int lvl) {
+	public int getMinCost(final int lvl) {
 		return 20;
 	}
 
 	@Override
-	public int getMaxEnchantability(final int lvl) {
+	public int getMaxCost(final int lvl) {
 		return 50;
 	}
 

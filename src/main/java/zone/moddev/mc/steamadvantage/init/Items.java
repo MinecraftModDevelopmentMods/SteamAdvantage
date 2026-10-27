@@ -29,12 +29,12 @@ public final class Items {
         steam_governor = add("steam_governor", new Item(properties()));
         steam_drill_bit = add("steam_drill_bit", new Item(properties()));
         blackpowder_cartridge = add("blackpowder_cartridge", new Item(properties()));
-        blackpowder_musket = add("musket", new MusketItem(properties().maxStackSize(1)));
+        blackpowder_musket = add("musket", new MusketItem(properties().stacksTo(1)));
         initialized = true;
     }
 
     private static Item.Properties properties() {
-        return new Item.Properties().group(ItemGroups.tab_powerAdvantage);
+        return new Item.Properties().tab(ItemGroups.tab_powerAdvantage);
     }
 
     private static Item add(String id, Item item) {

@@ -40,7 +40,7 @@ public abstract class GUIHelper {
 		float angle = (1f - value) * PI;
 		float offsetX = pivotX;
 		float offsetY = pivotY;
-		BufferBuilder renderer = Tessellator.getInstance().getBuffer();
+		BufferBuilder renderer = Tessellator.getInstance().getBuilder();
 
 		float sin = MathHelper.sin(angle);
 		float cos = MathHelper.cos(angle);
@@ -78,9 +78,9 @@ public abstract class GUIHelper {
 
 		// (x, y, z, u, v)
 		for(int i = 3; i >= 0; i--){
-			renderer.pos(x[i], y[i], zLevel).tex(u[i],v[i]).endVertex();; 
+			renderer.vertex(x[i], y[i], zLevel).uv(u[i],v[i]).endVertex();;
 		}
-		net.minecraft.client.renderer.Tessellator.getInstance().draw();
+		net.minecraft.client.renderer.Tessellator.getInstance().end();
 		
 	}
 	
@@ -108,7 +108,7 @@ public abstract class GUIHelper {
 		if(barHeight > 0){
 			FluidTankGUI.drawFluidFilledRectangle(guiContainer,fs,x+xPos, y+yPos+barSlotHeight-h,w, h,z);
 		}
-			net.minecraft.client.Minecraft.getInstance().getTextureManager().bindTexture(displayImage);
+			net.minecraft.client.Minecraft.getInstance().getTextureManager().bind(displayImage);
 		
 		guiContainer.blit(x+xPos-texMarginW, y+yPos-texMarginH, texOverlayX, texOverlayY, texOverlayW, texOverlayH); // x, y, textureOffsetX, textureOffsetY, width, height)
 	}

@@ -54,7 +54,7 @@ public class SteamTankTileEntity  extends cyano.poweradvantage.api.simple.TileEn
 	}
 
 	private boolean hasRedstoneSignal() {
-		return getWorld().isBlockPowered(getPos());
+		return getLevel().hasNeighborSignal(getBlockPos());
 	}
 	
 	
@@ -116,7 +116,7 @@ public class SteamTankTileEntity  extends cyano.poweradvantage.api.simple.TileEn
 	}
 
 	@Override
-	public boolean isUsableByPlayer(PlayerEntity player) {
+	public boolean stillValid(PlayerEntity player) {
 		return true;
 	}
 }

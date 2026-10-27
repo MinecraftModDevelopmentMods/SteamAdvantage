@@ -25,20 +25,20 @@ import static org.junit.Assert.assertTrue;
 
 public class SteamDrillPersistenceTest {
     @BeforeClass public static void bootstrapNativeRegistries() {
-        net.minecraft.util.registry.Bootstrap.register();
+        net.minecraft.util.registry.Bootstrap.bootStrap();
     }
 
     @Test public void retainsLegacyProgressUntilWorldIsAttached() {
         SteamDrillTileEntity drill = new SteamDrillTileEntity();
-        drill.read(target(94));
+        drill.load(net.minecraft.block.Blocks.AIR.defaultBlockState(), target(94));
         drill.prepareDataFieldsForSync();
         assertEquals(94, drill.getDataFieldArray()[1]);
     }
 
     @Test public void clearsPreviousProgressOnReadingAnUntargetedTile() {
         SteamDrillTileEntity drill = new SteamDrillTileEntity();
-        drill.read(target(94));
-        drill.read(new CompoundNBT());
+        drill.load(net.minecraft.block.Blocks.AIR.defaultBlockState(), target(94));
+        drill.load(net.minecraft.block.Blocks.AIR.defaultBlockState(), new CompoundNBT());
         drill.prepareDataFieldsForSync();
         assertEquals(0, drill.getDataFieldArray()[1]);
     }
@@ -46,12 +46,12 @@ public class SteamDrillPersistenceTest {
     @Test public void preservesAllSixFacingsTargetAndWorkUntilWorldIsAttached() throws Exception {
         for (Direction facing : Direction.values()) {
             CompoundNBT tag = target(94);
-            tag.putByte("Facing", (byte) facing.getIndex());
+            tag.putByte("Facing", (byte) facing.get3DDataValue());
             CompoundNBT state = new CompoundNBT();
             state.putString("Name", "minecraft:stone");
             tag.put("TargetState", state);
             SteamDrillTileEntity drill = new SteamDrillTileEntity();
-            drill.read(tag);
+            drill.load(net.minecraft.block.Blocks.AIR.defaultBlockState(), tag);
             assertEquals(facing, field(drill, "savedFacing"));
             assertEquals(new BlockPos(2048, 80, 2049), field(drill, "targetBlockCoord"));
             assertEquals(state, field(drill, "savedTargetState"));
@@ -64,12 +64,12 @@ public class SteamDrillPersistenceTest {
     @Test public void loadingAnotherTileDoesNotKeepPreviousFacing() throws Exception {
         SteamDrillTileEntity drill = new SteamDrillTileEntity();
         CompoundNBT tag = target(94);
-        tag.putByte("Facing", (byte) Direction.UP.getIndex());
-        drill.read(tag);
-        drill.read(target(12));
+        tag.putByte("Facing", (byte) Direction.UP.get3DDataValue());
+        drill.load(net.minecraft.block.Blocks.AIR.defaultBlockState(), tag);
+        drill.load(net.minecraft.block.Blocks.AIR.defaultBlockState(), target(12));
         assertNull(field(drill, "savedFacing"));
         tag.putByte("Facing", (byte) 127);
-        drill.read(tag);
+        drill.load(net.minecraft.block.Blocks.AIR.defaultBlockState(), tag);
         assertNull(field(drill, "savedFacing"));
     }
 
@@ -84,9 +84,9 @@ public class SteamDrillPersistenceTest {
         items.add(stack);
         tag.put("Items", items);
         SteamDrillTileEntity drill = new SteamDrillTileEntity();
-        drill.read(tag);
+        drill.load(net.minecraft.block.Blocks.AIR.defaultBlockState(), tag);
         assertEquals(37.5F, drill.getEnergy(Power.steam_power), 0.0F);
-        ItemStack output = drill.getStackInSlot(4);
+        ItemStack output = drill.getItem(4);
         assertEquals(net.minecraft.item.Items.COBBLESTONE, output.getItem());
         assertEquals(23, output.getCount());
     }
@@ -98,7 +98,7 @@ public class SteamDrillPersistenceTest {
         }
         int methods = 0, cachedFacingReads = 0;
         for (MethodNode method : node.methods) {
-            if (!method.name.equals("write")) continue;
+            if (!method.name.equals("save")) continue;
             methods++;
             for (AbstractInsnNode instruction : method.instructions.toArray()) {
                 if (instruction instanceof FieldInsnNode
@@ -120,13 +120,13 @@ public class SteamDrillPersistenceTest {
         BlockPos origin = new BlockPos(2048, 80, 2048);
         for (Direction direction : Direction.values()) {
             CompoundNBT tag = target(94);
-            BlockPos target = origin.offset(direction, 3);
+            BlockPos target = origin.relative(direction, 3);
             tag.putInt("targetX", target.getX());
             tag.putInt("targetY", target.getY());
             tag.putInt("targetZ", target.getZ());
             SteamDrillTileEntity drill = new SteamDrillTileEntity();
-            drill.read(tag);
-            drill.setPos(origin);
+            drill.load(net.minecraft.block.Blocks.AIR.defaultBlockState(), tag);
+            drill.setPosition(origin);
             assertNull(field(drill, "savedFacing"));
             assertEquals(direction, infer.invoke(drill));
         }
