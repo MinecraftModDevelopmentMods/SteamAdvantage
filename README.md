@@ -4,7 +4,8 @@
 This branch is a local candidate pending manual acceptance and publication approval.
 All 87 Java tests pass with Gradle and the Eclipse compiler, along with release
 and Eclipse audits against the updated Power dependency.
-Bounded runtime checks will follow after the candidate inputs are sealed.
+Packaged machine, migration, recipe, mining and restart checks use this same
+candidate. Their exact scope and remaining limits are in the shared record below.
 Earlier-candidate results and accepted 1.15 results do not qualify this candidate.
 
 The [shared test record](https://github.com/MinecraftModDevelopmentMods/PowerAdvantage/blob/master-1.16.5/docs/1.16/CURRENT-QUALIFICATION.md)
