@@ -14,7 +14,7 @@ public class BuildWorkflowContractTest {
             assertTrue(name, source.contains("ref: 995f6cc4dd2d5eecc628a42e5c43fa5390c24bca"));
             assertTrue(name, source.contains("BaseMetals-3.1.1.116051-deobf.jar"));
             assertTrue(name, source.contains("ref: a113e5d767169189f0e35ade1e173a12d550b00e"));
-            assertTrue(name, source.contains("ref: 098d4625abc8a849bd1a11dcf697b3fee0cade7b"));
+            assertTrue(name, source.contains("ref: e72fc3c39dab98fe2fb7b6a9105e0173585d6001"));
             assertTrue(name, source.contains("Final Power 1.16 dependency pin is pending."));
             assertTrue(name, source.contains("^[a-f0-9]{40}$"));
             assertTrue(name, source.contains("^[A-F0-9]{64}$"));

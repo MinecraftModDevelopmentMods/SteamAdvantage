@@ -1,9 +1,10 @@
 # SteamAdvantage
 
 **Minecraft 1.16.5 port candidate, version 2.2.8.116051.**
-This branch is local work pending full verification and manual acceptance.
-No 1.16 gameplay, rendering, or world-upgrade
-qualification is claimed. Accepted 1.15 results do not qualify this candidate.
+This branch is a local candidate pending manual acceptance and publication approval.
+Build, test, and runtime evidence is tied to exact dependency pins; none establishes
+complete gameplay or world-upgrade qualification. Accepted 1.15 results do not
+qualify this candidate.
 
 Steam Advantage adds steam-powered machines and infrastructure to Power Advantage.
 
@@ -15,18 +16,18 @@ ForgeGradle 7.0.34 and Gradle 9.6.1 run on Temurin 17.0.1+12.
 Compilation and Minecraft launches use Temurin 8.0.502+7 and Java 8 bytecode;
 Mavenizer uses Temurin 25.0.3+9.0.LTS.
 
-Power Advantage 2.4.7.116051 remains a separate required mod. The stable local API
-bootstrap B source is `098d4625abc8a849bd1a11dcf697b3fee0cade7b`; its development jar SHA-256 is
-`78E58DD2AB04E2B9F3267E5735C64AAE7E93EAC97571CB04485038862C853ED3`.
+Power Advantage 2.4.7.116051 remains a separate required mod. The current local
+candidate is Power C, source `e72fc3c39dab98fe2fb7b6a9105e0173585d6001`.
+Its development jar SHA-256 is
+`C97CE8428480AF34595428F439013F517CB9024092CD8475D56AFBEB8E6F497B`.
 These exact pins are recorded in `gradle.properties` and audited during builds.
 Use an immutable development jar through `-PpowerAdvantageDeobfJar=<path>`.
-This API bootstrap is not runtime qualification and may be repinned after runtime
-fixes. Release audits reject missing or placeholder pins.
+Release audits reject missing, placeholder, or mismatched pins. These source pins
+are local candidates, not publication approval.
 
-Steam's 87-test build and artifact evidence belongs to bootstrap A, not B.
-Bootstrap B initializes the GUI matrix before legacy direct decoration calls.
-Steam compilation and the full suite against B remain pending the next cache
-lease. Neither bootstrap has Steam runtime or manual acceptance.
+Earlier A/B build receipts and D runtime evidence remain historical evidence for
+their original inputs. They do not qualify the C candidate. Automated build and
+test results, bounded runtime checks, and manual acceptance are separate gates.
 
 The supplied native development dependencies are Base Metals 3.1.1.116051
 (source `995f6cc4dd2d5eecc628a42e5c43fa5390c24bca`) and OreSpawn 4.1.0.116051

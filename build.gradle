@@ -378,8 +378,8 @@ tasks.register('verifyReleaseConfiguration') {
         }
         if (project.poweradvantage_version != '2.4.7.116051'
                 || project.poweradvantage_source_repository != 'MinecraftModDevelopmentMods/PowerAdvantage'
-                || project.poweradvantage_source_ref != '098d4625abc8a849bd1a11dcf697b3fee0cade7b'
-                || project.poweradvantage_deobf_sha256 != '78E58DD2AB04E2B9F3267E5735C64AAE7E93EAC97571CB04485038862C853ED3') {
+                || project.poweradvantage_source_ref != 'e72fc3c39dab98fe2fb7b6a9105e0173585d6001'
+                || project.poweradvantage_deobf_sha256 != 'C97CE8428480AF34595428F439013F517CB9024092CD8475D56AFBEB8E6F497B') {
             throw new GradleException('Unexpected PowerAdvantage compile dependency identity')
         }
         String mainSource = file(
