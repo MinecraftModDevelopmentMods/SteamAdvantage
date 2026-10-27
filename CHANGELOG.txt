@@ -1,3 +1,17 @@
+Steam Advantage 2.2.7.115021
+
+- Target Minecraft 1.15.2 / Forge 31.2.57 with snapshot 20200514-1.15.1 mappings and MCP 20200515.085601.
+- Pin the native Power Advantage 2.4.6.115021, Base Metals and OreSpawn development dependencies.
+- Use native tile renderer registration, matrix stacks and lit vertex buffers without changing drill dimensions, UVs or animation axes.
+- Register the steam track's cutout render layer on the client and retain non-solid helper blocks through native properties.
+- Use native entity position accessors and action-result factories for elevators and muskets.
+- Preserve registry identities, recipes, migration codecs, saved NBT, machine costs and output quantities.
+- Register recipe conditions after parallel setup to prevent intermittent missing recipes at startup.
+- Retain the steam track's light transmission and keep tracks and elevator platforms from conducting redstone through their full-cube shapes.
+- Add all-facing renderer, lighting, matrix-restoration and native block-property regressions.
+- Record combined operating and disposable-copy migration results in Power Advantage's shared 1.15 test notes; manual acceptance remains separate.
+- Record the accepted in-game visuals and recipe unlocks; the shared test record retains the remaining limits.
+
 Steam Advantage 2.2.6.114041
 
 - Save the drill's cached facing without reloading a chunk during its unload-save.

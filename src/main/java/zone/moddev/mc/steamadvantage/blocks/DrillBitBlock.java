@@ -25,14 +25,12 @@ public class DrillBitBlock extends Block implements ITileEntityProvider {
     private static final VoxelShape SHAPE = VoxelShapes.create(0.25D, 0.25D, 0.25D, 0.75D, 0.75D, 0.75D);
 
     public DrillBitBlock() {
-        super(Block.Properties.create(Material.IRON).hardnessAndResistance(5.0F, 2000.0F));
+        super(Block.Properties.create(Material.IRON).hardnessAndResistance(5.0F, 2000.0F).notSolid());
     }
 
     @Override public TileEntity createNewTileEntity(IBlockReader world) { return new DrillBitTileEntity(); }
     @Override public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) { return SHAPE; }
     @Override public VoxelShape getCollisionShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) { return SHAPE; }
-    @Override public boolean isNormalCube(BlockState state, IBlockReader world, BlockPos pos) { return false; }
-    @Override public boolean isSolid(BlockState state) { return false; }
     @Override public List<ItemStack> getDrops(BlockState state, LootContext.Builder context) { return Collections.emptyList(); }
 
     @Override
