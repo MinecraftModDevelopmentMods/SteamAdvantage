@@ -8,7 +8,7 @@ Steam Advantage 2.2.8.116051 (local port candidate)
 - Preserve registry identities, recipe and trade quantities, machine ratios and NBT.
 - Retain exact track/platform opacity, collision and redstone behavior.
 - Add exact native level, persistence and callback regressions.
-- Pin Power's stable local API bootstrap; keep 1.16 runtime/manual qualification pending.
+- Pin Power Advantage local candidate E; keep current-input runtime and manual qualification pending.
 
 Steam Advantage 2.2.7.115021
 

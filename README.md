@@ -17,9 +17,9 @@ Compilation and Minecraft launches use Temurin 8.0.502+7 and Java 8 bytecode;
 Mavenizer uses Temurin 25.0.3+9.0.LTS.
 
 Power Advantage 2.4.7.116051 remains a separate required mod. The current local
-candidate is Power D, source `2116a35a40dd150d79e7dfdcdc891637793178b7`.
+candidate is Power E, source `3f1100e6f75b1fb949cc883be7288aa30789876d`.
 Its development jar SHA-256 is
-`F58B93DAF03CF303F32B18CCCA140E55E886A2BA82732A3F286ADF3E31194B6A`.
+`1A3E5B9EE45CF932CE963146D016E5270BD587A5D5AA2B9283886FF89EF14FD4`.
 These exact pins are recorded in `gradle.properties` and audited during builds.
 Use an immutable development jar through `-PpowerAdvantageDeobfJar=<path>`.
 Release audits reject missing, placeholder, or mismatched pins. These source pins
