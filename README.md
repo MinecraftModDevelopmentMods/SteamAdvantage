@@ -2,9 +2,14 @@
 
 **Minecraft 1.16.5 port candidate, version 2.2.8.116051.**
 This branch is a local candidate pending manual acceptance and publication approval.
-Build, test, and runtime evidence is tied to exact dependency pins; none establishes
-complete gameplay or world-upgrade qualification. Accepted 1.15 results do not
-qualify this candidate.
+All 87 Java tests pass with Gradle and the Eclipse compiler, along with release
+and Eclipse audits. Combined machine, recipe, mining and connected-world upgrade
+checks pass against the pinned jars; wider migration checks are still being
+completed. Accepted 1.15 results do not qualify this candidate.
+
+The [shared test record](https://github.com/MinecraftModDevelopmentMods/PowerAdvantage/blob/master-1.16.5/docs/1.16/CURRENT-QUALIFICATION.md)
+records the exact jars, completed checks and remaining limits. That page will be
+available upstream when this local port is merged.
 
 Steam Advantage adds steam-powered machines and infrastructure to Power Advantage.
 
@@ -17,7 +22,7 @@ Compilation and Minecraft launches use Temurin 8.0.502+7 and Java 8 bytecode;
 Mavenizer uses Temurin 25.0.3+9.0.LTS.
 
 Power Advantage 2.4.7.116051 remains a separate required mod. The current local
-candidate is Power E, source `3f1100e6f75b1fb949cc883be7288aa30789876d`.
+candidate uses source `3f1100e6f75b1fb949cc883be7288aa30789876d`.
 Its development jar SHA-256 is
 `1A3E5B9EE45CF932CE963146D016E5270BD587A5D5AA2B9283886FF89EF14FD4`.
 These exact pins are recorded in `gradle.properties` and audited during builds.

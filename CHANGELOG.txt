@@ -8,7 +8,9 @@ Steam Advantage 2.2.8.116051 (local port candidate)
 - Preserve registry identities, recipe and trade quantities, machine ratios and NBT.
 - Retain exact track/platform opacity, collision and redstone behavior.
 - Add exact native level, persistence and callback regressions.
-- Pin Power Advantage local candidate E; keep current-input runtime and manual qualification pending.
+- Pin the Power Advantage build that preserves legacy Forge swimming-speed values and modifiers during upgrades.
+- Pass all 87 Java tests with Gradle and the Eclipse compiler, along with release and Eclipse audits.
+- Recheck connected-machine upgrades, recipes, mining and full-restart operation through the shared Advantage Works rig; keep wider migration checks and manual acceptance separate.
 
 Steam Advantage 2.2.7.115021
 
