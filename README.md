@@ -2,10 +2,12 @@
 
 **Minecraft 1.16.5 port candidate, version 2.2.8.116051.**
 This branch is a local candidate pending manual acceptance and publication approval.
-All 87 Java tests pass with Gradle and the Eclipse compiler, along with release
-and Eclipse audits against the updated Power dependency.
-Packaged machine, migration, recipe, mining and restart checks use this same
-candidate. Their exact scope and remaining limits are in the shared record below.
+The follow-up checks use finite supplies and ordinary server ticks to measure
+actual machine output, energy use, blocked routes and saved state. They also
+cover fluid pickup without destroying waterlogged blocks. Rendered GUI checks
+require machine names and inventory labels as well as correctly placed controls.
+The shared record below identifies the current jars and each completed run;
+earlier results are retained separately rather than counted again.
 Earlier-candidate results and accepted 1.15 results do not qualify this candidate.
 
 The [shared test record](https://github.com/MinecraftModDevelopmentMods/PowerAdvantage/blob/master-1.16.5/docs/1.16/CURRENT-QUALIFICATION.md)
@@ -97,3 +99,8 @@ migration hook. Upgrade testing must use disposable whole-world copies with
 pinned inputs. Preserve original worlds and backups; never open a world in an
 older Minecraft version after upgrading it. Manual acceptance and publication
 approval remain separate from automated evidence.
+
+The shared [machine operating checks](https://github.com/MinecraftModDevelopmentMods/PowerAdvantage/blob/master-1.16.5/docs/1.16/OPERATING-TESTS.md)
+exercise finite boiler, processing, pumping, storage, elevator and musket jobs.
+They check real output and resource use, including failed jobs and complete
+server restarts. Live player controls and rendering still need a walkthrough.

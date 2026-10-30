@@ -1,5 +1,16 @@
 Steam Advantage 2.2.8.116051 (local port candidate)
 
+- Read live redstone before the crusher and furnace resume after loading, preserving saved work and the first-tick steam heat bonus without changing the normal polling interval.
+- Save real coal-boiler tank changes immediately, leave simulations unchanged, and return an empty result for null, empty or mismatched drain requests.
+- Honour the water-only input of coal, electric and geothermal boilers even when empty, and safely refuse null, empty or mismatched fluid requests.
+- Save accepted external tank changes in electric and geothermal boilers immediately, with the same simulation and client-side safeguards as the coal boiler.
+- Keep pressure needles, fluid levels, flames and progress arrows inside their GUI frames, including invalid or oversized readings.
+- Preserve pump fluid when a full receiver rejects it, and stop distillation before output would overflow.
+- Consume actual liquid source blocks before crediting pumped fluid; native block removal otherwise preserves the source.
+- Use native bucket pickup to retain waterlogged hosts; leave unsupported source blocks untouched without an air fallback.
+- Allow a loaded musket to fire after its last cartridge was consumed during reload.
+- Send nearby sounds only to loaded server players, preserving 16/50-block bounding-box ranges without scanning chunks.
+- Pick musket targets from loaded server entities and stop shots at nearer terrain instead of damaging entities through walls.
 - Target Minecraft 1.16.5 / Forge 36.2.34 with official 1.16.5 mappings.
 - Keep Java 8 compilation and runtime with ForgeGradle 7.0.34 / Gradle 9.6.1.
 - Use world-only conduit callbacks and Power Advantage's native tile lifecycle.
@@ -9,7 +20,7 @@ Steam Advantage 2.2.8.116051 (local port candidate)
 - Retain exact track/platform opacity, collision and redstone behavior.
 - Add exact native level, persistence and callback regressions.
 - Pin the Power Advantage build that preserves legacy Forge swimming speed, nametag distance, gravity and reach values and modifiers during upgrades.
-- Pass all 87 Java tests with Gradle and the Eclipse compiler, along with release and Eclipse audits against the pinned Power dependency.
+- Check the current Java tests with both Gradle and the Eclipse compiler, alongside release and Eclipse audits against the pinned Power dependency.
 - Recheck connected-machine upgrades, recipes, mining and full-restart operation through the shared Advantage Works rig; keep wider migration checks and manual acceptance separate.
 
 Steam Advantage 2.2.7.115021

@@ -33,6 +33,13 @@ public class RockCrusherTileEntity extends cyano.poweradvantage.api.simple.TileE
 	}
 
 	private boolean redstone = true;
+	private boolean redstoneInitialized = false;
+
+	@Override
+	public void onLoad() {
+		super.onLoad();
+		redstoneInitialized = false;
+	}
 	
 
 	private int timeSinceLastSteamBurst = 0;
@@ -41,6 +48,10 @@ public class RockCrusherTileEntity extends cyano.poweradvantage.api.simple.TileE
 	@Override
 	public void tickUpdate(boolean isServerWorld) {
 		if(isServerWorld){
+			if (!redstoneInitialized && getLevel() != null) {
+				redstone = hasRedstoneSignal();
+				redstoneInitialized = true;
+			}
 			// reset progress when item in slot changes
 			ItemStack input = inventory[0];
 			if(itemCheck != null && (input == null || input.isEmpty() || ItemStack.isSame(itemCheck, input) == false)){
@@ -113,6 +124,7 @@ public class RockCrusherTileEntity extends cyano.poweradvantage.api.simple.TileE
 		super.powerUpdate();
 		
 		redstone = hasRedstoneSignal();
+		redstoneInitialized = true;
 		
 		if(oldSteam != this.getEnergy(Power.steam_power) || progress != oldProgress){
 			this.sync();

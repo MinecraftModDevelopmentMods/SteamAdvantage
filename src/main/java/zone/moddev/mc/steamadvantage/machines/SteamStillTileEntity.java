@@ -53,8 +53,7 @@ public class SteamStillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 			if(!redstone){
 				if(getInputTank().getFluidAmount() > 0
 						&& getEnergy(Power.steam_power) > steamPerDistill
-						&& canDistill(getInputTank().getFluid())){
-					distill();
+						&& canDistill(getInputTank().getFluid()) && distill()){
 					this.subtractEnergy(steamPerDistill, Power.steam_power);
 					if(timeSinceSound > 200){
 						playSoundAtTileEntity(SoundEvents.LAVA_AMBIENT, SoundCategory.AMBIENT, 0.3f, 1.5f, this);
@@ -294,20 +293,34 @@ public class SteamStillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	}
 
 	private boolean canDistill(FluidStack fs) {
+		if(fs == null) return false;
 		DistillationRecipe recipe = DistillationRecipeRegistry.getInstance().getDistillationRecipeForFluid(fs.getFluid());
 		if(recipe == null) return false;
-		if(this.getOutputTank().getFluidAmount() > 0){
-			return recipe.isValidInput(fs) && recipe.isValidOutput(getOutputTank().getFluid());
-		} else {
-			return recipe.isValidInput(fs);
-		}
+		return recipe.isValidInput(fs) && (outputTank.getFluidAmount() == 0
+				|| recipe.isValidOutput(outputTank.getFluid()));
 	}
 
-	private void distill(){
+	private int distillationApplications(DistillationRecipe recipe, FluidStack input) {
+		if(!recipe.isValidInput(input)) return 0;
+		if(outputTank.getFluidAmount() > 0 && !recipe.isValidOutput(outputTank.getFluid())) return 0;
+		// Preview on a copy: a blocked or partially full output must not destroy input.
+		for(int applications = speed; applications > 0; applications--){
+			FluidStack output = recipe.applyRecipe(input.copy(), applications);
+			if(output != null && outputTank.fill(output, false) == output.amount) return applications;
+		}
+		return 0;
+	}
+
+	private boolean distill(){
 		DistillationRecipe recipe = DistillationRecipeRegistry.getInstance()
 				.getDistillationRecipeForFluid(getInputTank().getFluid().getFluid());
-		FluidStack output = recipe.applyRecipe(inputTank.getFluid(), speed);
-		getOutputTank().fill(output, true);
+		int applications = distillationApplications(recipe, inputTank.getFluid());
+		if(applications > 0){
+			FluidStack output = recipe.applyRecipe(inputTank.getFluid(), applications);
+			getOutputTank().fill(output, true);
+			return true;
+		}
+		return false;
 	}
 
 
