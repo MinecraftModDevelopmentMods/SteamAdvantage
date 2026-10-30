@@ -39,7 +39,15 @@ public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEn
 
 	public CoalBoilerTileEntity() {
 		super(zone.moddev.mc.steamadvantage.init.Entities.STEAM_BOILER_COAL, new ConduitType[]{Power.steam_power,Fluids.fluidConduit_general}, new float[]{1000,1000}, "tile.steamadvantage.steam_boiler_coal.name");
-		tank = new FluidTank(FluidTank.BUCKET_VOLUME * 4);
+		tank = new FluidTank(FluidTank.BUCKET_VOLUME * 4) {
+			@Override
+			protected void onContentsChanged() {
+				if (CoalBoilerTileEntity.this.getWorld() != null
+						&& !CoalBoilerTileEntity.this.getWorld().isRemote) {
+					CoalBoilerTileEntity.this.markDirty();
+				}
+			}
+		};
 		inventory = new ItemStack[1];
 	}
 
@@ -349,6 +357,8 @@ public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	 */
 	@Override
 	public int fill(EnumFacing face, FluidStack fluid, boolean forReal) {
+		if (fluid == null || fluid.amount <= 0 || !canFill(face, fluid.getFluid())
+				|| getTank().getFluidAmount() >= getTank().getCapacity()) return 0;
 		if(getTank().getFluidAmount() <= 0 || getTank().getFluid().getFluid().equals(fluid.getFluid())){
 			return getTank().fill(fluid, forReal);
 		} else {
@@ -363,10 +373,11 @@ public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	 */
 	@Override
 	public FluidStack drain(EnumFacing face, FluidStack fluid, boolean forReal) {
+		if (fluid == null || fluid.amount <= 0) return null;
 		if(getTank().getFluidAmount() > 0 && getTank().getFluid().getFluid().equals(fluid.getFluid())){
 			return getTank().drain(fluid.amount,forReal);
 		} else {
-			return new FluidStack(getTank().getFluid().getFluid(),0);
+			return null;
 		}
 	}
 	/**
@@ -377,6 +388,7 @@ public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	 */
 	@Override
 	public FluidStack drain(EnumFacing face, int amount, boolean forReal) {
+		if (amount <= 0) return null;
 		if(getTank().getFluidAmount() > 0 ){
 			return getTank().drain(amount,forReal);
 		} else {

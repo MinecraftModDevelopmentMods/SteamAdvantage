@@ -4,6 +4,7 @@ import static zone.moddev.mc.steamadvantage.util.SoundHelper.playBigSoundAtPosit
 import static zone.moddev.mc.steamadvantage.util.SoundHelper.playSoundAtPosition;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -34,6 +35,7 @@ import net.minecraft.network.play.server.SPacketEntityVelocity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.EntitySelectors;
 import net.minecraft.particles.IParticleData;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
@@ -110,7 +112,7 @@ public class MusketItem extends net.minecraft.item.Item{
 	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer playerEntity, EnumHand hand){
 		ItemStack srcItemStack = playerEntity.getHeldItem(hand);
 		if(hand != EnumHand.MAIN_HAND) return ActionResult.newResult(EnumActionResult.PASS,srcItemStack);
-		if(!hasAmmo(playerEntity, srcItemStack)) return ActionResult.newResult(EnumActionResult.FAIL,srcItemStack);
+		if(isNotLoaded(srcItemStack) && !hasAmmo(playerEntity, srcItemStack)) return ActionResult.newResult(EnumActionResult.FAIL,srcItemStack);
 		if(isNotLoaded(srcItemStack) && EnchantmentHelper.getEnchantmentLevel(Enchantments.rapid_reload, srcItemStack) > 0){
 			// instant reload
 			decrementAmmo(playerEntity,srcItemStack);
@@ -361,37 +363,42 @@ public class MusketItem extends net.minecraft.item.Item{
 	
 	
 	public static RayTraceResult rayTraceBlocksAndEntities(World w, double maxRange, EntityLivingBase source){
-		double rangeSqr = maxRange * maxRange;
 		Vec3d rayOrigin = new Vec3d(source.posX, source.posY + source.getEyeHeight(), source.posZ);
 		Vec3d rayDirection = source.getLookVec();
-		BlockPos srcPos = source.getPosition();
-		AxisAlignedBB aoi = new AxisAlignedBB(srcPos.getX() - maxRange, srcPos.getY() - maxRange, srcPos.getZ() - maxRange,
-				srcPos.getX() + maxRange, srcPos.getY() + maxRange, srcPos.getZ() + maxRange);
-		List<Entity> entities = w.getEntitiesWithinAABBExcludingEntity(source, aoi);
-		double closestDistSqr = Double.MAX_VALUE;
+		Vec3d rangeEnd = rayOrigin.add(rayDirection.scale(maxRange));
+		RayTraceResult terrainHit = w.rayTraceBlocks(rayOrigin, rangeEnd, RayTraceFluidMode.SOURCE_ONLY, false, false);
+		Vec3d rayEnd = terrainHit == null ? rangeEnd : terrainHit.hitVec;
+		AxisAlignedBB aoi = new AxisAlignedBB(rayOrigin.x, rayOrigin.y, rayOrigin.z,
+				rayEnd.x, rayEnd.y, rayEnd.z).grow(1.0D);
+		double closestDistSqr = rayOrigin.squareDistanceTo(rayEnd);
 		Entity closestEntity = null;
-		for(Entity e : entities){
-			double distSqr = e.getDistanceSq(source.posX, source.posY, source.posZ);
-			if(distSqr < rangeSqr){
-				// e is within range
-				AxisAlignedBB box = e.getBoundingBox();
-				if(rayIntersectsBoundingBox(rayOrigin,rayDirection, box)){
-					// e is in cross-hairs
-					if(distSqr < closestDistSqr){
-						// e is closest entity in line of fire
-						closestDistSqr = distSqr;
-						closestEntity = e;
-					}
+		Vec3d closestHit = null;
+		// A spatial entity query can load chunks; targeting only needs already loaded entities.
+		for(Entity e : w.loadedEntityList){
+			if(e == source || e.removed || !EntitySelectors.NOT_SPECTATING.test(e)
+					|| !aoi.intersects(e.getBoundingBox())) continue;
+			Optional<Vec3d> hit = rayHitBeforeTerrain(rayOrigin, rayEnd, e.getBoundingBox());
+			if(hit.isPresent()){
+				double distSqr = rayOrigin.squareDistanceTo(hit.get());
+				if(distSqr < closestDistSqr){
+					closestDistSqr = distSqr;
+					closestEntity = e;
+					closestHit = hit.get();
 				}
 			}
 		}
-		if(closestEntity == null) {
-			return w.rayTraceBlocks(rayOrigin, rayOrigin.add(mul(rayDirection, maxRange)), RayTraceFluidMode.SOURCE_ONLY, false, false);
+		return closestEntity == null ? terrainHit : new RayTraceResult(closestEntity, closestHit);
+	}
+
+	static Optional<Vec3d> rayHitBeforeTerrain(Vec3d origin, Vec3d terrainEnd, AxisAlignedBB target){
+		Vec3d point;
+		if(target.contains(origin)){
+			point = origin;
 		} else {
-			Vec3d pos = new Vec3d(closestEntity.posX, closestEntity.posY+closestEntity.getEyeHeight(), closestEntity.posZ);
-			RayTraceResult entityCollision = new RayTraceResult(closestEntity, pos);
-			return entityCollision;
+			RayTraceResult hit = target.calculateIntercept(origin, terrainEnd);
+			point = hit == null ? null : hit.hitVec;
 		}
+		return Optional.ofNullable(point).filter(hit -> origin.squareDistanceTo(hit) < origin.squareDistanceTo(terrainEnd));
 	}
 
 	public static boolean rayIntersectsBoundingBox(Vec3d rayOrigin, Vec3d rayDirection, AxisAlignedBB box){
@@ -424,9 +431,6 @@ public class MusketItem extends net.minecraft.item.Item{
 	}
 	
 	
-	private static Vec3d mul(Vec3d a, double b){
-		return new Vec3d(a.x * b, a.y * b, a.z * b);
-	}
 	private static double max(double a, double b){
 		return Math.max(a, b);
 	}
