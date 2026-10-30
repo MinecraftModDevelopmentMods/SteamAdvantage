@@ -1,7 +1,7 @@
 # SteamAdvantage
 
-**Minecraft 1.16.5 port candidate, version 2.2.8.116051.**
-This branch is a local candidate pending manual acceptance and publication approval.
+**Minecraft 1.16.5 source port candidate, version 2.2.8.116051.**
+This source port remains pending manual acceptance and publication approval.
 The follow-up checks use finite supplies and ordinary server ticks to measure
 actual machine output, energy use, blocked routes and saved state. They also
 cover fluid pickup without destroying waterlogged blocks. Rendered GUI checks
@@ -11,8 +11,7 @@ earlier results are retained separately rather than counted again.
 Earlier-candidate results and accepted 1.15 results do not qualify this candidate.
 
 The [shared test record](https://github.com/MinecraftModDevelopmentMods/PowerAdvantage/blob/master-1.16.5/docs/1.16/CURRENT-QUALIFICATION.md)
-records the exact jars, completed checks and remaining limits. That page will be
-available upstream when this local port is merged.
+records the exact jars, completed checks and remaining limits.
 
 Steam Advantage adds steam-powered machines and infrastructure to Power Advantage.
 
@@ -24,14 +23,14 @@ ForgeGradle 7.0.34 and Gradle 9.6.1 run on Temurin 17.0.1+12.
 Compilation and Minecraft launches use Temurin 8.0.502+7 and Java 8 bytecode;
 Mavenizer uses Temurin 25.0.3+9.0.LTS.
 
-Power Advantage 2.4.7.116051 remains a separate required mod. The current local
-candidate uses source `bcb75bfa91c14751ebf1e31865e1ec0ffa82c0b7`.
+Power Advantage 2.4.7.116051 remains a separate required mod. The pinned compile
+dependency uses source `bcb75bfa91c14751ebf1e31865e1ec0ffa82c0b7`.
 Its development jar SHA-256 is
 `2FB923944A456B4F26AB2F9212C646469CE3F49BFD4DAE894C15559B48908386`.
 These exact pins are recorded in `gradle.properties` and audited during builds.
 Use an immutable development jar through `-PpowerAdvantageDeobfJar=<path>`.
 Release audits reject missing, placeholder, or mismatched pins. These source pins
-are local candidates, not publication approval.
+do not grant publication approval.
 
 Power's migration hook preserves legacy Forge swimming speed, nametag distance,
 gravity and reach attributes, including their values and modifiers. Steam uses
