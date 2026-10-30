@@ -69,6 +69,37 @@ runtime or world-upgrade evidence.
 
 For an all-Advantage play-test, run `prepareCombinedEclipseLaunch` in the sibling PowerAdvantage checkout and select its `runClientAllAdvantage.launch`. The [native resource probe](https://github.com/MinecraftModDevelopmentMods/PowerAdvantage/blob/master-1.14.4/test-rig/client-resources/README.md) checks models, textures and names across all three mods. These resource checks do not replace gameplay testing.
 
+The local [test-coverage backport](../../PowerAdvantage/docs/1.14/TEST-COVERAGE-BACKPORT.md) records the stronger machine, restart and GUI checks for the repaired candidate.
+
 The implementation namespace is `zone.moddev.mc.steamadvantage`. Runtime identities, registries, tile IDs, saved NBT, recipes, and assets remain stable. Steam registers its legacy state and NBT codecs with PowerAdvantage's shared migration hook so 1.10 and 1.12 worlds can be converted before Minecraft flattens old numeric block states.
 
 The historical [1.13 migration guide](https://github.com/MinecraftModDevelopmentMods/PowerAdvantage/blob/master-1.13.2/docs/1.13/MIGRATION.md) explains the legacy conversion and backup process; the 1.14 test results above describe this port's coverage. Always make a whole-world backup before upgrading, keep the complete set of migration backups, and test only disposable copies. Check that every other mod supports the target version; these results do not qualify unrelated mods or an entire existing modpack.
+
+## Generator Follow-Up
+
+The [generator follow-up](../../PowerAdvantage/docs/1.14/TEST-COVERAGE-BACKPORT.md#generator-follow-up) records the older `pa114-candidate-c` inputs.
+Its 126 operating jobs and 126 cold checks, 39 GUI windows, 351 caption cases,
+355 rejected broken controls, thirteen frozen routes and five connected routes
+passed. The corrected paired 30-minute run also passed; the original POI failure
+is retained. This is a pre-final Steam-control checkpoint, not qualification of
+the newer SteamAdvantage jars or harness. Those still need the final sweep.
+Manual play-testing and release review remain separate.
+
+## Final T Candidate
+
+The [final-t checkpoint](../../PowerAdvantage/docs/1.14/TEST-COVERAGE-BACKPORT.md#final-t-candidate)
+records profile `pa114-candidate-e` and its exact jar hashes. All 132 operating
+jobs and 132 cold-restart comparisons pass, including an independent audit of
+six Steam controls and their nine tile-hold records. GUI checks pass for 39
+windows, 351 caption cases and 355 rejected broken controls.
+Frozen migration passed on 13 routes and connected-source operation passed on
+all five declared routes.
+Fresh and migrated-copy 30-minute runs pass. Power and Electric retain their
+exact-hash release and reproducibility proof; final-t Steam passes its full suite
+and two independent export builds. All 18 mod/version release and reproducibility
+gates pass across the six maintained Minecraft lines. Both requested broad
+profiles and their independent audit pass; the reporter-only unit/replay
+qualification preserves the original native proof. Survival harvest checks pass
+before and after restart. The report's extra network/drill scopes are now
+qualified; manual acceptance remains separate. Earlier checkpoints keep their original scope;
+nothing has been published by this local test work.

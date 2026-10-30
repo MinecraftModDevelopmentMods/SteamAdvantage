@@ -43,7 +43,15 @@ public class GeothermalBoilerTileEntity extends cyano.poweradvantage.api.simple.
 	
 	public GeothermalBoilerTileEntity() {
 		super(zone.moddev.mc.steamadvantage.init.Entities.STEAM_BOILER_GEOTHERMAL, new ConduitType[]{Power.steam_power,Fluids.fluidConduit_general}, new float[]{100,1000}, "tile.steamadvantage.steam_boiler_geothermal.name");
-		tank = new FluidTank(FluidTank.BUCKET_VOLUME * 2);
+		tank = new FluidTank(FluidTank.BUCKET_VOLUME * 2) {
+			@Override
+			protected void onContentsChanged() {
+				if (GeothermalBoilerTileEntity.this.getWorld() != null
+						&& !GeothermalBoilerTileEntity.this.getWorld().isRemote) {
+					GeothermalBoilerTileEntity.this.markDirty();
+				}
+			}
+		};
 		inventory = new ItemStack[0];
 	}
 	
@@ -337,6 +345,8 @@ public class GeothermalBoilerTileEntity extends cyano.poweradvantage.api.simple.
 	 */
 	@Override
 	public int fill(Direction face, FluidStack fluid, boolean forReal) {
+		if (fluid == null || fluid.amount <= 0 || !canFill(face, fluid.getFluid())
+				|| getTank().getFluidAmount() >= getTank().getCapacity()) return 0;
 		if(getTank().getFluidAmount() <= 0 || getTank().getFluid().getFluid().equals(fluid.getFluid())){
 			return getTank().fill(fluid, forReal);
 		} else {
@@ -351,10 +361,11 @@ public class GeothermalBoilerTileEntity extends cyano.poweradvantage.api.simple.
 	 */
 	@Override
 	public FluidStack drain(Direction face, FluidStack fluid, boolean forReal) {
+		if (fluid == null || fluid.amount <= 0) return null;
 		if(getTank().getFluidAmount() > 0 && getTank().getFluid().getFluid().equals(fluid.getFluid())){
 			return getTank().drain(fluid.amount,forReal);
 		} else {
-			return new FluidStack(getTank().getFluid().getFluid(),0);
+			return null;
 		}
 	}
 	/**
@@ -365,6 +376,7 @@ public class GeothermalBoilerTileEntity extends cyano.poweradvantage.api.simple.
 	 */
 	@Override
 	public FluidStack drain(Direction face, int amount, boolean forReal) {
+		if (amount <= 0) return null;
 		if(getTank().getFluidAmount() > 0 ){
 			return getTank().drain(amount,forReal);
 		} else {

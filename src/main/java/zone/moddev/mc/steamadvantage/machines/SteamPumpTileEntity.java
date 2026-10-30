@@ -11,8 +11,8 @@ import zone.moddev.mc.poweradvantage.init.Fluids;
 import zone.moddev.mc.poweradvantage.util.FluidHandlerHelper;
 import zone.moddev.mc.steamadvantage.init.Power;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.IBucketPickupHandler;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.block.Blocks;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -21,6 +21,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.IWorld;
 import net.minecraft.fluid.Fluid;
 import cyano.poweradvantage.api.fluid.FluidStack;
 import cyano.poweradvantage.api.fluid.FluidTank;
@@ -89,11 +90,14 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 							// Found a fluid to suck-up!
 							BlockState blockstate = w.getBlockState(fluidSource);
 							Fluid f = getFluid(blockstate);
-							if(f != null && getEnergy(Power.steam_power) >= cost){
-								this.getTank().fill(new FluidStack(f,FluidTank.BUCKET_VOLUME), true);
-								this.subtractEnergy(cost, Power.steam_power);
-								w.removeBlock(fluidSource, false);
-								success = true;
+							if(f != null && getEnergy(Power.steam_power) >= cost
+									&& getTank().fill(new FluidStack(f,FluidTank.BUCKET_VOLUME), false) == FluidTank.BUCKET_VOLUME){
+								Fluid collected = pickupSource(w, fluidSource, blockstate);
+								if(collected != net.minecraft.fluid.Fluids.EMPTY){
+									this.getTank().fill(new FluidStack(collected,FluidTank.BUCKET_VOLUME), true);
+									this.subtractEnergy(cost, Power.steam_power);
+									success = true;
+								}
 							}
 						}
 						timeUntilNextPump = PUMP_INTERVAL;
@@ -118,6 +122,15 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 
 	private Fluid getFluid(BlockState blockstate) {
 		return blockstate.getFluidState().isEmpty() ? null : blockstate.getFluidState().getFluid();
+	}
+
+	static Fluid pickupSource(IWorld world, BlockPos pos, BlockState state) {
+		if(!state.getFluidState().isSource() || !(state.getBlock() instanceof IBucketPickupHandler)){
+			return net.minecraft.fluid.Fluids.EMPTY;
+		}
+		// Native pickup removes the fluid without destroying a waterlogged host block.
+		Fluid collected = ((IBucketPickupHandler)state.getBlock()).pickupFluid(world, pos, state);
+		return collected == null ? net.minecraft.fluid.Fluids.EMPTY : collected;
 	}
 
 
@@ -148,7 +161,8 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 	}
 
 	private boolean isSourceBlock( BlockPos coord){
-		return getWorld().getFluidState(coord).isSource();
+		BlockState state = getWorld().getBlockState(coord);
+		return state.getFluidState().isSource() && state.getBlock() instanceof IBucketPickupHandler;
 	}
 
 
@@ -197,7 +211,7 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 					IAdvantageFluidHandler handler = FluidHandlerHelper.getHandler(neighbor, dir.getOpposite());
 					if(handler != null){
 						int d = handler.fill(dir.getOpposite(), fluid, true);
-						getTank().drain(Math.max(d,1),true); // no free energy!
+						if(d > 0) getTank().drain(d,true);
 						fluid = getTank().getFluid();
 					}
 				}
