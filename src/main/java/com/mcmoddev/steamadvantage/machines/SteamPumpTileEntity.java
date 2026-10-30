@@ -88,11 +88,14 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 							// Found a fluid to suck-up!
 							IBlockState blockstate = w.getBlockState(fluidSource);
 							Fluid f = getFluid(blockstate);
-							if(f != null && getEnergy(Power.steam_power) >= cost){
-								this.getTank().fill(new FluidStack(f,Fluid.BUCKET_VOLUME), true);
-								this.subtractEnergy(cost, Power.steam_power);
-								w.setBlockToAir(fluidSource);
-								success = true;
+							if(f != null && getEnergy(Power.steam_power) >= cost
+									&& getTank().fill(new FluidStack(f,Fluid.BUCKET_VOLUME), false) == Fluid.BUCKET_VOLUME){
+								FluidStack collected = pickupSource(w, fluidSource, blockstate);
+								if(collected != null && collected.amount > 0){
+									this.getTank().fill(collected, true);
+									this.subtractEnergy(cost, Power.steam_power);
+									success = true;
+								}
 							}
 						}
 						timeUntilNextPump = PUMP_INTERVAL;
@@ -116,7 +119,26 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 
 
 	private Fluid getFluid(IBlockState blockstate) {
-		return FluidRegistry.lookupFluidForBlock(blockstate.getBlock());
+		Block block = blockstate.getBlock();
+		return block instanceof IFluidBlock ? ((IFluidBlock)block).getFluid() : FluidRegistry.lookupFluidForBlock(block);
+	}
+
+	static FluidStack pickupSource(World world, BlockPos pos, IBlockState state) {
+		Block block = state.getBlock();
+		if(block instanceof IFluidBlock){
+			IFluidBlock source = (IFluidBlock)block;
+			if(!source.canDrain(world, pos)) return null;
+			FluidStack preview = source.drain(world, pos, false);
+			if(preview == null || preview.amount <= 0 || preview.amount > Fluid.BUCKET_VOLUME) return null;
+			// Forge owns source mutation and the actual quantity/NBT returned by the drain.
+			FluidStack collected = source.drain(world, pos, true);
+			return collected != null && collected.amount > 0 ? collected : null;
+		}
+		if((block == Blocks.WATER || block == Blocks.LAVA) && state.getValue(BlockLiquid.LEVEL) == 0){
+			Fluid fluid = FluidRegistry.lookupFluidForBlock(block);
+			if(fluid != null && world.setBlockToAir(pos)) return new FluidStack(fluid, Fluid.BUCKET_VOLUME);
+		}
+		return null;
 	}
 
 
@@ -207,7 +229,7 @@ public class SteamPumpTileEntity extends cyano.poweradvantage.api.simple.TileEnt
 					IFluidHandler handler = FluidHandlerHelper.getHandler(neighbor, dir.getOpposite());
 					if(handler != null){
 						int d = handler.fill(fluid,true);
-						getTank().drain(Math.max(d,1),true); // no free energy!
+						if(d > 0) getTank().drain(d,true);
 						fluid = getTank().getFluid();
 					}
 				}
