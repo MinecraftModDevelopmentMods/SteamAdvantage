@@ -35,6 +35,13 @@ public class BlastFurnaceTileEntity extends cyano.poweradvantage.api.simple.Tile
 	private static final float minSmeltingTemperature = 100f;
 	
 	private boolean redstone = true;
+	private boolean redstoneInitialized = false;
+
+	@Override
+	public void onLoad() {
+		super.onLoad();
+		redstoneInitialized = false;
+	}
 	
 	public BlastFurnaceTileEntity() {
 		super(Power.steam_power, 200, "tile.steamadvantage.steam_furnace.name");
@@ -63,6 +70,10 @@ public class BlastFurnaceTileEntity extends cyano.poweradvantage.api.simple.Tile
 	@Override
 	public void tickUpdate(boolean isServerWorld) {
 		if(isServerWorld){
+			if (!redstoneInitialized && getWorld() != null) {
+				redstone = hasRedstoneSignal();
+				redstoneInitialized = true;
+			}
 			// fual input heat
 			float e = 0;
 			if(burnTime > 0){
@@ -169,6 +180,7 @@ public class BlastFurnaceTileEntity extends cyano.poweradvantage.api.simple.Tile
 			this.sync();
 		}
 		redstone = hasRedstoneSignal();
+		redstoneInitialized = true;
 	}
 
 	private boolean hasRedstoneSignal() {
