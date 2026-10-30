@@ -1,3 +1,16 @@
+Unreleased - Minecraft 1.14.4
+
+- Keep waterlogged blocks intact when the steam pump collects their water, and only charge for successful pickup.
+- Keep fluid in the steam pump when an attached tank refuses it.
+- Pause the steam still when its output cannot hold a complete batch, without wasting input or processing steam.
+- Let a loaded musket fire its last cartridge without needing spare ammunition in the inventory.
+- Stop musket shots at terrain and select nearby targets without loading extra server chunks.
+- Send machine sounds to connected nearby players without scanning unloaded chunks; keep the existing sound ranges and spectator exclusion.
+- Read live redstone before the crusher and furnace resume after loading, preserving saved work and the first-tick steam heat bonus without changing the normal polling interval.
+- Save real coal-boiler tank changes immediately, leave simulations unchanged, and return an empty result for null, empty or mismatched drain requests.
+- Honour the water-only input of coal, electric and geothermal boilers even when empty, and safely refuse null, empty or mismatched fluid requests.
+- Save accepted external tank changes in electric and geothermal boilers immediately, with the same simulation and client-side safeguards as the coal boiler.
+
 Steam Advantage 2.2.6.114041
 
 - Save the drill's cached facing without reloading a chunk during its unload-save.
