@@ -41,7 +41,15 @@ public class ElectricBoilerTileEntity extends cyano.poweradvantage.api.simple.Ti
 		super(new ConduitType[]{Power.steam_power, ELECTRIC_POWER, Fluids.fluidConduit_general},
 				new float[]{100, MAX_ELECTRICITY, 1000},
 				"tile.steamadvantage.steam_boiler_electric.name");
-		tank = new FluidTank(FluidContainerRegistry.BUCKET_VOLUME * 2);
+		tank = new FluidTank(FluidContainerRegistry.BUCKET_VOLUME * 2) {
+			@Override
+			protected void onContentsChanged() {
+				if (ElectricBoilerTileEntity.this.getWorld() != null
+						&& !ElectricBoilerTileEntity.this.getWorld().isRemote) {
+					ElectricBoilerTileEntity.this.markDirty();
+				}
+			}
+		};
 		inventory = new ItemStack[0];
 	}
 
@@ -302,6 +310,8 @@ public class ElectricBoilerTileEntity extends cyano.poweradvantage.api.simple.Ti
 	 */
 	@Override
 	public int fill(EnumFacing face, FluidStack fluid, boolean forReal) {
+		if (fluid == null || fluid.amount <= 0 || !canFill(face, fluid.getFluid())
+				|| getTank().getFluidAmount() >= getTank().getCapacity()) return 0;
 		if(getTank().getFluidAmount() <= 0 || getTank().getFluid().getFluid().equals(fluid.getFluid())){
 			return getTank().fill(fluid, forReal);
 		} else {
@@ -316,10 +326,11 @@ public class ElectricBoilerTileEntity extends cyano.poweradvantage.api.simple.Ti
 	 */
 	@Override
 	public FluidStack drain(EnumFacing face, FluidStack fluid, boolean forReal) {
+		if (fluid == null || fluid.amount <= 0) return null;
 		if(getTank().getFluidAmount() > 0 && getTank().getFluid().getFluid().equals(fluid.getFluid())){
 			return getTank().drain(fluid.amount,forReal);
 		} else {
-			return new FluidStack(getTank().getFluid().getFluid(),0);
+			return null;
 		}
 	}
 	/**
@@ -330,6 +341,7 @@ public class ElectricBoilerTileEntity extends cyano.poweradvantage.api.simple.Ti
 	 */
 	@Override
 	public FluidStack drain(EnumFacing face, int amount, boolean forReal) {
+		if (amount <= 0) return null;
 		if(getTank().getFluidAmount() > 0 ){
 			return getTank().drain(amount,forReal);
 		} else {
