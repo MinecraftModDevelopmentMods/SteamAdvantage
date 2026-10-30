@@ -8,29 +8,29 @@ import net.minecraft.item.ItemStack;
 public class RecoilEnchantment extends net.minecraft.enchantment.Enchantment{
 
 	public RecoilEnchantment() {
-		super(Rarity.COMMON,EnchantmentType.ALL,new EquipmentSlotType[]{EquipmentSlotType.MAINHAND});
+		super(Rarity.COMMON,EnchantmentType.BREAKABLE,new EquipmentSlotType[]{EquipmentSlotType.MAINHAND});
 	}
 
 	
 	@Override
-	public boolean canApply(ItemStack item){
+	public boolean canEnchant(ItemStack item){
 		return item.getItem() == Items.blackpowder_musket;
 	}
 	@Override
 	public boolean canApplyAtEnchantingTable(ItemStack item){
-		return canApply(item);
+		return canEnchant(item);
 	}
 	
 
 
 	@Override
-	public int getMinEnchantability(final int lvl) {
+	public int getMinCost(final int lvl) {
 		return Math.max(1,lvl * 5 - 3);
 	}
 
 	@Override
-	public int getMaxEnchantability(final int lvl) {
-		return this.getMinEnchantability(lvl) + 10;
+	public int getMaxCost(final int lvl) {
+		return this.getMinCost(lvl) + 10;
 	}
 
 	@Override

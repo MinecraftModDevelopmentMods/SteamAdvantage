@@ -12,7 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.world.storage.loot.LootContext;
+import net.minecraft.loot.LootContext;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import zone.moddev.mc.steamadvantage.init.Blocks;
@@ -21,22 +21,24 @@ import zone.moddev.mc.steamadvantage.init.Blocks;
 public class PlatformBlock extends Block {
     public static final IntegerProperty HEIGHT = IntegerProperty.create("height", 0, 4);
     private static final VoxelShape[] SHAPES = new VoxelShape[] {
-            VoxelShapes.create(0.25D, 0.0D, 0.25D, 0.75D, 1.0D, 0.75D),
-            VoxelShapes.create(0.0D, 0.0D, 0.0D, 1.0D, 0.25D, 1.0D),
-            VoxelShapes.create(0.0D, 0.0D, 0.0D, 1.0D, 0.50D, 1.0D),
-            VoxelShapes.create(0.0D, 0.0D, 0.0D, 1.0D, 0.75D, 1.0D),
-            VoxelShapes.fullCube()
+            VoxelShapes.box(0.25D, 0.0D, 0.25D, 0.75D, 1.0D, 0.75D),
+            VoxelShapes.box(0.0D, 0.0D, 0.0D, 1.0D, 0.25D, 1.0D),
+            VoxelShapes.box(0.0D, 0.0D, 0.0D, 1.0D, 0.50D, 1.0D),
+            VoxelShapes.box(0.0D, 0.0D, 0.0D, 1.0D, 0.75D, 1.0D),
+            VoxelShapes.block()
     };
 
     public PlatformBlock() {
-        super(Block.Properties.create(Material.IRON).hardnessAndResistance(5.0F, 2000.0F).notSolid());
-        setDefaultState(getStateContainer().getBaseState().with(HEIGHT, 1));
+        super(Block.Properties.of(Material.METAL).strength(5.0F, 2000.0F).noOcclusion()
+                .isRedstoneConductor((state, world, pos) -> false)
+                .isSuffocating((state, world, pos) -> false)
+                .isViewBlocking((state, world, pos) -> false));
+        registerDefaultState(getStateDefinition().any().setValue(HEIGHT, 1));
     }
 
-    @Override protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) { builder.add(HEIGHT); }
-    @Override public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) { return SHAPES[state.get(HEIGHT)]; }
-    @Override public VoxelShape getCollisionShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) { return SHAPES[state.get(HEIGHT)]; }
-    @Override public boolean isNormalCube(BlockState state, IBlockReader world, BlockPos pos) { return false; }
+    @Override protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) { builder.add(HEIGHT); }
+    @Override public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) { return SHAPES[state.getValue(HEIGHT)]; }
+    @Override public VoxelShape getCollisionShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext context) { return SHAPES[state.getValue(HEIGHT)]; }
     @Override public List<ItemStack> getDrops(BlockState state, LootContext.Builder context) { return Collections.emptyList(); }
 
     @Override
@@ -45,7 +47,7 @@ public class PlatformBlock extends Block {
     }
 
     public boolean canBlockStay(World world, BlockPos pos) {
-        Block below = world.getBlockState(pos.down()).getBlock();
+        Block below = world.getBlockState(pos.below()).getBlock();
         return below == this || below == Blocks.steam_elevator_platform || below == Blocks.steam_elevator;
     }
 }

@@ -38,6 +38,13 @@ public class BlastFurnaceTileEntity extends cyano.poweradvantage.api.simple.Tile
 	private static final float minSmeltingTemperature = 100f;
 	
 	private boolean redstone = true;
+	private boolean redstoneInitialized = false;
+
+	@Override
+	public void onLoad() {
+		super.onLoad();
+		redstoneInitialized = false;
+	}
 	
 	public BlastFurnaceTileEntity() {
 		super(zone.moddev.mc.steamadvantage.init.Entities.STEAM_FURNACE, Power.steam_power, 200, "tile.steamadvantage.steam_furnace.name");
@@ -66,6 +73,10 @@ public class BlastFurnaceTileEntity extends cyano.poweradvantage.api.simple.Tile
 	@Override
 	public void tickUpdate(boolean isServerWorld) {
 		if(isServerWorld){
+			if (!redstoneInitialized && getLevel() != null) {
+				redstone = hasRedstoneSignal();
+				redstoneInitialized = true;
+			}
 			// fual input heat
 			float e = 0;
 			if(burnTime > 0){
@@ -77,7 +88,7 @@ public class BlastFurnaceTileEntity extends cyano.poweradvantage.api.simple.Tile
 					burnTime = fuel;
 					totalBurnTime = fuel;
 					decrementFuel();
-					playSoundAtTileEntity( SoundEvents.BLOCK_FURNACE_FIRE_CRACKLE, SoundCategory.AMBIENT, 0.5f, 1f, this);
+					playSoundAtTileEntity( SoundEvents.FURNACE_FIRE_CRACKLE, SoundCategory.AMBIENT, 0.5f, 1f, this);
 				}
 				energyDecay();
 			}
@@ -103,7 +114,7 @@ public class BlastFurnaceTileEntity extends cyano.poweradvantage.api.simple.Tile
 							inventory[slot].shrink(1);
 							if(inventory[slot].isEmpty()){inventory[slot] = null;} // decrement the input slot
 							if(!smeltSuccess){
-								playSoundAtTileEntity(SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.AMBIENT, 0.5f, 1f, this);
+								playSoundAtTileEntity(SoundEvents.FIRE_EXTINGUISH, SoundCategory.AMBIENT, 0.5f, 1f, this);
 							}
 							smeltSuccess = true;
 						}
@@ -126,8 +137,8 @@ public class BlastFurnaceTileEntity extends cyano.poweradvantage.api.simple.Tile
 		if(output.isEmpty()) return false;
 		ItemStack outputSlot = inventory[slot+3];
 		if(outputSlot == null) return true;
-		return (ItemStack.areItemsEqual(output, outputSlot) 
-				&& ItemStack.areItemStackTagsEqual(output, outputSlot)
+		return (ItemStack.isSame(output, outputSlot)
+				&& ItemStack.tagMatches(output, outputSlot)
 				&& (output.getCount() + outputSlot.getCount()) <= outputSlot.getMaxStackSize());
 	}
 	
@@ -172,10 +183,11 @@ public class BlastFurnaceTileEntity extends cyano.poweradvantage.api.simple.Tile
 			this.sync();
 		}
 		redstone = hasRedstoneSignal();
+		redstoneInitialized = true;
 	}
 
 	private boolean hasRedstoneSignal() {
-		return getWorld().isBlockPowered(getPos());
+		return getLevel().hasNeighborSignal(getBlockPos());
 	}
 
 
@@ -194,7 +206,7 @@ public class BlastFurnaceTileEntity extends cyano.poweradvantage.api.simple.Tile
 		if(inventory[0].getCount() == 1 && inventory[0].getItem().getContainerItem(inventory[0]) != null){
 			inventory[0] = inventory[0].getItem().getContainerItem(inventory[0]);
 		} else {
-			this.decrStackSize(0, 1);
+			this.removeItem(0, 1);
 		}
 	}
 	
@@ -252,16 +264,16 @@ public class BlastFurnaceTileEntity extends cyano.poweradvantage.api.simple.Tile
 	
 
 	@Override
-	public CompoundNBT write(CompoundNBT tagRoot){
-		super.write(tagRoot);
+	public CompoundNBT save(CompoundNBT tagRoot){
+		super.save(tagRoot);
 		prepareDataFieldsForSync();
 		tagRoot.putIntArray("Data", getDataFieldArray());
 		return tagRoot;
 	}
 	
 	@Override
-	public void read(CompoundNBT tagRoot){
-		super.read(tagRoot);
+	public void load(net.minecraft.block.BlockState state, CompoundNBT tagRoot){
+		super.load(state, tagRoot);
 		if(tagRoot.contains("Data")){
 			int[] data = tagRoot.getIntArray("Data");
 			System.arraycopy(data, 0, this.getDataFieldArray(), 0, Math.min(data.length,this.getDataFieldArray().length));
@@ -289,17 +301,17 @@ public class BlastFurnaceTileEntity extends cyano.poweradvantage.api.simple.Tile
 	}
 	
 	@Override
-	public boolean canExtractItem(final int slot, final ItemStack targetItem, final Direction side) {
+	public boolean canTakeItemThroughFace(final int slot, final ItemStack targetItem, final Direction side) {
 		return slot >= 4 && slot < this.getInventory().length;
 	}
 
 	@Override
-	public boolean canInsertItem(final int slot, final ItemStack srcItem, final Direction side) {
-		return this.isItemValidForSlot(slot, srcItem) && slot <= 3;
+	public boolean canPlaceItemThroughFace(final int slot, final ItemStack srcItem, final Direction side) {
+		return this.canPlaceItem(slot, srcItem) && slot <= 3;
 	}
 	
 	@Override
-	public boolean isItemValidForSlot(final int slot, final ItemStack item) {
+	public boolean canPlaceItem(final int slot, final ItemStack item) {
 		switch(slot){
 		case 0:
 			return this.getFuelBurnTime(item) > 0;
@@ -317,11 +329,11 @@ public class BlastFurnaceTileEntity extends cyano.poweradvantage.api.simple.Tile
 	}
 
 	private ItemStack getSmeltingResult(ItemStack input) {
-		if (input == null || input.isEmpty() || getWorld() == null) return ItemStack.EMPTY;
+		if (input == null || input.isEmpty() || getLevel() == null) return ItemStack.EMPTY;
 		Inventory inventory = new Inventory(1);
-		inventory.setInventorySlotContents(0, input);
-		return getWorld().getRecipeManager().getRecipe(IRecipeType.SMELTING, inventory, getWorld())
-				.map(recipe -> recipe.getCraftingResult(inventory)).orElse(ItemStack.EMPTY);
+		inventory.setItem(0, input);
+		return getLevel().getRecipeManager().getRecipeFor(IRecipeType.SMELTING, inventory, getLevel())
+				.map(recipe -> recipe.assemble(inventory)).orElse(ItemStack.EMPTY);
 	}
 
 
@@ -336,7 +348,7 @@ public class BlastFurnaceTileEntity extends cyano.poweradvantage.api.simple.Tile
 	}
 
 	@Override
-	public boolean isUsableByPlayer(PlayerEntity player) {
+	public boolean stillValid(PlayerEntity player) {
 		return true;
 	}
 }

@@ -29,10 +29,10 @@ public final class BaseMetalsCompat {
         if (world == null || input == null || input.isEmpty()) return null;
         if (isLoaded()) {
             Inventory inventory = new Inventory(1);
-            inventory.setInventorySlotContents(0, input.copy());
+            inventory.setItem(0, input.copy());
             for (IRecipe candidate : world.getRecipeManager().getRecipes()) {
                 if (candidate instanceof CrushingRecipe && candidate.matches(inventory, world)) {
-                    return candidate.getRecipeOutput().copy();
+                    return candidate.getResultItem().copy();
                 }
             }
         }

@@ -26,19 +26,19 @@ public class SteamStillBlock extends cyano.poweradvantage.api.simple.BlockSimple
 	}
 
 	@Override
-	public PoweredEntity createNewTileEntity(net.minecraft.world.IBlockReader world) {
+	public PoweredEntity newBlockEntity(net.minecraft.world.IBlockReader world) {
 		return new SteamStillTileEntity();
 	}
 
 	@Override
-	public boolean hasComparatorInputOverride(BlockState bs) {
+	public boolean hasAnalogOutputSignal(BlockState bs) {
 		return true;
 	}
 
 	@Override
-	public int getComparatorInputOverride(BlockState bs, World world, BlockPos coord) {
-		if(world.getTileEntity(coord) instanceof SteamStillTileEntity){
-			return ((SteamStillTileEntity)world.getTileEntity(coord)).getComparatorOutput();
+	public int getAnalogOutputSignal(BlockState bs, World world, BlockPos coord) {
+		if(world.getBlockEntity(coord) instanceof SteamStillTileEntity){
+			return ((SteamStillTileEntity)world.getBlockEntity(coord)).getComparatorOutput();
 		}
 		return 0;
 	}

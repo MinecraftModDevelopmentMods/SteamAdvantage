@@ -27,19 +27,19 @@ public class SteamPumpBlock extends cyano.poweradvantage.api.simple.BlockSimpleP
 	}
 
 	@Override
-	public PoweredEntity createNewTileEntity(net.minecraft.world.IBlockReader world) {
+	public PoweredEntity newBlockEntity(net.minecraft.world.IBlockReader world) {
 		return new SteamPumpTileEntity();
 	}
 
 	@Override
-	public boolean hasComparatorInputOverride(BlockState bs) {
+	public boolean hasAnalogOutputSignal(BlockState bs) {
 		return true;
 	}
 
 	@Override
-	public int getComparatorInputOverride(BlockState bs, World world, BlockPos coord) {
-		if(world.getTileEntity(coord) instanceof SteamPumpTileEntity){
-			return ((SteamPumpTileEntity)world.getTileEntity(coord)).getComparatorOutput();
+	public int getAnalogOutputSignal(BlockState bs, World world, BlockPos coord) {
+		if(world.getBlockEntity(coord) instanceof SteamPumpTileEntity){
+			return ((SteamPumpTileEntity)world.getBlockEntity(coord)).getComparatorOutput();
 		}
 		return 0;
 	}
@@ -57,25 +57,25 @@ public class SteamPumpBlock extends cyano.poweradvantage.api.simple.BlockSimpleP
 		return !ConduitType.areSameType(Power.steam_power, type);
 	}
 	@Override
-	public void onReplaced(BlockState state, World w, BlockPos coord, BlockState newState, boolean isMoving) {
+	public void onRemove(BlockState state, World w, BlockPos coord, BlockState newState, boolean isMoving) {
 		if (state.getBlock() != newState.getBlock()) destroyPipe(w, coord);
-		super.onReplaced(state, w, coord, newState, isMoving);
+		super.onRemove(state, w, coord, newState, isMoving);
 	}
 
 	@Override
-	public void onExplosionDestroy(World w, BlockPos coord, Explosion boom){
+	public void wasExploded(World w, BlockPos coord, Explosion boom){
 		destroyPipe(w, coord);
-		super.onExplosionDestroy(w, coord, boom);
+		super.wasExploded(w, coord, boom);
 	}
 	
 	
 	private void destroyPipe(World w, BlockPos coord) {
-		if(w.isRemote) return;
+		if(w.isClientSide) return;
 		// destroy connected drill bits
-		BlockPos c = coord.down();
+		BlockPos c = coord.below();
 		while(c.getY() > 0 && w.getBlockState(c).getBlock() == Blocks.pump_pipe_steam){
 			w.removeBlock(c, false);
-			c = c.down();
+			c = c.below();
 		}
 	}
 

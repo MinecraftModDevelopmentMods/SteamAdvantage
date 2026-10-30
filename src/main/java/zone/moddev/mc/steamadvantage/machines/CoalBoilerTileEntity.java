@@ -39,7 +39,15 @@ public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEn
 
 	public CoalBoilerTileEntity() {
 		super(zone.moddev.mc.steamadvantage.init.Entities.STEAM_BOILER_COAL, new ConduitType[]{Power.steam_power,Fluids.fluidConduit_general}, new float[]{1000,1000}, "tile.steamadvantage.steam_boiler_coal.name");
-		tank = new FluidTank(FluidTank.BUCKET_VOLUME * 4);
+		tank = new FluidTank(FluidTank.BUCKET_VOLUME * 4) {
+			@Override
+			protected void onContentsChanged() {
+				if (CoalBoilerTileEntity.this.getLevel() != null
+						&& !CoalBoilerTileEntity.this.getLevel().isClientSide) {
+					CoalBoilerTileEntity.this.setChanged();
+				}
+			}
+		};
 		inventory = new ItemStack[1];
 	}
 
@@ -55,12 +63,12 @@ public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEn
 				burnTime--;
 				boilWater();
 				// play steam sounds occasionally
-				if(getWorld().rand.nextInt(100) == 0){
-					playSoundAtTileEntity(SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.AMBIENT, 0.5f, 1f, this);
+				if(getLevel().random.nextInt(100) == 0){
+					playSoundAtTileEntity(SoundEvents.FIRE_EXTINGUISH, SoundCategory.AMBIENT, 0.5f, 1f, this);
 				}
 				if(timeSinceSound > 200){
 					if(getTank().getFluidAmount() > 0){
-						playSoundAtTileEntity( SoundEvents.BLOCK_LAVA_AMBIENT, SoundCategory.AMBIENT, 0.3f, 1f, this);
+						playSoundAtTileEntity( SoundEvents.LAVA_AMBIENT, SoundCategory.AMBIENT, 0.3f, 1f, this);
 					}
 					timeSinceSound = 0;
 				}
@@ -84,7 +92,7 @@ public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEn
 
 
 	private boolean hasRedstoneSignal() {
-		return getWorld().isBlockPowered(getPos());
+		return getLevel().hasNeighborSignal(getBlockPos());
 	}
 
 
@@ -105,7 +113,7 @@ public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEn
 		if(inventory[0].getCount() == 1 && inventory[0].getItem().getContainerItem(inventory[0]) != null){
 			inventory[0] = inventory[0].getItem().getContainerItem(inventory[0]);
 		} else {
-			this.decrStackSize(0, 1);
+			this.removeItem(0, 1);
 		}
 	}
 
@@ -201,8 +209,8 @@ public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	 * @param tagRoot An NBT tag
 	 */
 	@Override
-    public CompoundNBT write(final CompoundNBT tagRoot) {
-		super.write(tagRoot);
+    public CompoundNBT save(final CompoundNBT tagRoot) {
+		super.save(tagRoot);
         CompoundNBT tankTag = new CompoundNBT();
         this.getTank().writeToNBT(tankTag);
         tagRoot.put("Tank", tankTag);
@@ -215,8 +223,8 @@ public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	 * @param tagRoot An NBT tag
 	 */
 	@Override
-    public void read(final CompoundNBT tagRoot) {
-	super.read(tagRoot);
+    public void load(net.minecraft.block.BlockState state, final CompoundNBT tagRoot) {
+	super.load(state, tagRoot);
         if (tagRoot.contains("Tank")) {
             CompoundNBT tankTag = tagRoot.getCompound("Tank");
 		getTank().readFromNBT(tankTag);
@@ -349,6 +357,8 @@ public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	 */
 	@Override
 	public int fill(Direction face, FluidStack fluid, boolean forReal) {
+		if (fluid == null || fluid.amount <= 0 || !canFill(face, fluid.getFluid())
+				|| getTank().getFluidAmount() >= getTank().getCapacity()) return 0;
 		if(getTank().getFluidAmount() <= 0 || getTank().getFluid().getFluid().equals(fluid.getFluid())){
 			return getTank().fill(fluid, forReal);
 		} else {
@@ -363,10 +373,11 @@ public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	 */
 	@Override
 	public FluidStack drain(Direction face, FluidStack fluid, boolean forReal) {
+		if (fluid == null || fluid.amount <= 0) return null;
 		if(getTank().getFluidAmount() > 0 && getTank().getFluid().getFluid().equals(fluid.getFluid())){
 			return getTank().drain(fluid.amount,forReal);
 		} else {
-			return new FluidStack(getTank().getFluid().getFluid(),0);
+			return null;
 		}
 	}
 	/**
@@ -377,6 +388,7 @@ public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	 */
 	@Override
 	public FluidStack drain(Direction face, int amount, boolean forReal) {
+		if (amount <= 0) return null;
 		if(getTank().getFluidAmount() > 0 ){
 			return getTank().drain(amount,forReal);
 		} else {
@@ -420,12 +432,12 @@ public class CoalBoilerTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	///// end of IFluidHandler methods /////
 
 	@Override
-	public boolean isItemValidForSlot(final int slot, final ItemStack item) {
-		return super.isItemValidForSlot(slot, item) && zone.moddev.mc.steamadvantage.util.FurnaceFuelHelper.getBurnTime(item) > 0;
+	public boolean canPlaceItem(final int slot, final ItemStack item) {
+		return super.canPlaceItem(slot, item) && zone.moddev.mc.steamadvantage.util.FurnaceFuelHelper.getBurnTime(item) > 0;
 	}
 
 	@Override
-	public boolean isUsableByPlayer(PlayerEntity player) {
+	public boolean stillValid(PlayerEntity player) {
 		return true;
 	}
 }

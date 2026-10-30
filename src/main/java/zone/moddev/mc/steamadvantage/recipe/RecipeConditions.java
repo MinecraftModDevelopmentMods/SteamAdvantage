@@ -22,7 +22,7 @@ public final class RecipeConditions {
         CraftingHelper.register(new IConditionSerializer<ModeCondition>() {
             @Override public ResourceLocation getID() { return ModeCondition.ID; }
             @Override public ModeCondition read(JsonObject json) {
-                return new ModeCondition(RecipeMode.valueOf(JSONUtils.getString(json, "mode").toUpperCase(Locale.ROOT)));
+                return new ModeCondition(RecipeMode.valueOf(JSONUtils.getAsString(json, "mode").toUpperCase(Locale.ROOT)));
             }
             @Override public void write(JsonObject json, ModeCondition condition) {
                 json.addProperty("mode", condition.mode.name());

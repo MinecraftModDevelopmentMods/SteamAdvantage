@@ -53,11 +53,10 @@ public class SteamStillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 			if(!redstone){
 				if(getInputTank().getFluidAmount() > 0
 						&& getEnergy(Power.steam_power) > steamPerDistill
-						&& canDistill(getInputTank().getFluid())){
-					distill();
+						&& canDistill(getInputTank().getFluid()) && distill()){
 					this.subtractEnergy(steamPerDistill, Power.steam_power);
 					if(timeSinceSound > 200){
-						playSoundAtTileEntity(SoundEvents.BLOCK_LAVA_AMBIENT, SoundCategory.AMBIENT, 0.3f, 1.5f, this);
+						playSoundAtTileEntity(SoundEvents.LAVA_AMBIENT, SoundCategory.AMBIENT, 0.3f, 1.5f, this);
 						timeSinceSound = 0;
 					}
 					timeSinceSound++;
@@ -70,7 +69,7 @@ public class SteamStillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 
 
 	private boolean hasRedstoneSignal() {
-		return getWorld().isBlockPowered(getPos());
+		return getLevel().hasNeighborSignal(getBlockPos());
 	}
 
 
@@ -92,7 +91,7 @@ public class SteamStillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 			ConduitType type = Fluids.fluidToConduitType(getOutputTank().getFluid().getFluid());
 			float availableAmount = getOutputTank().getFluidAmount();
 			float delta =  ConduitRegistry.transmitPowerToConsumers(availableAmount, zone.moddev.mc.poweradvantage.init.Fluids.fluidConduit_general, type,
-					this.getMinimumSinkPriority(), getWorld(), getPos(), this);
+					this.getMinimumSinkPriority(), getLevel(), getBlockPos(), this);
 			if(delta > 0){
 				getOutputTank().drain(Math.max((int)delta,1),true); // no free energy!
 			}
@@ -172,8 +171,8 @@ public class SteamStillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	 * @param tagRoot An NBT tag
 	 */
 	@Override
-	public CompoundNBT write(final CompoundNBT tagRoot) {
-		super.write(tagRoot);
+	public CompoundNBT save(final CompoundNBT tagRoot) {
+		super.save(tagRoot);
 		CompoundNBT tankTag = new CompoundNBT();
 		this.getOutputTank().writeToNBT(tankTag);
 		tagRoot.put("TankOut", tankTag);
@@ -187,8 +186,8 @@ public class SteamStillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	 * @param tagRoot An NBT tag
 	 */
 	@Override
-	public void read(final CompoundNBT tagRoot) {
-		super.read(tagRoot);
+	public void load(net.minecraft.block.BlockState state, final CompoundNBT tagRoot) {
+		super.load(state, tagRoot);
 		if (tagRoot.contains("TankOut")) {
 			CompoundNBT tankTag = tagRoot.getCompound("TankOut");
 			getOutputTank().readFromNBT(tankTag);
@@ -294,20 +293,34 @@ public class SteamStillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	}
 
 	private boolean canDistill(FluidStack fs) {
+		if(fs == null) return false;
 		DistillationRecipe recipe = DistillationRecipeRegistry.getInstance().getDistillationRecipeForFluid(fs.getFluid());
 		if(recipe == null) return false;
-		if(this.getOutputTank().getFluidAmount() > 0){
-			return recipe.isValidInput(fs) && recipe.isValidOutput(getOutputTank().getFluid());
-		} else {
-			return recipe.isValidInput(fs);
-		}
+		return recipe.isValidInput(fs) && (outputTank.getFluidAmount() == 0
+				|| recipe.isValidOutput(outputTank.getFluid()));
 	}
 
-	private void distill(){
+	private int distillationApplications(DistillationRecipe recipe, FluidStack input) {
+		if(!recipe.isValidInput(input)) return 0;
+		if(outputTank.getFluidAmount() > 0 && !recipe.isValidOutput(outputTank.getFluid())) return 0;
+		// Preview on a copy: a blocked or partially full output must not destroy input.
+		for(int applications = speed; applications > 0; applications--){
+			FluidStack output = recipe.applyRecipe(input.copy(), applications);
+			if(output != null && outputTank.fill(output, false) == output.amount) return applications;
+		}
+		return 0;
+	}
+
+	private boolean distill(){
 		DistillationRecipe recipe = DistillationRecipeRegistry.getInstance()
 				.getDistillationRecipeForFluid(getInputTank().getFluid().getFluid());
-		FluidStack output = recipe.applyRecipe(inputTank.getFluid(), speed);
-		getOutputTank().fill(output, true);
+		int applications = distillationApplications(recipe, inputTank.getFluid());
+		if(applications > 0){
+			FluidStack output = recipe.applyRecipe(inputTank.getFluid(), applications);
+			getOutputTank().fill(output, true);
+			return true;
+		}
+		return false;
 	}
 
 
@@ -420,12 +433,12 @@ public class SteamStillTileEntity extends cyano.poweradvantage.api.simple.TileEn
 	///// end of IFluidHandler methods /////
 
 	@Override
-	public boolean isItemValidForSlot(final int slot, final ItemStack item) {
+	public boolean canPlaceItem(final int slot, final ItemStack item) {
 		return false; // no inventory
 	}
 
 	@Override
-	public boolean isUsableByPlayer(PlayerEntity player) {
+	public boolean stillValid(PlayerEntity player) {
 		return true;
 	}
 }

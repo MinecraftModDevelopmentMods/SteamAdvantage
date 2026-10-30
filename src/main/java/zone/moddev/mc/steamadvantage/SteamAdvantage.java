@@ -30,12 +30,12 @@ import zone.moddev.mc.steamadvantage.init.Villages;
 import zone.moddev.mc.steamadvantage.migration.SteamLegacyMigrations;
 import zone.moddev.mc.steamadvantage.recipe.RecipeConditions;
 
-/** Forge 1.15 entry point for Steam Advantage. */
+/** Forge 1.16 entry point for Steam Advantage. */
 @Mod(SteamAdvantage.MODID)
 public final class SteamAdvantage {
     public static final String MODID = "steamadvantage";
     public static final String NAME = "Steam Advantage";
-    public static final String VERSION = "2.2.7.115021";
+    public static final String VERSION = "2.2.8.116051";
     public static final Logger LOGGER = LogManager.getLogger(MODID);
 
     public static float MUSKET_DAMAGE = 20.0F;
@@ -80,7 +80,7 @@ public final class SteamAdvantage {
 
     private void commonSetup(FMLCommonSetupEvent event) {
         // CraftingHelper's shared condition map is not safe during parallel loading.
-        net.minecraftforge.fml.DeferredWorkQueue.runLater(RecipeConditions::register);
+        event.enqueueWork(RecipeConditions::register);
         SteamAdvantageConfig.apply();
         Recipes.init();
         TreasureChests.init(FMLPaths.CONFIGDIR.get());

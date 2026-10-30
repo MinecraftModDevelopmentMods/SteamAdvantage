@@ -26,19 +26,19 @@ public class CoalBoilerBlock extends cyano.poweradvantage.api.simple.BlockSimple
 	}
 
 	@Override
-	public PoweredEntity createNewTileEntity(net.minecraft.world.IBlockReader world) {
+	public PoweredEntity newBlockEntity(net.minecraft.world.IBlockReader world) {
 		return new CoalBoilerTileEntity();
 	}
 
 	@Override
-	public boolean hasComparatorInputOverride(BlockState bs) {
+	public boolean hasAnalogOutputSignal(BlockState bs) {
 		return true;
 	}
 
 	@Override
-	public int getComparatorInputOverride(BlockState bs, World world, BlockPos coord) {
-		if(world.getTileEntity(coord) instanceof CoalBoilerTileEntity){
-			return ((CoalBoilerTileEntity)world.getTileEntity(coord)).getComparatorOutput();
+	public int getAnalogOutputSignal(BlockState bs, World world, BlockPos coord) {
+		if(world.getBlockEntity(coord) instanceof CoalBoilerTileEntity){
+			return ((CoalBoilerTileEntity)world.getBlockEntity(coord)).getComparatorOutput();
 		}
 		return 0;
 	}

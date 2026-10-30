@@ -17,9 +17,9 @@ public class DrillBitRendererTest {
         for (Direction facing : Direction.values()) {
             RecordingBuffer buffer = new RecordingBuffer();
             MatrixStack matrices = new MatrixStack();
-            MatrixStack.Entry caller = matrices.getLast();
+            MatrixStack.Entry caller = matrices.last();
             DrillBitRenderer.renderGeometry(facing.getAxis(), 0, matrices, buffer, LIGHT, OVERLAY);
-            assertSame(caller, matrices.getLast());
+            assertSame(caller, matrices.last());
             assertEquals(24, buffer.vertices.size());
             double[] minimum = { Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY };
             double[] maximum = { Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY };
@@ -59,7 +59,7 @@ public class DrillBitRendererTest {
 
     @Test public void failedVertexSubmissionRestoresTheCallerMatrix() {
         MatrixStack matrices = new MatrixStack();
-        MatrixStack.Entry caller = matrices.getLast();
+        MatrixStack.Entry caller = matrices.last();
         try {
             DrillBitRenderer.renderGeometry(Direction.Axis.X, 37, matrices, new RecordingBuffer() {
                 @Override public void endVertex() { throw new IllegalStateException("submission failed"); }
@@ -68,7 +68,7 @@ public class DrillBitRendererTest {
         } catch (IllegalStateException expected) {
             assertEquals("submission failed", expected.getMessage());
         }
-        assertSame(caller, matrices.getLast());
+        assertSame(caller, matrices.last());
     }
 
     private static final class Vertex {
@@ -83,7 +83,7 @@ public class DrillBitRendererTest {
         final List<Vertex> vertices = new ArrayList<>();
         private Vertex vertex = new Vertex();
 
-        @Override public IVertexBuilder pos(double x, double y, double z) {
+        @Override public IVertexBuilder vertex(double x, double y, double z) {
             vertex.position[0] = x; vertex.position[1] = y; vertex.position[2] = z;
             return this;
         }
@@ -91,9 +91,9 @@ public class DrillBitRendererTest {
             vertex.color[0] = red; vertex.color[1] = green; vertex.color[2] = blue; vertex.color[3] = alpha;
             return this;
         }
-        @Override public IVertexBuilder tex(float u, float v) { vertex.u = u; vertex.v = v; return this; }
-        @Override public IVertexBuilder overlay(int u, int v) { vertex.overlay = u | v << 16; return this; }
-        @Override public IVertexBuilder lightmap(int u, int v) { vertex.light = u | v << 16; return this; }
+        @Override public IVertexBuilder uv(float u, float v) { vertex.u = u; vertex.v = v; return this; }
+        @Override public IVertexBuilder overlayCoords(int u, int v) { vertex.overlay = u | v << 16; return this; }
+        @Override public IVertexBuilder uv2(int u, int v) { vertex.light = u | v << 16; return this; }
         @Override public IVertexBuilder normal(float x, float y, float z) {
             vertex.normal[0] = x; vertex.normal[1] = y; vertex.normal[2] = z;
             return this;
